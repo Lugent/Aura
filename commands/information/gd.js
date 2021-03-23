@@ -198,7 +198,6 @@ module.exports = {
 								embed.attachFiles([search_image, gd_image]);
 								embed.setThumbnail("attachment://search.png");
 								embed.setAuthor("Geometry Dash - Level Search", "attachment://gd_icon.png")
-								embed.setFooter("API by GDColon", "https://gdbrowser.com/icon/colon");
 								embed.setColor([254, 223, 0]);
 								return message.channel.send(embed);
 							}
@@ -270,7 +269,6 @@ module.exports = {
 								embed.setColor(diff_to_color.find(element => element.id === level_data.difficulty).color);
 								embed.attachFiles([difficulty_image]);
 								embed.setThumbnail("attachment://" + level_data.difficultyFace + ".png");
-								embed.setFooter("API by GDColon", "https://gdbrowser.com/icon/colon");
 								embed.setAuthor(level_author, "https://gdbrowser.com/icon/" + level_data.playerID);
 								embed.setTitle(level_header);
 								embed.setDescription(level_information);
@@ -286,6 +284,93 @@ module.exports = {
 					}).on("error", async (error) => {
 						var embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.level.failure"));
+						embed.setColor([255, 0, 0]);
+						return message.channel.send(embed);
+					});
+					break;
+				}
+				
+				case "profile": {
+					if (!args[1]) {
+						var embed = new Discord.MessageEmbed();
+						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.profile.no_argument"));
+						embed.setColor([255, 0, 0]);
+						return message.channel.send(embed);
+					}
+					
+					let profile_id = args.slice(1).join(" ");
+					let complete_url = api_url + "profile/" + profile_id;
+					https.get(complete_url, async (response) => {
+						response.on("data", async (chunk) => { raw_data += chunk; })
+						response.on("end", async () => {
+							if (raw_data !== "-1") {
+								let profile_data = JSON.parse(raw_data);
+								console.log(profile_data)
+								
+								let profile_moderator = "";
+								if (profile_data.moderator == 1) { profile_moderator = "<:gd_mod:823150781988995082> "; }
+								else if (profile_data.moderator == 2) { profile_moderator = "<:gd_elder_mod:823150781964222464> "; }
+								
+								let profile_rank = profile_data.rank;
+								let profile_rank_string = (profile_rank > 0) ? ("Top #" + profile_rank) : "No rank";
+								let profile_rank_index = 0;
+								if (profile_rank == 1) { profile_rank_index = 1; }
+								else if ((profile_rank > 1) && (profile_rank < 11)) { profile_rank_index = 2; }
+								else if ((profile_rank > 10) && (profile_rank < 51)) { profile_rank_index = 3; }
+								else if ((profile_rank > 50) && (profile_rank < 101)) { profile_rank_index = 4; }
+								else if ((profile_rank > 100) && (profile_rank < 201)) { profile_rank_index = 5; }
+								else if ((profile_rank > 200) && (profile_rank < 501)) { profile_rank_index = 6; }
+								else if ((profile_rank > 500) && (profile_rank < 1001)) { profile_rank_index = 7; }
+								else if (profile_rank > 1000) { profile_rank_index = 8; }
+								let profile_rank_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/trophies/" + profile_rank_index + ".png", "rank_" + profile_rank_index + ".png");
+								
+								let profile_name = profile_data.username;
+								let profile_header = profile_moderator + profile_rank_string;
+
+								let profile_stars = "<:gd_star:823042179374120960> " + client.functions.number_formatter(profile_data.stars, 2) + " | ";
+								let profile_diamonds = "<:gd_diamond:823042795148148796> " + client.functions.number_formatter(profile_data.diamonds, 2) + " | ";
+								let profile_coins = "<:gd_coin:823042793739386920> " + client.functions.number_formatter(profile_data.coins, 2) + " | ";
+								let profile_usercoins = "<:gd_silver_coin:823042425953976321> " + client.functions.number_formatter(profile_data.userCoins, 2) + " | ";
+								let profile_demons = "<:gd_hard_demon:816469080872976405> " + client.functions.number_formatter(profile_data.demons, 2);
+								let profile_creatorpoints = (profile_data.cp > 0) ? (" | " + "<:gd_creator_points:823153273711362059> " + client.functions.number_formatter(profile_data.cp, 2)) : "";
+								let profile_info = profile_stars + profile_diamonds + profile_coins + profile_usercoins + profile_demons + profile_creatorpoints;
+								
+								let profile_youtube = (profile_data.youtube !== null) ? ("<:gd_youtube:823606174565662731> " + "[Youtube Channel](https://youtube.com/channel/" + profile_data.youtube + ")" + "\n") : "";
+								let profile_twitter = (profile_data.twitter !== null) ? ("<:gd_twitter:823606175231770674> " + "[Twitter Account](https://twitter.com/" + profile_data.twitter + ")" + "\n") : "";
+								let profile_twitch = (profile_data.twitch !== null) ? ("<:gd_twitch:823606175613321246> " + "[Twitch](https://twitch.tv/" + profile_data.twitch + ")" + "\n") : "";
+								let profile_socials = profile_youtube + profile_twitter + profile_twitch;
+								// 
+								let profile_friends = profile_data.friendRequests ? "<:gd_friends:823765982198759516> Friend requests enabled." : "<:gd_friends_grey:823765982077517854> Friend requests disabled.";
+								let profile_messages = "<:gd_messages:823765981313761351> Messages from Everyone.";
+								switch (profile_data.messages) {
+									case "friends": { profile_messages = "<:gd_messages_yellow:823765982195089439> Messages from friends."; break; }
+									case "off": { profile_messages = "<:gd_messages_grey:823765981981442089> No messages."; break; }
+								}
+								let profile_commenthistory = "<:gd_comments:823765980961439754> Comment history public.";
+								switch (profile_data.messages) {
+									case "friends": { profile_commenthistory = "<:gd_comments_yellow:823765981184393216> Comment history to friends."; break; }
+									case "off": { profile_commenthistory = "<:gd_comments_grey:823765981158834177> Comment history private."; break; }
+								}
+								let profile_options = profile_friends + "\n" + profile_messages + "\n" + profile_commenthistory;
+								
+								var embed = new Discord.MessageEmbed();
+								embed.attachFiles([profile_rank_image]);
+								embed.setThumbnail("attachment://" + "rank_" + profile_rank_index + ".png");
+								embed.setTitle(profile_header);
+								embed.setDescription(profile_info + (profile_socials.length ? ("\n\n" + profile_socials) : "") + "\n\n" + profile_options);
+								embed.setAuthor(profile_name, "https://gdbrowser.com/icon/" + profile_data.playerID);
+								return message.channel.send(embed);
+							}
+							else {
+								var embed = new Discord.MessageEmbed();
+								embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.profile.no_data"));
+								embed.setColor([255, 0, 0]);
+								return message.channel.send(embed);
+							}
+						})
+					}).on("error", async (error) => {
+						var embed = new Discord.MessageEmbed();
+						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.profile.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					});
