@@ -1,4 +1,27 @@
 let language = {
+	/* UTILS */
+	"utils.date.day.sunday": "sunday",
+	"utils.date.day.monday": "monday",
+	"utils.date.day.tuesday": "tuesday",
+	"utils.date.day.wednesday": "wednesday",
+	"utils.date.day.thursday": "thursday",
+	"utils.date.day.friday": "friday",
+	"utils.date.day.saturday": "saturday",
+	"utils.date.month.january": "january",
+	"utils.date.month.february": "february",
+	"utils.date.month.march": "march",
+	"utils.date.month.april": "april",
+	"utils.date.month.may": "may",
+	"utils.date.month.june": "june",
+	"utils.date.month.july": "july",
+	"utils.date.month.august": "august",
+	"utils.date.month.september": "september",
+	"utils.date.month.october": "october",
+	"utils.date.month.november": "november",
+	"utils.date.month.december": "december",
+	"utils.date.complete_date": "%s(3) %s(2), %s(4)",
+	/* UTILS */
+	
 	/* COMMAND CATEGORIES */
 	"command.help.category.administration": "Administration",
 	"command.help.category.general": "General",
@@ -280,7 +303,7 @@ let language = {
 	"command.guild.embed.emojis.field.none": "None",
 	"command.guild.embed.emojis.field.normal": "%s Normal",
 	"command.guild.embed.emojis.field.animated": "%s Animated",
-	"command.guild.embed.boostlevel": "Mejoras",
+	"command.guild.embed.boostlevel": "Boosts",
 	"command.guild.embed.community": "Community",
 	"command.guild.embed.creationdate": "Creation Date",
 	"command.guild.embed.locale": "Locate",
@@ -441,6 +464,7 @@ let language = {
 	"command.youtube.loading.stats": "Getting video's statistics...",
 	"command.youtube.failure.fatal": "FAILED TO PROCESS HTTP REQUEST",
 	"command.youtube.failure.notfound": "No result found.",
+	"command.youtube.embed.stats": "Stats",
 	
 	// Image
 	"command.image.usage": "<Search>",

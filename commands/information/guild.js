@@ -260,33 +260,7 @@ module.exports = {
 			system_channel = "#" + guild.systemChannel.name + " - " + "**" + system_channel_flags + "**";
 		}
 		
-		// Creation date - Day
-		let time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.sunday"); // Domingo
-		switch (guild.createdAt.getDay()) {
-			case 1: { time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.monday"); break; } // Lunes
-			case 2: { time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.tuesday"); break; } // Martes
-			case 3: { time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.wednesday"); break; } // Miercoles
-			case 4: { time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.thursday"); break; } // Juevez
-			case 5: { time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.friday"); break; } // Viernes
-			case 6: { time_day = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.day.saturday"); break; } // Sabado
-		}
-		
-		// Creation date - Month
-		let time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.january"); // enero
-		switch (guild.createdAt.getMonth()) {
-			case 1: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.february"); break; } // febrero
-			case 2: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.march"); break; } // marzo
-			case 3: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.april"); break; } // abril
-			case 4: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.may"); break; } // mayo
-			case 5: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.june"); break; } // junio
-			case 6: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.july"); break; } // julio
-			case 7: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.august"); break; } // agosto
-			case 8: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.september"); break; } // septiembre
-			case 9: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.october"); break; } // octubre
-			case 10: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.november"); break; } // noviembre
-			case 11: { time_month = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.month.december"); break; } // diciembre
-		}
-		let time_string = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.fulldate", [time_day, guild.createdAt.getDate(), time_month, guild.createdAt.getFullYear()]); //time_day + ", " + guild.createdAt.getDate() + " de " + time_month + " de " + guild.createdAt.getFullYear()
+		let time_string = client.functions.generateDateString(client, message.author, guild, guild.createdAt);
 		
 		// Widger
 		let widget = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.widget.disabled");

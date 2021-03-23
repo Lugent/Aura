@@ -1,6 +1,25 @@
 let language = {
 	/* UTILS */
-	
+	"utils.date.day.sunday": "domingo",
+	"utils.date.day.monday": "lunes",
+	"utils.date.day.tuesday": "martes",
+	"utils.date.day.wednesday": "miercoles",
+	"utils.date.day.thursday": "jueves",
+	"utils.date.day.friday": "viernes",
+	"utils.date.day.saturday": "sabado",
+	"utils.date.month.january": "enero",
+	"utils.date.month.february": "febrero",
+	"utils.date.month.march": "marzo",
+	"utils.date.month.april": "abril",
+	"utils.date.month.may": "mayo",
+	"utils.date.month.june": "junio",
+	"utils.date.month.july": "julio",
+	"utils.date.month.august": "agosto",
+	"utils.date.month.september": "septiembre",
+	"utils.date.month.october": "octubre",
+	"utils.date.month.november": "noviembre",
+	"utils.date.month.december": "diciembre",
+	"utils.date.complete_date": "%s(0), %s(2) de %s(3) de %s(4)",
 	/* UTILS */
 	
 	/* COMMAND CATEGORIES */
@@ -445,6 +464,7 @@ let language = {
 	"command.youtube.loading.stats": "Obteniendo estadisticas del video...",
 	"command.youtube.failure.fatal": "FALLO AL PROCESAR LA PETICION HTTP",
 	"command.youtube.failure.notfound": "No se encontro resultado.",
+	"command.youtube.embed.stats": "Estadisticas",
 	
 	// Image
 	"command.image.usage": "<Busqueda>",

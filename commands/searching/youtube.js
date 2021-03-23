@@ -96,13 +96,21 @@ module.exports = {
 									if (get_statistics.statistics.dislikeCount) { dislikes_count = client.functions.number_formatter(get_statistics.statistics.dislikeCount, 2); }
 									if (get_statistics.statistics.commentCount) { comments_count = client.functions.number_formatter(get_statistics.statistics.commentCount, 2); }
 									
+									let get_date = client.functions.ISODateToJSDate(get_video.snippet.publishedAt)
+									
+									let video_views = ":eye: " + views_count;
+									let video_likes = ":thumbsup: " + likes_count;
+									let video_dislikes = ":thumbsdown: " + dislikes_count;
+									let video_comments = ":speech_left: " + comments_count;
+									let video_date = ":calendar_spiral: " + client.functions.generateDateString(client, message.author, message.guild, get_date);
+									
 									let embed = new Discord.MessageEmbed();
 									embed.setAuthor(get_channel.snippet.title, get_channel.snippet.thumbnails.high.url, channel_link);
 									embed.setTitle(get_video.snippet.title);
 									embed.setDescription(get_video.snippet.description);
 									embed.setURL(video_link);
 									embed.setImage(get_video.snippet.thumbnails.high.url);
-									embed.addField(":bar_chart: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.stats") + ":", views_count + " :eye:" + " - " + likes_count + " :thumbsup:" + " - " + dislikes_count + " :thumbsdown:" + " - " + comments_count + " :speech_left:" + "\n" + ":calendar_spiral: " + client.functions.ISODateToJSDate(get_video.snippet.publishedAt));
+									embed.addField(":bar_chart: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.stats") + ":", video_date + "\n" + video_views + " | " + video_likes + " | " + video_dislikes + " | " + video_comments);
 									embed.setColor([255, 0, 0]);
 									return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 								}).on("error", (error) => {

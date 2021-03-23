@@ -1,8 +1,47 @@
 const Discord = require("discord.js");
+const util = require("util");
 const changelog = require(process.cwd() + "/configurations/changelog.js");
 
 function getRandomInt(max) { return Math.floor(Math.random() * Math.floor(max)); }
 function getRandomRangeInt(min, max) { return Math.floor(Math.random() * ((max - min) + 1)) + min; }
+
+function generateDateString(client, author, guild, get_date) {
+	if (typeof get_date !== "object") { return; }
+	
+	let date_week_day_number = get_date.getDay();
+	let date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.sunday"); // Domingo
+	switch (date_week_day_number) {
+		case 1: { date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.monday"); break; } // Lunes
+		case 2: { date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.tuesday"); break; } // Martes
+		case 3: { date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.wednesday"); break; } // Miercoles
+		case 4: { date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.thursday"); break; } // Juevez
+		case 5: { date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.friday"); break; } // Viernes
+		case 6: { date_week_day_string = client.utils.getTrans(client, author, guild, "utils.date.day.saturday"); break; } // Sabado
+	}
+	
+	let date_month_day_number = get_date.getDate();
+	let date_month_day_english = numberOrdinal(date_month_day_number);
+	let date_month_number = get_date.getMonth();
+	let date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.january"); // enero
+	switch (date_month_number) {
+		case 1: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.february"); break; } // febrero
+		case 2: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.march"); break; } // marzo
+		case 3: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.april"); break; } // abril
+		case 4: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.may"); break; } // mayo
+		case 5: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.june"); break; } // junio
+		case 6: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.july"); break; } // julio
+		case 7: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.august"); break; } // agosto
+		case 8: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.september"); break; } // septiembre
+		case 9: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.october"); break; } // octubre
+		case 10: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.november"); break; } // noviembre
+		case 11: { date_month_string = client.utils.getTrans(client, author, guild, "utils.date.month.december"); break; } // diciembre
+	}
+	
+	let date_year_number = get_date.getFullYear();
+	
+	let date_full_string = client.utils.getTrans(client, author, guild, "utils.date.complete_date", [date_week_day_string, date_month_day_number, date_month_day_english, date_month_string, date_year_number]);
+	return date_full_string;
+}
 
 function ISODateToJSDate(isodate_string) {
     var parts = isodate_string.match(/\d+/g);
@@ -264,4 +303,5 @@ module.exports = {
 	generateRankIcon: generateRankIcon,
 	numberOrdinal: numberOrdinal,
 	ISODateToJSDate: ISODateToJSDate,
+	generateDateString: generateDateString,
 };
