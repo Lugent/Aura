@@ -3,3 +3,5 @@ node_modules
 temp
 .env
 .eslintrc.json
+package.json
+package-lock.json
