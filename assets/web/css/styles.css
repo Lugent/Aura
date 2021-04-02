@@ -1,0 +1,19 @@
+.scoreboard_title {
+	text-align: center;
+}
+
+.scoreboard_table {
+	width: 50%;
+	padding: 20px;
+	margin: auto;
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+.scoreboard_table th, .scoreboard_table tr, .scoreboard_table td {
+	padding: 8px;
+	text-align: left;
+	/*border-bottom: 1px solid #ddd;*/
+	border: 1px solid black;
+	border-collapse: collapse;
+}

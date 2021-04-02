@@ -13,7 +13,7 @@ module.exports = {
         let channel_target = null;
         let channel_id = args[0];
         let message_content = args.slice(1).join(" ");
-        let guilds_array = client.guilds_array.cache.array();
+        let guilds_array = client.guilds.cache.array();
         for (let guild_index = 0; guild_index < guilds_array.length; guild_index++) {
             let guild_element = guilds_array[guild_index];
             channel_target = guild_element.channels.cache.get(channel_id);
@@ -22,7 +22,7 @@ module.exports = {
 		
         if (!channel_target) { return message.channel.send("El canal expecificado no existe, revisa bien la ID."); }
         if (!message_content) { return message.channel.send("No puedo mandar un agujero negro como mensaje."); }
-
+		
         return channel_target.send(message_content).then(() => {
             console.log("SAYIN: " + message.author.tag + " => " + channel_target.name + " > " + message_content);
 			

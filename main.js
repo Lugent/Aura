@@ -1,6 +1,7 @@
 // Dependencies
 const Discord = require("discord.js");
 const chalk = require("chalk");
+const fs = require("fs");
 
 // Process handlers
 process.on("exit", (code) => {
@@ -43,9 +44,9 @@ client.functions = require(process.cwd() + "/functions/general/core.js");
 client.crypt = require(process.cwd() + "/functions/general/crypto.js");
 client.fetchers = require(process.cwd() + "/functions/general/fetchers.js");
 client.commands = new Discord.Collection();
-client.afk = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 client.exp_cooldowns = new Discord.Collection();
+client.guild_music = new Discord.Collection(); // {id: <snowflake>, music: <stream>, position: <integer>, is_playing: <boolean>, is_paused: <boolean>}
 client.last_msg = undefined;
 client.toggle_logger = false;
 client.status_updating = true;
@@ -114,12 +115,16 @@ client.on("guildUnavailable", async (guild) => {
 
 // Verbose
 let command_loader = require(process.cwd() + "/functions/general/command_loader.js");
+let web_setup = require(process.cwd() + "/functions/general/web_setup.js");
 client.on("ready", async () => {
 	client.functions.resources_monitoring(client);
 	if (client.status_updating) { client.functions.status_update(client); }
 	
 	console.log("Registering commands...");
 	await command_loader(client);
+	
+	console.log("Starting up webserver...");
+	await web_setup(client);
 	
 	setInterval(function() { if (client.status_updating) { client.functions.status_update(client); }}, 15000);
 	setInterval(function() {

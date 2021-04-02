@@ -12,7 +12,7 @@ function isEmpty(obj) {
     return true;
 }
 
-async function commandsLoader(client, reload = false) {
+async function command_loader(client, reload = false) {
 	if (reload) {
 		console.log("");
 		console.log("Unloading commands:");
@@ -30,7 +30,7 @@ async function commandsLoader(client, reload = false) {
 	let count_error = 0;
 	let count_commands = 0;
 	let count_total = 0;
-	let root_dir = fs.readdirSync(process.cwd() + "/" + client.config.commands_dir);
+	let root_dir = await fs.readdirSync(process.cwd() + "/" + client.config.commands_dir);
 	for (let dir of root_dir) {
 		let file_size_dir = 0;
 		let count_load = 0;
@@ -80,4 +80,4 @@ async function commandsLoader(client, reload = false) {
 	console.log("");
 	console.log("Loaded all " + chalk.greenBright(count_commands) + " commands" + " (" + chalk.greenBright(final_size) + " KB in total)." + " " + "(" + chalk.redBright(count_error) + " errored)" + " " + "(" + chalk.yellowBright(count_skipped) + " skipped)");
 }
-module.exports = commandsLoader;
+module.exports = command_loader;

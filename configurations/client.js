@@ -4,10 +4,11 @@ const config = {
 		prefix: "=",
 		language: "es",
 	},
+	web_dir: "web",
 	commands_dir: "commands",
 	exp_score_base: 50,
 	exp_level_max: 780,
-	exp_gainrate: 32,
+	exp_gainrate: 10,
 	exp_cooldown: 4000,
 	exp_shield_table: [
 		{level: 720, type: 11}, {level: 660, type: 10}, {level: 600, type: 9}, {level: 540, type: 8},
