@@ -263,15 +263,15 @@ function status_update(client) {
 			status: "dnd"
 		},*/
 	]
-    client.user.setPresence(status_data[getRandomInt(status_data.length)]);
-    /*client.user.setPresence({
+    //client.user.setPresence(status_data[getRandomInt(status_data.length)]);
+    client.user.setPresence({
 		activity:
 		{
-			name: "for new re-written code",
+			name: "a wall",
 			type: "WATCHING"
 		},
 		status: "dnd"
-	});*/
+	});
 }
 
 async function generateRankIcon(client, Canvas, level_number) {

@@ -1,16 +1,6 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 async function commandExecutor(client, message) {
-	
-	/*if (message.guild) {
-		let is_blacklisted_server = client.blacklist_server.select.get(message.guild.id);
-		if (is_blacklisted_server) { return; }
-	}
-	else {
-		let is_blacklisted_user = client.blacklist_user.select.get(message.author.id);
-		if (is_blacklisted_user) { return; }
-	}*/
-	
 	let prefix = client.config.default.prefix;
 	if (message.guild) {
 		let get_server_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(message.guild.id);  //client.server_prefix.select.get(message.guild.id);

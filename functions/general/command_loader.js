@@ -30,7 +30,7 @@ async function command_loader(client, reload = false) {
 	let count_error = 0;
 	let count_commands = 0;
 	let count_total = 0;
-	let root_dir = await fs.readdirSync(process.cwd() + "/" + client.config.commands_dir);
+	let root_dir = await fs.readdirSync(process.cwd() + "/" + client.config.commands_dir).filter(dir => !dir.includes("."));
 	for (let dir of root_dir) {
 		let file_size_dir = 0;
 		let count_load = 0;

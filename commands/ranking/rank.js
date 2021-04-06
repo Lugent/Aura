@@ -7,6 +7,7 @@ module.exports = {
     cooldown: 5,
     usage: "command.rank.usage",
 	description: "command.rank.desc",
+	flags: constants.cmdFlags.noHelp,
     async execute(client, message, args)
     {
 		if (!message.guild) {

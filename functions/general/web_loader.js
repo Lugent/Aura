@@ -1,5 +1,5 @@
 const fs = require("fs");
-async function web_loader(client, app) {
+async function web_loader(client, app, reload = false) {
 	console.log("Loading request handlers...");
 	
 	app.run = {}
@@ -7,6 +7,8 @@ async function web_loader(client, app) {
 	for (let file of web_root_dir) {
 		try {
 			let path_file = process.cwd() + "/" + client.config.web_dir + "/" + file;
+			delete require.cache[require.resolve(path_file)];
+			
 			let size = await fs.statSync(path_file).size;
 			let web = require(path_file);
 			app.run[web.name] = web.execute

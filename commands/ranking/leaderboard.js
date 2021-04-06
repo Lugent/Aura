@@ -7,6 +7,7 @@ module.exports = {
     cooldown: 5,
     usage: "command.leaderboard.usage",
 	description: "command.leaderboard.desc",
+	flags: constants.cmdFlags.noHelp,
     async execute(client, message, args)
     {
 		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === client.config.owner)))) {

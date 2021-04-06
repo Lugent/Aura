@@ -1,3 +1,31 @@
+body {
+	background-color: #404040;
+}
+
+.header_main {
+	margin: 0 auto 0 auto;
+    /*width: 90%;*/
+	background-color: #0450AA;
+	padding: 1px;
+}
+
+.header_main_text {
+	color: white;
+    text-shadow: 4px 4px black;
+    font-family: monospace;
+	cursor: default;
+    user-select: none;
+	padding-left: 112px
+}
+
+.header_main_icon {
+	top: 36px;
+	border-radius: 24px;
+	padding: 1px;
+	margin-left: 32px;
+	position: absolute;
+}
+
 .scoreboard_title {
 	text-align: center;
 }
@@ -16,4 +44,20 @@
 	/*border-bottom: 1px solid #ddd;*/
 	border: 1px solid black;
 	border-collapse: collapse;
+}
+
+.error_message {
+	width: 60%;
+    padding: 10px;
+	background-color: #E00000;
+    border-radius: 20px;
+    color: white;
+    margin: auto;
+    margin-top: 60px;
+	text-align: center;
+    font-size: 40px;
+    text-shadow: 2px 2px black;
+    font-family: monospace;
+	cursor: default;
+    user-select: none;
 }
