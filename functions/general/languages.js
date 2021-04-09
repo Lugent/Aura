@@ -38,7 +38,7 @@ function getTranslation(client, user, guild, string, values) {
 		}
 	}
 	catch (error) {
-		throw error;
+		console.error(error);
 	}
 	finally {
 		translated_string = language_data[string];

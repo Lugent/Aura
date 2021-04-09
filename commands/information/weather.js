@@ -12,10 +12,28 @@ module.exports = {
     async execute(client, message, args)
     {
 		if (!args[0]) { return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.weather.error")); }
-		weather.find({search: args.slice(0).join(" "), degreeType: 'C'}, function(error, result) {
+		
+		let get_language = "es-ES";
+		let server_data = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(message.guild.id);
+		let server_language = server_data.language;
+		switch (server_language) {
+			case "en": { get_language = "en-US"; break; }
+		}
+		
+		weather.find({search: args.slice(0).join(" "), degreeType: 'C', lang: get_language}, function(error, result) {
 			if (error) {
 				console.error(error);
-				return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.weather.failure"))
+				let embed = new Discord.MessageEmbed();
+				embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.weather.failure"));
+				embed.setColor(0xff0000);
+				return message.channel.send(embed);
+			}
+			
+			if (!result[0]) {
+				let embed = new Discord.MessageEmbed();
+				embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.weather.not_found"));
+				embed.setColor(0xff0000);
+				return message.channel.send(embed);
 			}
 			
 			let currentWeather = result[0].current;

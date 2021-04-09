@@ -2,7 +2,7 @@ const config = {
 	owner: "258976701730521088",
     default: {
 		prefix: "=",
-		language: "es",
+		language: "es"
 	},
 	web_dir: "web",
 	commands_dir: "commands",

@@ -1,5 +1,12 @@
 const changelog = [
 	{
+		version: "1.4.1.0-beta",
+		data: [
+			":white_check_mark: Comando de Geometry Dash, `gd`. (En desarollo).",
+			":white_check_mark: Posibilidad de desactivar comandos y funciones en un servidor. (Solo Administradores)."
+		]
+	},
+	{
 		version: "1.4.0.0",
 		data: [
 			":blue_circle: Re-escritura de la mayoria del código.",

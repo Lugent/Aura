@@ -7,7 +7,7 @@ module.exports = {
 	path: path.basename(__dirname),
     cooldown: 6,
 	description: "command.gd.usage",
-	async execute(client, message, args) {
+	async execute(client, message, args, prefix) {
 		
 		let diff_to_color = [
 			{id: "Unrated", color: [182, 182, 182]},
@@ -29,8 +29,6 @@ module.exports = {
 		let subcommand = args[0];
 		if (!subcommand) {
 			var embed = new Discord.MessageEmbed();
-			//embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.nosubcommand"));
-			//embed.setColor([255, 0, 0]);
 			embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.title")); // "List of available subcommands"
 			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_0"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_0")); // "help" - "Gives a help of the usage of the given subcommand."
 			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_1"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_1")); // "search" - "Returns a list of levels with the given filters. (Defaults to most downloaded if no filters given)."
@@ -47,6 +45,53 @@ module.exports = {
 		}
 		else {
 			switch (subcommand) {
+				case "help": {
+					let help_command = args[1];
+					if (!help_command) {
+						var embed = new Discord.MessageEmbed();
+						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.help_no_command"));
+						embed.setColor([255, 0, 0]);
+						return message.channel.send(embed);
+					}
+					
+					switch (help_command) {
+						case "search": {
+							var embed = new Discord.MessageEmbed();
+							embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.title", [prefix]));
+							embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_main"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_0"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_0"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_1"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_1"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_2"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_2"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_3"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_3"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_4"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_4"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_5"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_5"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_6"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_6"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_7"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_7"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_8"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_8"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_9"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_9"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_10"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_10"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_11"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_11"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_12"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_12"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_13"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_13"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_14"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_14"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_15"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_15"));
+							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_16"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_16"));
+							embed.setColor([0, 255, 255]);
+							return message.channel.send(embed);
+							break;
+						}
+						
+						default: {
+							var embed = new Discord.MessageEmbed();
+							embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.help_invalid_command"));
+							embed.setColor([255, 0, 0]);
+							return message.channel.send(embed);
+							break;
+						}
+					}
+					break;
+				}
+				
 				case "search": {
 					// flags
 					let filters_custom_count = false;
@@ -70,11 +115,139 @@ module.exports = {
 						for (let filters_index = 0; filters_index < filters_arguments.length; filters_index++) {
 							let filter_element = filters_arguments[filters_index];
 							let filter_argument = "";
-							if (filters_index > 0) { filter_prefix = "&"; }
 							
-							if (filter_element.startsWith("/count=")) {
+							// Flags
+							if (filter_element.startsWith("/featured")) { search_filters += filter_prefix + "featured=yes"; } // Featured
+							if (filter_element.startsWith("/original")) { search_filters += filter_prefix + "original=yes"; } // Original
+							if (filter_element.startsWith("/twoPlayer")) { search_filters += filter_prefix + "twoPlayer=yes"; } // Two Player
+							if (filter_element.startsWith("/coins")) { search_filters += filter_prefix + "coins=yes"; } // Coins
+							if (filter_element.startsWith("/epic")) { search_filters += filter_prefix + "epic=yes"; } // Epic
+							if (filter_element.startsWith("/starred")) { search_filters += filter_prefix + "starred=yes"; } // Starred
+							if (filter_element.startsWith("/noStar")) { search_filters += filter_prefix + "noStar=yes"; } // No Star
+							
+							// Search types
+							if (filter_element.startsWith("/type=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								console.log(filter_argument)
+								switch (filter_argument.toLowerCase()) {
+									case "mostdownloaded": { search_filters += filter_prefix + "type=mostdownloaded"; break; }
+									case "mostliked": { search_filters += filter_prefix + "type=mostliked"; break; }
+									case "trending": { search_filters += filter_prefix + "type=trending"; break; }
+									case "recent": { search_filters += filter_prefix + "type=recent"; break; }
+									case "awarded": { search_filters += filter_prefix + "type=awarded"; break; }
+									case "featured": { search_filters += filter_prefix + "type=featured"; break; }
+									case "magic": { search_filters += filter_prefix + "type=magic"; break; }
+									case "halloffame": { search_filters += filter_prefix + "type=halloffame"; break; }
+								}
+							}
+							
+							// Custom Song ID
+							if (filter_element.startsWith("/customSong=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
+								search_filters += filter_prefix + "customSong=" + filter_argument;
+							}
+							
+							// User
+							if (filter_element.startsWith("/user=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
+								search_filters += filter_prefix + "user=" + filter_argument;
+							}
+							
+							// Creators
+							if (filter_element.startsWith("/creators=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
+								search_filters += filter_prefix + "creators=" + filter_argument;
+							}
+							
+							// List
+							if (filter_element.startsWith("/list=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
+								search_filters += filter_prefix + "list=" + filter_argument;
+							}
+							
+							// Official Song ID
+							if (filter_element.startsWith("/songID=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
+								let size_number = Number(filter_argument)
+								if (Number.isNaN(size_number)) {
+									switch (filter_argument.toLowerCase()) {
+										case "stereo_madness": { search_filters += filter_prefix + "songID=1"; break; }
+										case "back_on_track": { search_filters += filter_prefix + "songID=2"; break; }
+										case "polargeist": { search_filters += filter_prefix + "songID=3"; break; }
+										case "dry_out": { search_filters += filter_prefix + "songID=4"; break; }
+										case "base_after_base": { search_filters += filter_prefix + "songID=5"; break; }
+										case "cant_let_go": { search_filters += filter_prefix + "songID=6"; break; }
+										case "jumper": { search_filters += filter_prefix + "songID=7"; break; }
+										case "time_machine": { search_filters += filter_prefix + "songID=8"; break; }
+										case "cycles": { search_filters += filter_prefix + "songID=9"; break; }
+										case "xstep": { search_filters += filter_prefix + "songID=10"; break; }
+										case "clutterfunk": { search_filters += filter_prefix + "songID=11"; break; }
+										case "theory_of_everything": { search_filters += filter_prefix + "songID=12"; break; }
+										case "electroman_adventures": { search_filters += filter_prefix + "songID=13"; break; }
+										case "clubstep": { search_filters += filter_prefix + "songID=14"; break; }
+										case "electrodynamix": { search_filters += filter_prefix + "songID=15"; break; }
+										case "hexagon_force": { search_filters += filter_prefix + "songID=16"; break; }
+										case "blast_processing": { search_filters += filter_prefix + "songID=17"; break; }
+										case "theory_of_everything_2": { search_filters += filter_prefix + "songID=18"; break; }
+										case "geometrical_dominator": { search_filters += filter_prefix + "songID=19"; break; }
+										case "deadlocked": { search_filters += filter_prefix + "songID=20"; break; }
+										case "fingerdash": { search_filters += filter_prefix + "songID=21"; break; }
+									}
+								}
+								else {
+									switch (size_number) {
+										case 1: { search_filters += filter_prefix + "songID=1"; break; }
+										case 2: { search_filters += filter_prefix + "songID=2"; break; }
+										case 3: { search_filters += filter_prefix + "songID=3"; break; }
+										case 4: { search_filters += filter_prefix + "songID=4"; break; }
+										case 5: { search_filters += filter_prefix + "songID=5"; break; }
+										case 6: { search_filters += filter_prefix + "songID=6"; break; }
+										case 7: { search_filters += filter_prefix + "songID=7"; break; }
+										case 8: { search_filters += filter_prefix + "songID=8"; break; }
+										case 9: { search_filters += filter_prefix + "songID=9"; break; }
+										case 10: { search_filters += filter_prefix + "songID=10"; break; }
+										case 11: { search_filters += filter_prefix + "songID=11"; break; }
+										case 12: { search_filters += filter_prefix + "songID=12"; break; }
+										case 13: { search_filters += filter_prefix + "songID=13"; break; }
+										case 14: { search_filters += filter_prefix + "songID=14"; break; }
+										case 15: { search_filters += filter_prefix + "songID=15"; break; }
+										case 16: { search_filters += filter_prefix + "songID=16"; break; }
+										case 17: { search_filters += filter_prefix + "songID=17"; break; }
+										case 18: { search_filters += filter_prefix + "songID=18"; break; }
+										case 19: { search_filters += filter_prefix + "songID=19"; break; }
+										case 20: { search_filters += filter_prefix + "songID=20"; break; }
+										case 21: { search_filters += filter_prefix + "songID=21"; break; }
+									}
+								}
+							}
+							
+							// Length
+							if (filter_element.startsWith("/length=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
+								let size_number = Number(filter_argument)
+								if (Number.isNaN(size_number)) {
+									switch (filter_argument.toLowerCase()) {
+										case "tiny": { search_filters += filter_prefix + "length=0"; break; }
+										case "short": { search_filters += filter_prefix + "length=1"; break; }
+										case "medium": { search_filters += filter_prefix + "length=2"; break; }
+										case "long": { search_filters += filter_prefix + "length=3"; break; }
+										case "xl": { search_filters += filter_prefix + "length=4"; break; }
+									}
+								}
+								else {
+									switch (size_number) {
+										case 0: { search_filters += filter_prefix + "length=0"; break; }
+										case 1: { search_filters += filter_prefix + "length=1"; break; }
+										case 2: { search_filters += filter_prefix + "length=2"; break; }
+										case 3: { search_filters += filter_prefix + "length=3"; break; }
+										case 4: { search_filters += filter_prefix + "length=4"; break; }
+									}
+								}
+							}
+							
+							// Count
+							if (filter_element.startsWith("/count=")) {
+								filter_argument = filter_element.split("=").slice(1).join("");
 								let search_count = Number(filter_argument);
 								if (!Number.isNaN(search_count)) {
 									if (search_count > 5) { search_count = 5; }
@@ -83,19 +256,20 @@ module.exports = {
 								}
 							}
 							
+							// Page
 							if (filter_element.startsWith("/page=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
-								console.log(filter_argument)
 								let search_count = Number(filter_argument);
 								if (!Number.isNaN(search_count)) { search_filters += filter_prefix + "page=" + search_count; }
 								else { search_filters += filter_prefix + "page=1"; }
 							}
 							
+							// Difficulty
 							if (filter_element.startsWith("/difficulty=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								let difficulty_number = Number(filter_argument)
 								if (Number.isNaN(difficulty_number)) {
-									switch (filter_argument) {
+									switch (filter_argument.toLowerCase()) {
 										case "na": { search_filters += filter_prefix + "diff=-1"; break; }
 										case "auto": { search_filters += filter_prefix + "diff=-3"; break; }
 										case "easy": { search_filters += filter_prefix + "diff=1"; break; }
@@ -127,6 +301,9 @@ module.exports = {
 									}
 								}
 							}
+							
+							// Update prefix
+							filter_prefix = "&";
 						}
 					}
 					if (!filters_custom_count) { search_filters += filter_prefix + "count=5"; }
@@ -140,7 +317,7 @@ module.exports = {
 								let levels_data = JSON.parse(raw_data);
 								//console.log(levels_data);
 								var search_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/magnify.png", "search.png");
-								var gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gdps/gd_icon.png", "gd_icon.png");
+								var gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gd_icon.png", "gd_icon.png");
 								var embed = new Discord.MessageEmbed();
 								for (let level_index = 0; level_index < levels_data.length; level_index++) {
 									var level_element = levels_data[level_index];

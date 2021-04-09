@@ -454,6 +454,7 @@ let language = {
 	"command.weather.embed.humidity": "Humedad",
 	"command.weather.embed.timezone": "Zona Horaria",
 	"command.weather.embed.coords": "Localización",
+	"command.weather.not_found": "Localización invalida.",
 	
 	// Youtube
 	"command.youtube.usage": "<Busqueda>",
