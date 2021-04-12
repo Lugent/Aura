@@ -22,14 +22,19 @@ module.exports = {
         let member = mentioned_member || find_member;
 		
 		let kick_reason = client.utils.getTrans(client, message.author, message.guild, "command.kick.noreason");
-		if (args[1]) { banReason = args.slice(1).join(" "); }
+		if (args[1]) { kick_reason = args.slice(1).join(" "); }
 		
 		if (!member) {
-			let embed = new Discord.MessageEmbed();
-			embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.kick.error.dontexists.title"));
-			embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.kick.error.dontexists.desc"));
-			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			if (args[0]) {
+				member = await client.fetchers.getGuildMember(client, message.guild, args[0]);
+			}
+			else {
+				let embed = new Discord.MessageEmbed();
+				embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.kick.error.dontexists.title"));
+				embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.kick.error.dontexists.desc"));
+				embed.setColor([255, 0, 0]);
+				return message.channel.send(embed);
+			}
 		}
 		
 		if (member.user.id === client.user.id) {
