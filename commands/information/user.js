@@ -1,6 +1,11 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 module.exports = {
     name: "user",
 	path: path.basename(__dirname),
@@ -40,17 +45,7 @@ module.exports = {
 		let mentioned_user = message.mentions.users.first();
         let user = mentioned_user || get_user;
 		if (!user) {
-			if (args[0]) {
-				try { 
-					user = await client.fetchers.fetchUser(client, args[0]);
-				}
-				catch (error) {
-					user = undefined;
-				} 
-			}
-			else {
-				user = message.author;
-			}
+			if (args[0]) { user = await client.fetchers.getUser(client, args[0]); } else { user = message.author; }
 		}
 		if (!user) {
 			var embed = new Discord.MessageEmbed();
@@ -68,24 +63,6 @@ module.exports = {
 		
 		// Badges
 		let user_badges = "";
-		/*if (user.flags) {
-			let user_flags = user.flags.serialize();
-			if (user_flags.DISCORD_EMPLOYEE || is_debug) { user_badges += "<:discord_staff_badge:813093779262668811>" + " "; }
-			if (user_flags.TEAM_USER || is_debug) { user_badges += "<:discord_team_badge:813101102446280757>" + " "; } // Ehm... what's the context of this badge?
-			if (user_flags.SYSTEM || is_debug) { user_badges += "<:discord_system_badge:813101088693026818>" + " "; } // Yeah, another non sense badge idk
-			if (user_flags.BUGHUNTER_LEVEL_2 || is_debug) { user_badges += "<:discord_bug_hunter_badge2:813094144804782130>" + " "; }
-			if (user_flags.BUGHUNTER_LEVEL_1 || is_debug) { user_badges += "<:discord_bug_hunter_badge:813094122902650900>" + " "; }
-			if (user_flags.DISCORD_PARTNER || is_debug) { user_badges += "<:discord_partner_badge:813094007386931240>" + " "; }
-			if (user_flags.PARTNERED_SERVER_OWNER || is_debug) { user_badges += "<:discord_new_partner_badge:813093989817253909>" + " "; }
-			if (user_flags.VERIFIED_DEVELOPER || is_debug) { user_badges += "<:discord_verified_developer_badge:813094181517656094>" + " "; }
-			if (user_flags.EARLY_VERIFIED_DEVELOPER || is_debug) { user_badges += "<:discord_early_verified_developer:813097918797578290>" + " "; }
-			if (user_flags.EARLY_SUPPORTER || is_debug) { user_badges += "<:discord_early_supporter_badge:813094078919999490>" + " "; }
-			if (user_flags.HYPESQUAD_EVENTS || is_debug) { user_badges += "<:discord_hypesquad_badge:813096076919308309>" + " "; }
-			if (user_flags.HOUSE_BRAVERY || is_debug) { user_badges += "<:discord_bravery_badge:813094208045973605>" + " "; }
-			if (user_flags.HOUSE_BRILLIANCE || is_debug) { user_badges += "<:discord_brilliance_badge:813094235313406022>" + " "; }
-			if (user_flags.HOUSE_BALANCE || is_debug) { "<:discord_balance_badge:813094252959105065>" + " "; }
-		}*/
-		
 		if (user.flags) {
 			let user_flags = user.flags.serialize();
 			if (user_flags.DISCORD_EMPLOYEE || is_debug) { user_badges += client.utils.getTrans(client, message.author, message.guild, "command.user.data.badges.staff") + "\n"; }
@@ -123,14 +100,15 @@ module.exports = {
 		
 		// Send info
         var embed = new Discord.MessageEmbed();
-		embed.setTitle(user.tag + tag);
+		embed.setAuthor(user.tag + "\n" + "(" + user.id + ")", user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }));
+		embed.setTitle(tag);
         embed.setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 4096 }));
 		embed.addField(":satellite: " + client.utils.getTrans(client, message.author, message.guild, "command.user.embed.status") + ":", user_status, true);
 		if (((user.presence.status !== "offline") && user.presence.clientStatus) || is_debug) { embed.addField(":signal_strength: " + client.utils.getTrans(client, message.author, message.guild, "command.user.embed.device") + ":", user_device, true); }
 		if (user.locale) { embed.addField(":globe_with_meridians: " + client.utils.getTrans(client, message.author, message.guild, "command.user.embed.locale") + ":", user.locale, false); }
 		if (user_badges.length) { embed.addField(":military_medal: " + client.utils.getTrans(client, message.author, message.guild, "command.user.embed.badges") + ":", user_badges, false); }
-		embed.addField(":calendar_spiral: " + client.utils.getTrans(client, message.author, message.guild, "command.user.embed.creationdate") + ":", user.createdAt.toString(), false);
-        embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.user.embed.id") + ": " + user.id);
+		embed.addField(":calendar_spiral: " + client.utils.getTrans(client, message.author, message.guild, "command.user.embed.creationdate") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
+        //embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.user.embed.id") + ": " + user.id);
 		embed.setColor(0x66b3ff);
 		return send_message ? send_message.edit(embed) : message.channel.send(embed);
     }

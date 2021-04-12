@@ -1,6 +1,11 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 module.exports = {
     name: "member",
 	path: path.basename(__dirname),
@@ -132,7 +137,9 @@ module.exports = {
 		
 		// Send info
         let embed = new Discord.MessageEmbed();
-		embed.setTitle(member.user.tag + tag + memberSpecials);
+		embed.setFooter(member.guild.name + "\n" + "(" + member.guild.id + ")", member.guild.iconURL());
+		embed.setAuthor(member.user.tag + "\n" + "(" + member.user.id + ")", member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }));
+		embed.setTitle(tag + memberSpecials);
 		if (member.nickname) { embed.setDescription(memberNickname); }
         embed.setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 4096 }));
 	    /*embed.addField(":satellite: " + "Estado:", userStatus, true);
@@ -145,14 +152,10 @@ module.exports = {
 			embed.addField(":card_index: " + client.utils.getTrans(client, message.author, message.guild, "command.member.embed.permissions.voice") + ":", memberPermissionsVoice, true);
 		}
 		if (member.premiumSince) { embed.addField(":diamonds: " + client.utils.getTrans(client, message.author, message.guild, "command.member.embed.boostdate") + ":", member.premiumSince.toString(), false); }
-		embed.addField(":notepad_spiral: " + client.utils.getTrans(client, message.author, message.guild, "command.member.embed.joindate") + ":", member.joinedAt.toString(), false);
+		embed.addField(":notepad_spiral: " + client.utils.getTrans(client, message.author, message.guild, "command.member.embed.joindate") + ":", client.functions.generateDateString(client, message.author, message.guild, member.joinedAt).capitalize(), false);
 		//embed.addField(":calendar_spiral: " + "Fecha de creación" + ":", member.user.createdAt.toString(), false);
-        embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.member.embed.id", [member.user.id])); // member.user.id
-		embed.setColor(0x66b3ff);
-        if (getMessage) {
-			return getMessage.edit(embed);
-		} else {
-			return message.channel.send(embed);
-		}
+        //embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.member.embed.id", [member.user.id])); // member.user.id
+		embed.setColor(member.displayHexColor);
+        if (getMessage) { return getMessage.edit(embed); } else { return message.channel.send(embed); }
     }
 };

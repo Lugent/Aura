@@ -1,6 +1,11 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 module.exports = {
 	name: "guild",
 	path: path.basename(__dirname),
@@ -260,7 +265,7 @@ module.exports = {
 			system_channel = "#" + guild.systemChannel.name + " - " + "**" + system_channel_flags + "**";
 		}
 		
-		let time_string = client.functions.generateDateString(client, message.author, guild, guild.createdAt);
+		let time_string = client.functions.generateDateString(client, message.author, guild, guild.createdAt).capitalize();
 		
 		// Widger
 		let widget = client.utils.getTrans(client, message.author, message.guild, "command.guild.data.widget.disabled");
@@ -302,14 +307,14 @@ module.exports = {
 		// Information
 		var embed = new Discord.MessageEmbed();
 		embed.setThumbnail(guild.iconURL());
-		embed.setTitle(guild.name);
+		embed.setTitle(guild.name + "\n" + "(" + guild.id + ")");
 		if (description_string.length) { embed.setDescription(guild.description); }
-		embed.setAuthor(guild.owner.user.tag, guild.owner.user.displayAvatarURL());
+		embed.setAuthor(guild.owner.user.tag + "\n" + "(" + guild.owner.user.id + ")", guild.owner.user.displayAvatarURL());
 		embed.addField(":map: " + client.utils.getTrans(client, message.author, message.guild, "command.guild.embed.locale") + ":", region_string + "\n" + locale_string);
 		embed.addField(":closed_lock_with_key: " + client.utils.getTrans(client, message.author, message.guild, "command.guild.embed.admin") + ":", (feature_community ? (rules_channel_string + "\n") : "") + system_channel_string + "\n" + notifications_string + "\n" + moderation_string + "\n" + ex_filter_string + "\n" + mfa_string + "\n" + widget_string);
 		embed.addField(":bar_chart: " + client.utils.getTrans(client, message.author, message.guild, "command.guild.embed.stats") + ":", date_string + "\n" + member_string + "\n" + channel_string + "\n" + roles_string + "\n" + emojis_string + "\n" + boost_string);
 		if (features.length) { embed.addField(":star2: " + client.utils.getTrans(client, message.author, message.guild, "command.guild.embed.features") + ":", features); }
-		embed.setFooter("ID" + ": " + guild.id);
+		//embed.setFooter("ID" + ": " + guild.id);
 		embed.setColor([0, 255, 0]);
 		return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 	},
