@@ -46,6 +46,7 @@ client.fetchers = require(process.cwd() + "/functions/general/fetchers.js");
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 client.exp_cooldowns = new Discord.Collection();
+client.guild_invites = new Discord.Collection();
 client.guild_music = new Discord.Collection(); // {id: <snowflake>, music: <stream>, position: <integer>, is_playing: <boolean>, is_paused: <boolean>}
 client.last_msg = undefined;
 client.toggle_logger = false;
@@ -79,16 +80,18 @@ client.login(process.env.DISCORD_TOKEN).then(() => {
 console.log("Connecting to discord...");
 
 // Load event files
-let command_executor = require(process.cwd() + "/functions/events/general_command_executor.js"); 
-let data_handler = require(process.cwd() + "/functions/events/general_database_handler.js");
-let msg_logger = require(process.cwd() + "/functions/events/general_message_logger.js");
-let first_time_welcome = require(process.cwd() + "/functions/events/guilds_bot_welcome.js");
-let exp_handler = require(process.cwd() + "/functions/events/guilds_experience_handler.js");
-let afk_handler = require(process.cwd() + "/functions/events/users_afk_handler.js");
+let general_command_executor = require(process.cwd() + "/functions/events/general_command_executor.js"); 
+let general_data_handler = require(process.cwd() + "/functions/events/general_database_handler.js");
+let guild_member_join = require(process.cwd() + "/functions/events/guild_member_join.js");
+let guild_invite_tracker = require(process.cwd() + "/functions/general/invite_tracker.js");
+let guild_msg_logger = require(process.cwd() + "/functions/events/general_message_logger.js");
+let guild_bot_welcome = require(process.cwd() + "/functions/events/guilds_bot_welcome.js");
+let guild_experience_handler = require(process.cwd() + "/functions/events/guilds_experience_handler.js");
+let user_afk_handler = require(process.cwd() + "/functions/events/users_afk_handler.js");
 
 // Execute events
 client.on("message", async (message) => {
-	await data_handler(client, message);
+	await general_data_handler(client, message);
 	
 	let blacklist_guild = undefined;
 	let blacklist_user = undefined;
@@ -98,17 +101,36 @@ client.on("message", async (message) => {
 	if ((blacklist_guild) && (blacklist_guild.active)) { return; }
 	else if ((blacklist_user) && (blacklist_user.active)) { return; }
 	
-	await msg_logger(client, message);
-	await afk_handler(client, message);
-	await exp_handler(client, message);
-	await command_executor(client, message);
+	await guild_msg_logger(client, message);
+	await user_afk_handler(client, message);
+	await guild_experience_handler(client, message);
+	await general_command_executor(client, message);
 });
+
+client.on("inviteCreate", async (invite) => {
+	await guild_invite_tracker(client);
+	console.log("Invite '" + invite.code + "' created by '" + invite.inviter.tag + "' to '" + invite.guild.name + "'.");
+});
+
+client.on("inviteDelete", async (invite) => {
+	await guild_invite_tracker(client);
+	console.log("Invite '" + invite.code + "' deleted, created by '" + invite.inviter.tag + "' to '" + invite.guild.name + "'.");
+});
+
+client.on("guildMemberAdd", async (member) => {
+	await guild_member_join(client, member);
+});
+
 client.on("guildCreate", async (guild) => {
-	await first_time_welcome(client, guild);
+	await guild_bot_welcome(client, guild);
+	await guild_invite_tracker(client);
 });
+
 client.on("guildDelete", async (guild) => {
+	await guild_invite_tracker(client);
 	console.log("Leaved guild " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
 });
+
 client.on("guildUnavailable", async (guild) => {
 	console.log("Guild offline " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
 });
@@ -126,6 +148,9 @@ client.on("ready", async () => {
 	console.log("Starting up webserver...");
 	await web_setup(client);
 	
+	console.log("Initializing invite tracker...");
+	await guild_invite_tracker(client);
+	
 	setInterval(function() { if (client.status_updating) { client.functions.status_update(client); }}, 15000);
 	setInterval(function() {
 		if (client.connected) {
@@ -138,7 +163,7 @@ client.on("ready", async () => {
             else if (ping > 30) { pingcolor = chalk.cyanBright(ping); }
 			console.log("Connection latency is " + pingcolor + "ms.");
 		}
-	}, 60000);
+	}, 120000);
 	
 	client.connected = true;
 	console.log("All functions ready.")
