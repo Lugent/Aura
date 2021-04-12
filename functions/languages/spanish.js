@@ -19,7 +19,7 @@ let language = {
 	"utils.date.month.october": "octubre",
 	"utils.date.month.november": "noviembre",
 	"utils.date.month.december": "diciembre",
-	"utils.date.complete_date": "%s(0), %s(2) de %s(3) de %s(4)",
+	"utils.date.complete_date": "%s(0), %s(1) de %s(3) de %s(4)",
 	/* UTILS */
 	
 	/* COMMAND CATEGORIES */
@@ -402,12 +402,11 @@ let language = {
 	
 	// Uptime
 	"command.uptime.desc": "Muestra la información del bot",
-	"command.uptime.embed.cpuusage": "Uso de CPU",
-	"command.uptime.embed.ramusage": "Uso de RAM",
-	"command.uptime.embed.timeconnected": "Tiempo conectado",
-	"command.uptime.embed.timeconnected.field": "%s dias, %s horas, %s minutos, y %s segundos",
-	"command.uptime.embed.createddate": "Fecha de creación",
-	"command.uptime.embed.id": "ID",
+	"command.uptime.result.software": "Software",
+	"command.uptime.result.resources_usage": "Uso de recursos",
+	"command.uptime.result.time_connected": "Tiempo conectado",
+	"command.uptime.result.time_connected.field": "%s dias, %s horas, %s minutos, y %s segundos",
+	"command.uptime.result.creation_date": "Fecha de creación",
 	
 	// User
 	"command.user.usage": "[usuario]",
@@ -528,6 +527,21 @@ let language = {
 	"command.gd.usage.desc_8": "Verifica si una canción esta permitida para su uso en GD.",
 	"command.gd.usage.footer": "API hecha por GDColon",
 	"command.gd.invalid_subcommand": "Subcomando invalido",
+	
+	// Wikipedia
+	"command.wikipedia.usage": "Busca información desde Wikipedia. (El idioma depende del idioma configurado del servidor).",
+	"command.wikipedia.no_arguments": "Especifique una busqueda.",
+	"command.wikipedia.not_found": "No se encontro el resultado.",
+	"command.wikipedia.fatal_error": "Hubo un error durante la petición HTTP.",
+	
+	// Google
+	"command.google.desc": "Realiza una busqueda en Google",
+	"command.google.no_arguments": "Indique una busqueda.",
+	"command.google.loading": "Buscando...",
+	"command.google.results.author": "Resultados de %s",
+	"command.google.results.title": "Se han encontrado %s resultados." + "\n" + "(En aproximadamente %s segundos).",
+	"command.google.not_found": "No se encontraron resultados.",
+	"command.google.fatal_failure": "Hubo un error durante la petición HTTP."
 	/* INFORMATION COMMANDS */
 }
 module.exports = language;

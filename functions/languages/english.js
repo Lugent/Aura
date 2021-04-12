@@ -402,12 +402,11 @@ let language = {
 	
 	// Uptime
 	"command.uptime.desc": "Show bot's info",
-	"command.uptime.embed.cpuusage": "CPU Usage",
-	"command.uptime.embed.ramusage": "RAM Usage",
-	"command.uptime.embed.timeconnected": "Time Connected",
-	"command.uptime.embed.timeconnected.field": "%s days, %s hours, %s minutes, y %s seconds",
-	"command.uptime.embed.createddate": "Creation Date",
-	"command.uptime.embed.id": "ID",
+	"command.uptime.result.software": "Software",
+	"command.uptime.result.resources_usage": "Resources usage",
+	"command.uptime.result.time_connected": "Time connected",
+	"command.uptime.result.time_connected.field": "%s days, %s hours, %s minutes, y %s seconds",
+	"command.uptime.result.creation_date": "Creation date",
 	
 	// User
 	"command.user.usage": "[user]",
@@ -573,6 +572,21 @@ let language = {
 	"command.gd.profile.no_argument": "No username or ID specified.",
 	"command.gd.profile.no_data": "Profile not found!",
 	"command.gd.profile.failure": "Something went wrong...",
+	
+	// Wikipedia
+	"command.wikipedia.usage": "Search information from Wikipedia. (The language depends from the configured guild's language).",
+	"command.wikipedia.no_arguments": "Specify a search.",
+	"command.wikipedia.not_found": "No result found.",
+	"command.wikipedia.fatal_error": "Something went wrong during HTTP request."
+	
+	// Google
+	"command.google.desc": "Perform a search via Google",
+	"command.google.no_arguments": "Specify a search.",
+	"command.google.loading": "Searching...",
+	"command.google.results.author": "Results of %s",
+	"command.google.results.title": "Found %s results." + "\n" + "(%s seconds aprox.).",
+	"command.google.not_found": "No results found.",
+	"command.google.fatal_failure": "Something went wrong during HTTP request."
 	/* INFORMATION COMMANDS */
 }
 module.exports = language;
