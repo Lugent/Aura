@@ -57,16 +57,16 @@ async function commandExecutor(client, message) {
 
     // Cooldown
 	if (!client.cooldowns.has(command.name)) { client.cooldowns.set(command.name, new Discord.Collection()); }
-    let time_now = Date.now();
-	let time_amount = (command.cooldown || 0) * 1000;
-    let timestamps = client.cooldowns.get(command.name);
-    if (timestamps.has(message.author.id)) {
-        let expirationTime = timestamps.get(message.author.id) + time_amount;
-        if (time_now < expirationTime) {
-            let timeLeft = (expirationTime - time_now) / 1000;
+    let time_actual = Date.now();
+	let time_cooldown = (command.cooldown || 1) * 1000;
+    let time_data = client.cooldowns.get(command.name);
+    if (time_data.has(message.author.id)) {
+        let time_count = time_data.get(message.author.id) + time_cooldown;
+        if (time_actual < time_count) {
+            let time_remaining = (time_count - time_actual) / 1000;
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
-            embed.setDescription(":information_source: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.cooldown", [timeLeft.toFixed(2)])); // timeLeft.toFixed(2)
+            embed.setDescription(":information_source: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.cooldown", [time_remaining.toFixed(2)])); // time_remaining.toFixed(2)
             return message.channel.send(embed);
         }
     }
@@ -99,8 +99,8 @@ async function commandExecutor(client, message) {
         return message.channel.send(embed);
     }
     finally {
-        timestamps.set(message.author.id, time_now);
-        setTimeout(() => timestamps.delete(message.author.id), time_amount);
+        time_data.set(message.author.id, time_actual);
+        setTimeout(() => time_data.delete(message.author.id), time_cooldown);
     }
 }
 module.exports = commandExecutor;
