@@ -8,6 +8,7 @@ module.exports = {
 	description: "command.image.desc",
 	aliases: ["img"],
 	usage: "command.image.usage",
+	cooldown: 20,
 	async execute(client, message, args) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
