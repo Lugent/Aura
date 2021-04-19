@@ -4,16 +4,11 @@ const path = require("path");
 const os = require("os");
 const packages_json = require(process.cwd() + "/package.json");
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}
-
+String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1); }
 module.exports = {
     name: "uptime",
 	path: path.basename(__dirname),
-    //aliases: ["profile"],
     cooldown: 5,
-    //usage: "[usuario]",
 	description: "command.uptime.desc",
     async execute(client, message, args)
     {

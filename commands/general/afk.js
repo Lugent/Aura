@@ -2,9 +2,6 @@
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 
-const image_filters = [".png", ".jpg", ".gif", ".jpeg"];
-const invite_filters = ["discord.gg", "discord.me", "discord.io/", "discordapp.com/invite"];
-
 module.exports = {
 	name: "afk",
 	path: path.basename(__dirname),
