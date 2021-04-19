@@ -21,6 +21,10 @@ let language = {
 	"utils.date.month.december": "diciembre",
 	"utils.date.complete_date": "%s(0), %s(1) de %s(3) de %s(4)",
 	"utils.date.complete_time": "%s:%s:%s%s",
+	"utils.duration.seconds": "segundos",
+	"utils.duration.minutes": "minutos",
+	"utils.duration.hours": "horas",
+	"utils.duration.days": "dias",
 	/* UTILS */
 	
 	/* COMMAND CATEGORIES */
@@ -42,8 +46,10 @@ let language = {
 	/* EXP HANDLER */
 	
 	/* AFK HANDLER */
-	"afkhandler.title.active": "**%s** esta AFK",
-	"afkhandler.title.gone": "**%s** volvio de su AFK",
+	"afk_handler.caller.returned": "**%s** volvió de su AFK.",
+	"afk_handler.caller.time": "Después de %s.",
+	"afk_handler.pinged": "**%s** está AFK.",
+	"afk_handler.pinged.time": "Durante %s",
 	/* AFK HANDLER */
 	
 	/* COMMAND EXECUTOR */

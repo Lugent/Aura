@@ -13,8 +13,12 @@ module.exports = {
 	description: "command.afk.desc",
 	//flags: constants.cmdFlags.dontLoad,
 	execute(client, message, args) {
-        let reason = "";
-		let get_link = "";
+		let actual_time = new Date().getTime();
+        let reason = args.slice(0).join(" ");
+		client.user_data.prepare("INSERT OR REPLACE INTO afk (user_id, name, reason, time) VALUES (?, ?, ?, ?);").run(message.author.id, message.author.tag, reason, actual_time);
+		return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.afk.set", [message.author.tag]) + "\n\n" + reason);
+		
+		/*let get_link = "";
 		if (args.length) {
 			for (var argument_index = 0; argument_index < arguments.length; argument_index++) {
 				if (!args[argument_index]) { continue };
@@ -23,14 +27,13 @@ module.exports = {
 				}
 			}
 			reason = args.slice(0).join(" ");
-		}
-		client.user_data.prepare("INSERT OR REPLACE INTO afk (user_id, name, reason) VALUES (?, ?, ?);").run(message.author.id, message.author.tag, reason + get_link); //client.user_afk.insert.run();
+		}*/
 		
-		let embed = new Discord.MessageEmbed();
+		/*let embed = new Discord.MessageEmbed();
 		embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.afk.set", [message.author.tag])); // "**" + message.author.tag + "**" + " esta AFK"
 		if (reason.length) { embed.setDescription(reason); }
 		if (get_link.length) { embed.setImage(get_link); }
 		embed.setColor([255, 255, 0]);
-		return message.channel.send(embed);
+		return message.channel.send(embed);*/
 	},
 };

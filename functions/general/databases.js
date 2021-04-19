@@ -43,7 +43,7 @@ function setupDatabases (client) {
 	// Afk
 	let table_user_afk = data_user.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'afk';").get();
 	if (!table_user_afk["count(*)"]) {
-		data_user.prepare("CREATE TABLE afk (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, name TEXT, reason TEXT);").run();
+		data_user.prepare("CREATE TABLE afk (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, name TEXT, reason TEXT, time NUMERIC);").run();
 		data_user.prepare("CREATE UNIQUE INDEX afk_id ON afk (id);").run();
 	}
 	

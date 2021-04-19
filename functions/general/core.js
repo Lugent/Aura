@@ -65,6 +65,27 @@ function generateTimeString(client, author, guild, get_date) {
 	return client.utils.getTrans(client, author, guild, "utils.date.complete_time", [date_hour, date_minute, date_second, date_suffix]);
 }
 
+function generateDurationString(client, author, guild, get_time, is_full = false) {
+	if (typeof get_time !== "number") { return; }
+	
+	let seconds_string = client.utils.getTrans(client, author, guild, "utils.duration.seconds");
+	let minutes_string = client.utils.getTrans(client, author, guild, "utils.duration.minutes");
+	let hours_string = client.utils.getTrans(client, author, guild, "utils.duration.hours");
+	let days_string = client.utils.getTrans(client, author, guild, "utils.duration.days");
+	
+	let calculated_time = Math.abs(new Date().getTime() - get_time);
+	let get_seconds = (calculated_time / 1000);
+	let get_minutes = (get_seconds / 60);
+	let get_hours = (get_minutes / 60);
+	let get_days = (get_hours / 24);
+	
+	var get_time = ((get_days.toFixed(0) > 0) ? (get_days.toFixed(0) + " " + days_string + ", ") : "") + (((get_hours.toFixed(0) % 24) > 0) ? ((get_hours.toFixed(0) % 24) + " " + hours_string + ", ") : "") + (((get_minutes.toFixed(0) % 60) > 0) ? ((get_minutes.toFixed(0) % 60) + " " + minutes_string + ", ") : "") + (get_seconds.toFixed(0) % 60) + " " + seconds_string;
+	if (is_full) {
+		get_time = get_days.toFixed(0) + " " + days_string + ", " + (get_hours.toFixed(0) % 24) + " " + hours_string + ", " +  (get_minutes.toFixed(0) % 60) + " " + minutes_string + ", " +  (get_seconds.toFixed(0) % 60) + " " + seconds_string;
+	}
+	return get_time;
+}
+
 function ISODateToJSDate(isodate_string) {
     var parts = isodate_string.match(/\d+/g);
     return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
@@ -326,5 +347,6 @@ module.exports = {
 	numberOrdinal: numberOrdinal,
 	ISODateToJSDate: ISODateToJSDate,
 	generateDateString: generateDateString,
-	generateTimeString: generateTimeString
+	generateTimeString: generateTimeString,
+	generateDurationString: generateDurationString
 };
