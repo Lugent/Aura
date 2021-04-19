@@ -10,7 +10,7 @@ module.exports = {
 	description: "command.music.desc",
     async execute(client, message, args, prefix)
     {
-		if (message.channel.type !== "text") { return message.channel.send("GO TO A TEXT CHANNEL YOU MORRON!!!"); }
+		if (message.channel.type !== "text") { return message.channel.send("Please use this command on a server."); }
 		
 		let evoker_channel = message.channel;
 		let voice_channel = message.member.voice.channel;
@@ -66,8 +66,6 @@ module.exports = {
 				let selected_music = youtube_link || url_link || audio_file;
 				if (!selected_music) { return message.channel.send("Specify an URL or an file!"); }
 				voice_channel.join().then(async (connection) => {
-					//connection.on("disconnect", () => { evoker_channel.send("Disconnected."); });
-					//connection.on("ready", () => { evoker_channel.send("Resumed connection."); });
 					connection.on("error", (error) => { evoker_channel.send(error.message); });
 					
 					let target_audio = undefined;
@@ -75,21 +73,16 @@ module.exports = {
 					else if (url_link) { target_audio = url_link; }
 					else if (audio_file) { target_audio = audio_file.url; }
 					
-					let dispatcher = connection.play(target_audio, {highWaterMark: 1}); //connection.play("D:/Archivos/Variado/Audios/LSPE/bgmSpecialStage.wav");
+					let dispatcher = connection.play(target_audio, {highWaterMark: 10});
 					dispatcher.on("start", () => { evoker_channel.send("Playing..."); });
 					dispatcher.on("error", () => {
-						evoker_channel.send("An error occurred during playback. Disconnecting...");
-						connection.disconnect();
+						evoker_channel.send("An error occurred during playback.");
 					});
-					/*dispatcher.on("finish", () => {
-						evoker_channel.send("Playback ended. Disconnecting...");
-						connection.disconnect();
-					});*/
 				});
 				break;
 			}
 			default: {
-				message.channel.send("Invalid subcommand!" + "\n" + "`" + prefix + "music play <file/url>`");
+				message.channel.send("Invalid subcommand!");
 				break;
 			}
 		}

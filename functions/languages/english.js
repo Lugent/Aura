@@ -20,6 +20,7 @@ let language = {
 	"utils.date.month.november": "november",
 	"utils.date.month.december": "december",
 	"utils.date.complete_date": "%s(3) %s(2), %s(4)",
+	"utils.date.complete_time": "%s:%s:%s%s",
 	/* UTILS */
 	
 	/* COMMAND CATEGORIES */
@@ -113,6 +114,20 @@ let language = {
 	"command.gsettings.toggle.error.command.cantdisable": "Cannot disabled this command.",
 	"command.gsettings.toggle.command.disabled": "**%s** command disabled.",
 	"command.gsettings.toggle.command.enabled": "**%s** command enabled.",
+	
+	// Kick
+	"command.kick.usage": "<member> [reason]",
+	"command.kick.desc": "Kicks a member from the server. (Requires **Kick Members** permission).",
+	"command.kick.no_perms": "You lack from **Kick Members** permission to do that.",
+	"command.kick.no_reason": "No reason.",
+	"command.kick.dont_exists": "Specified member didn't exists.",
+	"command.kick.myself": "Impossible to do that action.",
+	"command.kick.yourself": "You can leave from the server easily.",
+	"command.kick.is_owner": "Can't do that against server's ownership.",
+	"command.kick.cant_kick": "I'm unable to do that due porably it's in a higher role that me.",
+	"command.kick.success.title": "%s was kicked from the server.",
+	"command.kick.success.reason": "Reason: %s",
+	"command.kick.success.by": "Operator: %s",
 	/* ADMINISTRATION COMMANDS */
 	
 	/* GENERAL COMMANDS */
@@ -132,7 +147,7 @@ let language = {
 	"command.help.find.send.failure": "Unable to show detaills of the command due to, or your DMs are closed or the API failed.",
 	
 	// Math
-	"command.math.usage": "<Math Expression>",
+	"command.math.usage": "<math expression>",
 	"command.math.desc": "A calculator, amazing.",
 	"command.math.error.empty": "Empty expression, impossible to calculate.",
 	"command.math.error.failure": "Syntax Error.",
@@ -456,7 +471,7 @@ let language = {
 	"command.weather.not_found": "Invalid location.",
 	
 	// Youtube
-	"command.youtube.usage": "<Search>",
+	"command.youtube.usage": "<search>",
 	"command.youtube.desc": "Search a Youtube's video. (For the moment)",
 	"command.youtube.error.nosearch": "Specify search.",
 	"command.youtube.loading.desc": "Searching video...",
@@ -467,7 +482,7 @@ let language = {
 	"command.youtube.embed.stats": "Stats",
 	
 	// Image
-	"command.image.usage": "<Search>",
+	"command.image.usage": "<search>",
 	"command.image.error.nosearch": "Specify search.",
 	"command.image.loading.desc": "Searching image...",
 	"command.image.warning.experimental": "Experimental command, errors ahead.",
@@ -574,12 +589,13 @@ let language = {
 	"command.gd.profile.failure": "Something went wrong...",
 	
 	// Wikipedia
-	"command.wikipedia.usage": "Search information from Wikipedia. (The language depends from the configured guild's language).",
+	"command.wikipedia.usage": "Search information from Wikipedia.",
 	"command.wikipedia.no_arguments": "Specify a search.",
 	"command.wikipedia.not_found": "No result found.",
-	"command.wikipedia.fatal_error": "Something went wrong during HTTP request."
+	"command.wikipedia.fatal_error": "Something went wrong during HTTP request.",
 	
 	// Google
+	"command.google.usage": "<search>",
 	"command.google.desc": "Perform a search via Google",
 	"command.google.no_arguments": "Specify a search.",
 	"command.google.loading": "Searching...",

@@ -7,7 +7,7 @@ function setupDatabases (client) {
 	/* BOT DATA */
 	let table_bot_blacklist = data_bot.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'blacklist';").get();
 	if (!table_bot_blacklist["count(*)"]) {
-		data_bot.prepare("CREATE TABLE blacklist (id INTEGER PRIMARY KEY AUTOINCREMENT, target_id TEXT, type TEXT, reason TEXT, active NUMERIC);").run();
+		data_bot.prepare("CREATE TABLE blacklist (id INTEGER PRIMARY KEY AUTOINCREMENT, target_id TEXT, type TEXT, time NUMERIC, reason TEXT);").run();
 		data_bot.prepare("CREATE UNIQUE INDEX blacklist_id ON blacklist (id);").run();
 	}
 	client.bot_data = data_bot;

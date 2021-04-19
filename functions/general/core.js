@@ -38,9 +38,31 @@ function generateDateString(client, author, guild, get_date) {
 	}
 	
 	let date_year_number = get_date.getFullYear();
+	return client.utils.getTrans(client, author, guild, "utils.date.complete_date", [date_week_day_string, date_month_day_number, date_month_day_english, date_month_string, date_year_number]);
+}
+
+function generateTimeString(client, author, guild, get_date) {
+	if (typeof get_date !== "object") {
+		if (typeof get_date === "number") {
+			get_date = new Date(get_date); 
+		}
+		else { return; }
+	}
 	
-	let date_full_string = client.utils.getTrans(client, author, guild, "utils.date.complete_date", [date_week_day_string, date_month_day_number, date_month_day_english, date_month_string, date_year_number]);
-	return date_full_string;
+	
+	let is_12hours = true;
+	let get_language = "es";
+	let server_data = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(guild.id);
+	let server_language = server_data.language;
+	switch (server_language) {
+		case "en": { is_12hours = false; break; }
+	}
+	
+	let date_hour = is_12hours ? ((get_date.getHours() % 12) ? (get_date.getHours() % 12) : 12) : get_date.getHours();
+	let date_minute = ((get_date.getMinutes() + 1) < 10) ? ("0" + (get_date.getMinutes() + 1)) : (get_date.getMinutes() + 1);
+	let date_second = ((get_date.getSeconds() + 1) < 10) ? ("0" + (get_date.getSeconds() + 1)) : (get_date.getSeconds() + 1);
+	let date_suffix = (is_12hours ? ((get_date.getHours() > 12) ? " PM" : " AM") : "");
+	return client.utils.getTrans(client, author, guild, "utils.date.complete_time", [date_hour, date_minute, date_second, date_suffix]);
 }
 
 function ISODateToJSDate(isodate_string) {
@@ -304,4 +326,5 @@ module.exports = {
 	numberOrdinal: numberOrdinal,
 	ISODateToJSDate: ISODateToJSDate,
 	generateDateString: generateDateString,
+	generateTimeString: generateTimeString
 };

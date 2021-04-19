@@ -98,8 +98,7 @@ client.on("message", async (message) => {
 	if (message.guild) { blacklist_guild = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(message.guild.id); }
 	else { blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(message.author.id); }
 	
-	if ((blacklist_guild) && (blacklist_guild.active)) { return; }
-	else if ((blacklist_user) && (blacklist_user.active)) { return; }
+	if (blacklist_guild || blacklist_user) { return; }
 	
 	await guild_msg_logger(client, message);
 	await user_afk_handler(client, message);
@@ -109,16 +108,30 @@ client.on("message", async (message) => {
 
 client.on("inviteCreate", async (invite) => {
 	await guild_invite_tracker(client);
-	console.log("Invite '" + invite.code + "' created by '" + invite.inviter.tag + "' to '" + invite.guild.name + "'.");
+	if (invite.inviter) {
+		console.log("Invite '" + invite.code + "' created, by '" + invite.inviter.tag + "' from '" + invite.guild.name + "'.");
+	}
+	else {
+		console.log("Invite '" + invite.code + "' created, to '" + invite.guild.name + "'.");
+	}
 });
 
 client.on("inviteDelete", async (invite) => {
 	await guild_invite_tracker(client);
-	console.log("Invite '" + invite.code + "' deleted, created by '" + invite.inviter.tag + "' to '" + invite.guild.name + "'.");
+	if (invite.inviter) {
+		console.log("Invite '" + invite.code + "' deleted, created by '" + invite.inviter.tag + "' from '" + invite.guild.name + "'.");
+	}
+	else {
+		console.log("Invite '" + invite.code + "' deleted, from '" + invite.guild.name + "'.");
+	}
 });
 
 client.on("guildMemberAdd", async (member) => {
 	await guild_member_join(client, member);
+});
+
+client.on("guildMemberRemove", async (member) => {
+	console.log(member.user.tag + " leaved from " + member.guild.name);
 });
 
 client.on("guildCreate", async (guild) => {
@@ -155,7 +168,7 @@ client.on("ready", async () => {
 	setInterval(function() {
 		if (client.connected) {
 			let ping = client.ws.ping;
-            let pingcolor = ping //[254, 254, 254];
+            let pingcolor = ping;
             if (ping > 330) { pingcolor = chalk.red(ping); }
             else if (ping > 225) { pingcolor = chalk.redBright(ping); }
             else if (ping > 140) { pingcolor = chalk.yellowBright(ping); }
@@ -164,6 +177,15 @@ client.on("ready", async () => {
 			console.log("Connection latency is " + pingcolor + "ms.");
 		}
 	}, 120000);
+	/*setInterval(function() {
+		let uptime_count = new Date().getTime() - client.readyAt.getTime();
+		let uptime_seconds = (uptime_count / 1000);
+		let uptime_minutes = (uptime_seconds / 60);
+		let uptime_hours = (uptime_minutes / 60);
+		let uptime_days = (uptime_hours / 24);
+		let uptime_string = uptime_days.toFixed(0) + " days, " + (uptime_hours.toFixed(0) % 24) + " hours, " + (uptime_minutes.toFixed(0) % 60) + " minutes, " + (uptime_seconds.toFixed(0) % 60) + " seconds.";
+		console.log(uptime_string)
+	}, 1)*/
 	
 	client.connected = true;
 	console.log("All functions ready.")

@@ -27,11 +27,18 @@ body {
 }
 
 .scoreboard_title {
+	color: white;
+	font-family: monospace;
+	cursor: default;
+    user-select: none;
 	text-align: center;
+    font-size: 40px;
+    text-shadow: 3px 3px black;
+	padding-top: 12px;
 }
 
 .scoreboard_table {
-	width: 50%;
+	width: 80rem;
 	padding: 20px;
 	margin: auto;
 	border: 1px solid black;
@@ -44,10 +51,19 @@ body {
 	/*border-bottom: 1px solid #ddd;*/
 	border: 1px solid black;
 	border-collapse: collapse;
+	padding-bottom: 12px;
+}
+
+.scoreboard_main_divier {
+	background-color: #808080;
+    border-radius: 20px;
+	width: 100rem;
+	margin: auto;
+    margin-top: 60px;
 }
 
 .error_message {
-	width: 60%;
+	width: 100rem;
     padding: 10px;
 	background-color: #E00000;
     border-radius: 20px;

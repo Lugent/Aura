@@ -17,7 +17,8 @@ module.exports = {
 	description: "command.uptime.desc",
     async execute(client, message, args)
     {
-		let uptime_seconds = (client.uptime / 1000);
+		let uptime_count = new Date().getTime() - client.readyAt.getTime();
+		let uptime_seconds = (uptime_count / 1000);
 		let uptime_minutes = (uptime_seconds / 60);
 		let uptime_hours = (uptime_minutes / 60);
 		let uptime_days = (uptime_hours / 24);

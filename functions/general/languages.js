@@ -17,7 +17,7 @@ function getTranslation(client, user, guild, string, values) {
 		let get_guild_language = client.server_data.prepare("SELECT language FROM settings WHERE guild_id = ?;").get(guild.id);
 		if (get_guild_language) { language_target = get_guild_language.language; }
 	}
-	else {
+	else if (user) {
 		let get_user_language = client.user_data.prepare("SELECT language FROM settings WHERE user_id = ?;").get(user.id);
 		if (get_user_language) { language_target = get_user_language.language; }
 	}

@@ -20,6 +20,7 @@ let language = {
 	"utils.date.month.november": "noviembre",
 	"utils.date.month.december": "diciembre",
 	"utils.date.complete_date": "%s(0), %s(1) de %s(3) de %s(4)",
+	"utils.date.complete_time": "%s:%s:%s%s",
 	/* UTILS */
 	
 	/* COMMAND CATEGORIES */
@@ -113,6 +114,20 @@ let language = {
 	"command.gsettings.toggle.error.command.cantdisable": "No se puede deshabilitar este comando.",
 	"command.gsettings.toggle.command.disabled": "Comando **%s** deshabilitado.",
 	"command.gsettings.toggle.command.enabled": "Comando **%s** habilitado.",
+	
+	// Kick
+	"command.kick.usage": "<miembro> [razón]",
+	"command.kick.desc": "Explusa un miembro del servidor. (Requiere permiso **Explusar Miembros**).",
+	"command.kick.no_perms": "No tienes el permiso **Explusar Miembros** para hacer esto.",
+	"command.kick.no_reason": "Sin razón.",
+	"command.kick.dont_exists": "El miembro especificado no existe.",
+	"command.kick.myself": "Imposible hacer esa acción.",
+	"command.kick.yourself": "Puedes salirte del servidor tranquilamente.",
+	"command.kick.is_owner": "No se puede hacer eso contra el propietario del servidor.",
+	"command.kick.cant_kick": "No soy capaz de hacerlo debido que posiblemente tiene un rol mas alto que yo.",
+	"command.kick.success.title": "%s fue explusado del servidor.",
+	"command.kick.success.reason": "Razón: %s",
+	"command.kick.success.by": "Operador: %s",
 	/* ADMINISTRATION COMMANDS */
 	
 	/* GENERAL COMMANDS */
@@ -132,7 +147,7 @@ let language = {
 	"command.help.find.send.failure": "Imposible mostrarte una detalles del comando debido a que, o tienes los MDs cerrados o la API falló.",
 	
 	// Math
-	"command.math.usage": "<Expresión Matematica>",
+	"command.math.usage": "<expresión matematica>",
 	"command.math.desc": "Una calculadora, impresionante.",
 	"command.math.error.empty": "Expresión vacia, imposible calcular.",
 	"command.math.error.failure": "Error de sintaxis.",
@@ -196,7 +211,7 @@ let language = {
 	"command.avatar.error.notfound": "Usuario no encontrado.",
 	
 	// Changelog
-	"command.changelog.usage": "[pagina]",
+	"command.changelog.usage": "[página]",
 	"command.changelog.desc": "Muestra la lista de cambios del bot. (Solo en español).",
 	"command.changelog.error.notfound": "Versión no existente",
 	"command.changelog.embed.title": "%s",
@@ -456,7 +471,7 @@ let language = {
 	"command.weather.not_found": "Localización invalida.",
 	
 	// Youtube
-	"command.youtube.usage": "<Busqueda>",
+	"command.youtube.usage": "<busqueda>",
 	"command.youtube.desc": "Busca un video en youtube. (De momento).",
 	"command.youtube.error.nosearch": "Especifique busqueda.",
 	"command.youtube.loading.desc": "Buscando video...",
@@ -467,7 +482,7 @@ let language = {
 	"command.youtube.embed.stats": "Estadisticas",
 	
 	// Image
-	"command.image.usage": "<Busqueda>",
+	"command.image.usage": "<busqueda>",
 	"command.image.error.nosearch": "Especifique busqueda.",
 	"command.image.loading.desc": "Buscando imagen...",
 	"command.image.warning.experimental": "Comando experimental, errores visibles.",
@@ -529,12 +544,13 @@ let language = {
 	"command.gd.invalid_subcommand": "Subcomando invalido",
 	
 	// Wikipedia
-	"command.wikipedia.usage": "Busca información desde Wikipedia. (El idioma depende del idioma configurado del servidor).",
+	"command.wikipedia.usage": "Busca información desde Wikipedia.",
 	"command.wikipedia.no_arguments": "Especifique una busqueda.",
 	"command.wikipedia.not_found": "No se encontro el resultado.",
 	"command.wikipedia.fatal_error": "Hubo un error durante la petición HTTP.",
 	
 	// Google
+	"command.google.usage": "<busqueda>",
 	"command.google.desc": "Realiza una busqueda en Google",
 	"command.google.no_arguments": "Indique una busqueda.",
 	"command.google.loading": "Buscando...",
