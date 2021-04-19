@@ -1,8 +1,5 @@
 const Discord = require("discord.js");
 
-const image_filters = [".png", ".jpg", ".gif", ".jpeg"];
-const invite_filters = ["discord.gg", "discord.me", "discord.io/", "discordapp.com/invite"];
-
 async function messageAFK(client, message) {
 	let get_afk = client.user_data.prepare("SELECT * FROM afk WHERE user_id = ?").get(message.author.id); //client.user_afk.select.get(message.author.id);
 	if (get_afk) {
