@@ -222,10 +222,10 @@ function status_update(client) {
 			},
 			status: "online"
 		},
-		/*{
+		{
 			activity:
 			{
-				name: "Rah-",
+				name: "Ra!",
 				type: "PLAYING"
 			},
 			status: "online"
@@ -233,11 +233,11 @@ function status_update(client) {
 		{
 			activity:
 			{
-				name: "Rawr",
+				name: "Rawr!",
 				type: "PLAYING"
 			},
 			status: "online"
-		},*/
+		},
 		{
 			activity:
 			{
@@ -283,13 +283,18 @@ function status_update(client) {
 			{
 				name: "for others Lucario",
 				type: "WATCHING"
-				
-				//name: "with others Lucario",
-				//type: "PLAYING"
 			},
 			status: "idle"
 		},
-		/*{
+		{
+			activity:
+			{
+				name: "with others Lucario",
+				type: "PLAYING"
+			},
+			status: "idle"
+		},
+		{
 			activity:
 			{
 				name: "a Gym",
@@ -304,17 +309,9 @@ function status_update(client) {
 				type: "COMPETING"
 			},
 			status: "dnd"
-		},*/
+		},
 	]
     client.user.setPresence(status_data[getRandomInt(status_data.length)]);
-    /*client.user.setPresence({
-		activity:
-		{
-			name: "a wall",
-			type: "WATCHING"
-		},
-		status: "dnd"
-	});*/
 }
 
 async function generateRankIcon(client, Canvas, level_number) {
