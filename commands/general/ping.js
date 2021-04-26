@@ -9,7 +9,7 @@ module.exports = {
 	execute(client, message, args) {
         var embed = new Discord.MessageEmbed()
 		embed.setColor([254, 254, 254])
-		embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.ping.loading"));
+		embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.ping.loading"));
         message.channel.send(embed).then(async oldmessage => {
             let ping = oldmessage.createdTimestamp - message.createdTimestamp;
 			let selfping = client.ws.ping;

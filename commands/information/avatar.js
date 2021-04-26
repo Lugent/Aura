@@ -18,12 +18,12 @@ module.exports = {
 		if (!selected) {
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.avatar.error.notfound"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.avatar.error.notfound"));
 			return message.channel.send(embed);
 		}
 		
         var embed = new Discord.MessageEmbed();
-		embed.setAuthor(client.utils.getTrans(client, message.author, message.guild, "command.avatar.show.footer", [selected.tag, selected.id]), selected.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
+		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "command.avatar.show.footer", [selected.tag, selected.id]), selected.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
         embed.setColor(0x66b3ff);
         embed.setImage(selected.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
         return message.channel.send(embed);

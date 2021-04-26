@@ -12,14 +12,14 @@ module.exports = {
 	async execute(client, message, args) {
 		if (!args.length) {
 			var embed = new Discord.MessageEmbed();
-			embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.title"));
-			embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.desc"));
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args0"), client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args0.field"), false);
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args1"), client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args1.field"), false);
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args2"), client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args2.field"), false);
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args3"), client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args3.field"), false);
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args4"), client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.args4.field"), false);
-			embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.help.footer"));
+			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.title"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.desc"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args0"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args0.field"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args1"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args1.field"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args2"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args2.field"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args3"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args3.field"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args4"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args4.field"), false);
+			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.footer"));
 			embed.setColor([0, 255, 255]);
 			return message.channel.send(embed);
 		}
@@ -39,7 +39,7 @@ module.exports = {
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass_flowing_sand:" + client.utils.getTrans(client, message.author, message.guild, "command.mcserver.loading.desc"));
+		embed.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.loading.desc"));
 		embed.setColor([255, 255, 0]);
 		
 		let send_message = undefined;
@@ -51,7 +51,7 @@ module.exports = {
 			else {
 				wait_time_count = -1;
 				var embed = new Discord.MessageEmbed();
-				embed.setDescription(":hourglass_flowing_sand:" + client.utils.getTrans(client, message.author, message.guild, "command.mcserver.loading.toolong"));
+				embed.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.loading.toolong"));
 				embed.setColor([255, 255, 0]);
 				send_message ? send_message.edit(embed) : message.channel.send(embed);
 			}
@@ -79,53 +79,53 @@ module.exports = {
 							if (parsed_data.motd !== undefined)
 							{
 								if (parsed_data.motd.clean.join("\n") !== "") {
-									embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.motd") + ": ", parsed_data.motd.clean, false);
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.motd") + ": ", parsed_data.motd.clean, false);
 								}
 							}
 							
 							if (parsed_data.info !== undefined) {
 								if (parsed_data.info.clean.join("\n") !== "") {
-									embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.info") + ": ", parsed_data.info.clean, false);
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.info") + ": ", parsed_data.info.clean, false);
 								}
 							}
 							
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.players") + ": ", parsed_data.players.online + " / " + parsed_data.players.max, true);
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players") + ": ", parsed_data.players.online + " / " + parsed_data.players.max, true);
 							if (players && (parsed_data.players.list !== undefined))
 							{
 								var allplayers = "```" + parsed_data.players.list.slice(0).join("\n") + "```";
 								if (allplayers.length > 1024) // Discord limit xd
 								{
-									allplayers = client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.players.list.limit");
+									allplayers = client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list.limit");
 									
 									var players_writer = fs.createWriteStream(process.cwd() + "/temp/players.txt");
 									await players_writer.write(parsed_data.players.list.slice(0).join("\n"));
 									await players_writer.end();
 								}
-								embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.players.list") + ":", allplayers, true);
+								embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list") + ":", allplayers, true);
 							}
 							
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.version") + ": ", parsed_data.version, false);
-							if (world && (parsed_data.map !== undefined)) { embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.world") + ":", parsed_data.map, false); }
-							if (software && (parsed_data.software !== undefined)) { embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.software") + ":", parsed_data.software, true); }
-							if (modded && (parsed_data.plugins !== undefined)) { embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.plugins") + ":", parsed_data.plugins.raw, true); }
-							if (modded && (parsed_data.mods !== undefined)) { embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.mods") + ":", parsed_data.mods.raw, true); }
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.version") + ": ", parsed_data.version, false);
+							if (world && (parsed_data.map !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.world") + ":", parsed_data.map, false); }
+							if (software && (parsed_data.software !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.software") + ":", parsed_data.software, true); }
+							if (modded && (parsed_data.plugins !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.plugins") + ":", parsed_data.plugins.raw, true); }
+							if (modded && (parsed_data.mods !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.mods") + ":", parsed_data.mods.raw, true); }
 							embed.setThumbnail("https://api.mcsrvstat.us/icon/" + arguments[0]);
 							if ((parsed_data.ip + ":" + parsed_data.port) !== arguments[0]) {
-								embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
+								embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
 							}
 						}
 						else {
 							if (parsed_data.ip !== "") {
 								var embed = new Discord.MessageEmbed();
-								embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.notonline"));
+								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.notonline"));
 								if ((parsed_data.ip + ":" + parsed_data.port) !== arguments[0]) {
-									embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
+									embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
 								}
 								embed.setColor([255, 0, 0]);
 							}
 							else {
 								var embed = new Discord.MessageEmbed();
-								embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.dontexists"));
+								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.dontexists"));
 								embed.setColor([0, 0, 0]);
 							}
 						}
@@ -133,14 +133,14 @@ module.exports = {
 					else {
 						var embed = new Discord.MessageEmbed();
 						embed.setColor([255, 0, 0]);
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.mcserver.failure.desc"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.failure.desc"));
 						return send_message ? send_message.edit(embed) : message.channel.send(embed);
 					}
 				} 
 				catch (error) {
 					console.error(error);
 					var embed = new Discord.MessageEmbed();
-					embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.mcserver.error.desc"));
+					embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.error.desc"));
 					return send_message ? send_message.edit(embed) : message.channel.send(embed);
 				}
 				finally {
@@ -149,7 +149,7 @@ module.exports = {
 					{
 						var attachfile = process.cwd() + "/temp/players.txt";
 						await message.channel.send({
-							content: client.utils.getTrans(client, message.author, message.guild, "command.mcserver.data.players.list.send"),
+							content: client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list.send"),
 							files: [{
 								attachment: process.cwd() + "/temp/players.txt",
 								name: "players.txt"
@@ -164,7 +164,7 @@ module.exports = {
 			
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.mcserver.failure.fatal"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.failure.fatal"));
 			embed.addField(error.name, error.message);
 			return send_message ? send_message.edit(embed) : message.channel.send(embed);
 		});

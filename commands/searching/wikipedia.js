@@ -12,7 +12,7 @@ module.exports = {
 	async execute(client, message, args) {
 		if (!args.length) {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.wikipedia.no_arguments"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.no_arguments"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
@@ -34,7 +34,7 @@ module.exports = {
 				for (var p in pages) {
 					if (pages[p].missing === "") {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.wikipedia.not_found"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.not_found"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -45,7 +45,7 @@ module.exports = {
 			})
 		}).on("error", (error) => {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.wikipedia.fatal_error"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.fatal_error"));
 			embed.setColor([255, 0, ]);
 			return message.channel.send(embed);
 		});

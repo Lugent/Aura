@@ -117,8 +117,8 @@ async function exp_handler(client, message) {
 			image_context.textAlign = "center";
 			image_context.textBaseline = "top";
 			image_context.fillStyle = "rgb(255, 255, 255)";
-			image_context.fillText(client.utils.getTrans(client, message.author, message.guild, "exphandler.levelup.image.level") + ". " + level_index_old, image_data_rank_back_padding + (image_data_rank_back_size / 2), image_data_bar_vertical - 4);
-			image_context.fillText(client.utils.getTrans(client, message.author, message.guild, "exphandler.levelup.image.level") + ". " + level_index, image_data_width - (image_data_rank_back_padding + (image_data_rank_back_size / 2)), image_data_bar_vertical - 4);
+			image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "exphandler.levelup.image.level") + ". " + level_index_old, image_data_rank_back_padding + (image_data_rank_back_size / 2), image_data_bar_vertical - 4);
+			image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "exphandler.levelup.image.level") + ". " + level_index, image_data_width - (image_data_rank_back_padding + (image_data_rank_back_size / 2)), image_data_bar_vertical - 4);
 			
 			// Arrow
 			image_context.beginPath();
@@ -138,8 +138,8 @@ async function exp_handler(client, message) {
 			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			var embed = new Discord.MessageEmbed();
 			embed.attachFiles(attachment);
-			embed.setAuthor(client.utils.getTrans(client, message.author, message.guild, "exphandler.levelup.embed.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
-			embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "exphandler.levelup.embed.footer") + ": " + message.guild.name, message.guild.iconURL());
+			embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "exphandler.levelup.embed.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
+			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "exphandler.levelup.embed.footer") + ": " + message.guild.name, message.guild.iconURL());
 			embed.setImage("attachment://" + attachment.name);
 			embed.setColor(0x66b3ff);
 			return message.channel.send({content: "<@" + get_member.user.id + ">", embed: embed});

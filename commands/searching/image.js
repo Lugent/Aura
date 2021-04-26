@@ -12,13 +12,13 @@ module.exports = {
 	async execute(client, message, args) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.image.error.nosearch"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.error.nosearch"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.utils.getTrans(client, message.author, message.guild, "command.image.loading.desc"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.loading.desc"));
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message = undefined;
@@ -44,15 +44,15 @@ module.exports = {
 				if (get_image) {
 					let embed = new Discord.MessageEmbed();
 					embed.setImage(get_image[0].link);
-					embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.image.warning.experimental"));
-					embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.image.success.string", [search])); // search
+					embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.warning.experimental"));
+					embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.image.success.string", [search])); // search
 					embed.setColor([254, 254, 254]);
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 				}
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
-					embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.image.failure.notfound"));
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.failure.notfound"));
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 				}
 			});
@@ -60,7 +60,7 @@ module.exports = {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.image.failure.fatal"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.failure.fatal"));
 			embed.addField(error.name, error.message);
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 		});

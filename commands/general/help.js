@@ -41,12 +41,12 @@ module.exports = {
 			
 			//let element = commands[index];
 			//if (((element.flags & constants.cmdFlags.ownerOnly) || (element.flags & constants.cmdFlags.autorizedOnly) || (element.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
-			//embed.addField(prefix + element.name + " " + client.utils.getTrans(client, message.author, message.guild, ((element.usage && element.usage) || "")), client.utils.getTrans(client, message.author, message.guild, element.description || "command.help.list.nodesc"), false);
+			//embed.addField(prefix + element.name + " " + client.functions.getTranslation(client, message.author, message.guild, ((element.usage && element.usage) || "")), client.functions.getTranslation(client, message.author, message.guild, element.description || "command.help.list.nodesc"), false);
 		}
 		
         if (!args[0]) {
             var embed = new Discord.MessageEmbed();
-            embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.help.list.title"));
+            embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.help.list.title"));
 			
 			let category_list = categories.array();
 			for (let category_index = 0; category_index < category_list.length; category_index++) {
@@ -57,23 +57,23 @@ module.exports = {
 					let command = command_list[command_index];
 					let command_usage = command.usage ? command.usage : "";
 					if (((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
-					command_names += prefix + command.name + " " + client.utils.getTrans(client, message.author, message.guild, command_usage) + "\n";
+					command_names += prefix + command.name + " " + client.functions.getTranslation(client, message.author, message.guild, command_usage) + "\n";
 				}
 				
 				/*console.log("");
 				console.log(category_list[category_index].name);
 				console.log(command_names);*/
-				if (command_names !== "") { embed.addField(client.utils.getTrans(client, message.author, message.guild, category_list[category_index].name), command_names); }
+				if (command_names !== "") { embed.addField(client.functions.getTranslation(client, message.author, message.guild, category_list[category_index].name), command_names); }
 			}
 			
-            embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.help.list.footer", [prefix]));
+            embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.help.list.footer", [prefix]));
 			
 			if (message.channel.type !== "dm") {
 				message.author.send(embed).then(() => {
-					return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.help.list.send.success"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.help.list.send.success"));
 				}).catch((error) => {
 					console.log(error);
-					return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.help.list.send.failure"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.help.list.send.failure"));
 				});
 			}
 			else {
@@ -84,19 +84,19 @@ module.exports = {
 			var name = args[0].toLowerCase();
 			var command = commands.get(name) || commands.find((c) => { c.aliases && c.aliases.includes(name) });
 			if ((!command) || ((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && (!hidden)) {
-				return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.help.find.failure"));
+				return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.help.find.failure"));
 			}
 
 			var embed = new Discord.MessageEmbed();
-			embed.setTitle(prefix + command.name + " " + client.utils.getTrans(client, message.author, message.guild, ((command.usage && command.usage) || "")));
-			if (command.description) { embed.setDescription(client.utils.getTrans(client, message.author, message.guild, command.description)); }
-			if (command.aliases) { embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.help.find.aliases"), command.aliases.join(", "), false); }
-			if (command.cooldown) { embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.help.find.cooldown"), client.utils.getTrans(client, message.author, message.guild, "command.help.find.cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
+			embed.setTitle(prefix + command.name + " " + client.functions.getTranslation(client, message.author, message.guild, ((command.usage && command.usage) || "")));
+			if (command.description) { embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, command.description)); }
+			if (command.aliases) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.help.find.aliases"), command.aliases.join(", "), false); }
+			if (command.cooldown) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.help.find.cooldown"), client.functions.getTranslation(client, message.author, message.guild, "command.help.find.cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
 			if (message.channel.type !== "dm") {
 				message.author.send(embed).then(() => {
-					return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.help.find.send.success"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.help.find.send.success"));
 				}).catch(() => {
-					return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.help.find.send.failure"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.help.find.send.failure"));
 				});
 			}
 			else {

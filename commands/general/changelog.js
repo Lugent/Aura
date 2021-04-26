@@ -15,7 +15,7 @@ module.exports = {
 		if (args[0]) { versionNumber = args[0] - 1; }
 		if (!changelog[versionNumber]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.changelog.error.notfound"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.changelog.error.notfound"));
 			return message.channel.send(embed);
 		}
 		
@@ -25,9 +25,9 @@ module.exports = {
 		}
 		
         let embed = new Discord.MessageEmbed();
-		embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.changelog.embed.title", [changelog[versionNumber].version]));
+		embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.changelog.embed.title", [changelog[versionNumber].version]));
 		embed.setDescription((changelogMessage === "") && "command.changelog.embed.empty" || changelogMessage);
-        embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.changelog.embed.footer", [(versionNumber + 1), changelog.length])); 
+        embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.changelog.embed.footer", [(versionNumber + 1), changelog.length])); 
 		embed.setColor(0x66b3ff);
         return message.channel.send(embed);
     }

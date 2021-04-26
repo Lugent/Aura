@@ -12,7 +12,7 @@ module.exports = {
     {
 		if (!message.guild) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.rank.warning.noguild"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.warning.noguild"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
@@ -21,7 +21,7 @@ module.exports = {
 		let get_disabled_functions = get_features.disabled_functions.trim().split(" ");
 		if (get_disabled_functions.includes("exp")) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.rank.error.disabled"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.error.disabled"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -37,14 +37,14 @@ module.exports = {
 		
 		if (!get_member) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.rank.error.nomember"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.error.nomember"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
 		
 		if (get_member.user.bot) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.rank.error.bot"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.error.bot"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -126,19 +126,19 @@ module.exports = {
 		
 		// String - Name
 		let target_xp = client.functions.number_formatter(score_goal, 2);
-		if (level_index >= client.config.exp_level_max) { target_xp = client.utils.getTrans(client, message.author, message.guild, "command.rank.image.xp.max"); }
+		if (level_index >= client.config.exp_level_max) { target_xp = client.functions.getTranslation(client, message.author, message.guild, "command.rank.image.xp.max"); }
 		image_context.font = "48px xirod";
 		image_context.textAlign = "left";
 		image_context.textBaseline = "bottom";
 		image_context.fillStyle = "rgb(255, 255, 255)";
-		image_context.fillText(client.functions.number_formatter(get_level.score, 2) + " / " + target_xp + " " + client.utils.getTrans(client, message.author, message.guild, "command.rank.image.xp"), image_data_bar_padding_text, image_data_bar_vertical - 4);
+		image_context.fillText(client.functions.number_formatter(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.image.xp"), image_data_bar_padding_text, image_data_bar_vertical - 4);
 		
 		// String - Score
 		image_context.font = "48px xirod";
 		image_context.textAlign = "left";
 		image_context.textBaseline = "top";
 		image_context.fillStyle = "rgb(255, 255, 255)";
-		image_context.fillText(client.utils.getTrans(client, message.author, message.guild, "command.rank.image.level") + ". " + level_index + " / " + client.config.exp_level_max, (image_data_avatar_padding + image_data_avatar_size) + 20, image_data_bar_padding);
+		image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "command.rank.image.level") + ". " + level_index + " / " + client.config.exp_level_max, (image_data_avatar_padding + image_data_avatar_size) + 20, image_data_bar_padding);
 		image_context.fillText("Rank" + " " + (get_rank + 1), (image_data_avatar_padding + image_data_avatar_size) + 20, image_data_bar_padding + 50);
 		
 		// Progress bar - Container
@@ -171,8 +171,8 @@ module.exports = {
 		var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png"); 
 		var embed = new Discord.MessageEmbed();
 		embed.attachFiles(attachment);
-		embed.setAuthor(client.utils.getTrans(client, message.author, message.guild, "command.rank.embed.title", [get_member.user.tag]), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
-		embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.rank.embed.footer") + ": " + message.guild.name, message.guild.iconURL());
+		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "command.rank.embed.title", [get_member.user.tag]), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
+		embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.rank.embed.footer") + ": " + message.guild.name, message.guild.iconURL());
 		embed.setImage("attachment://" + attachment.name);
 		embed.setColor(0x66b3ff);
 		return message.channel.send(embed);

@@ -41,6 +41,7 @@ if (dotenv_result.error) { process.exit(); } else { console.log("Loaded .env var
 const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, disableMentions: "everyone", http: {version: 7}});
 client.config = require(process.cwd() + "/configurations/client.js");
 client.functions = require(process.cwd() + "/functions/general/core.js");
+client.functions.getTranslation = require(process.cwd() + "/functions/general/languages.js");
 client.crypt = require(process.cwd() + "/functions/general/crypto.js");
 client.fetchers = require(process.cwd() + "/functions/general/fetchers.js");
 client.commands = new Discord.Collection();
@@ -52,10 +53,6 @@ client.last_msg = undefined;
 client.toggle_logger = false;
 client.status_updating = true;
 client.connected = false; // don't change this
-
-// Client utilities
-let translator = require(process.cwd() + "/functions/general/languages.js");
-client.utils = { getTrans: translator.getTranslation }
 
 // Databases
 let setupDatabases = require(process.cwd() + "/functions/general/databases.js");

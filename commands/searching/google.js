@@ -12,13 +12,13 @@ module.exports = {
 	async execute(client, message, args) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.google.no_arguments"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.no_arguments"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.utils.getTrans(client, message.author, message.guild, "command.google.loading"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.loading"));
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message = undefined;
@@ -45,8 +45,8 @@ module.exports = {
 					
 					let display_result = "";
 					let embed = new Discord.MessageEmbed();
-					embed.setAuthor(client.utils.getTrans(client, message.author, message.guild, "command.google.results.author", [search]), "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png"); // search
-					embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.google.results.title", [data.searchInformation.formattedTotalResults, data.searchInformation.searchTime])); // data.searchInformation.searchTime - data.searchInformation.formattedTotalResults
+					embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "command.google.results.author", [search]), "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png"); // search
+					embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.google.results.title", [data.searchInformation.formattedTotalResults, data.searchInformation.searchTime])); // data.searchInformation.searchTime - data.searchInformation.formattedTotalResults
 					for (var result_index = 0; result_index < get_results.length; result_index += 1) {
 						display_result += "**" + (result_index + 1) + ".-** " + "[" + get_results[result_index].title + "]" + "(" + get_results[result_index].link + ")" + "\n" + get_results[result_index].snippet + "\n";
 					}
@@ -58,7 +58,7 @@ module.exports = {
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
-					embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.google.not_found"));
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.not_found"));
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 				}
 			});
@@ -66,7 +66,7 @@ module.exports = {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.google.fatal_failure"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.fatal_failure"));
 			embed.addField(error.name, error.message);
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 		});

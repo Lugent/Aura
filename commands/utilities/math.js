@@ -13,7 +13,7 @@ module.exports = {
         const calc = args.slice(0).join(" ");
         if (calc === "") {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.math.error.empty"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.math.error.empty"));
 			embed.setColor([255, 255, 0]);
             return message.channel.send(embed);
 		}
@@ -23,7 +23,7 @@ module.exports = {
 			var finalresult = result;
 			if ((!result) || (result === "")) {
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.math.error.failure"));
+				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.math.error.failure"));
 				embed.setColor([255, 0, 0]);
 				return message.channel.send(embed);
 			}
@@ -41,8 +41,8 @@ module.exports = {
 			console.error(error);
 			
 			let embed = new Discord.MessageEmbed();
-			//embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.math.error.fatal") + ":");
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.math.error.fatal"));
+			//embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.math.error.fatal") + ":");
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.math.error.fatal"));
 			embed.addField(error.name, error.message || "undefined");
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
