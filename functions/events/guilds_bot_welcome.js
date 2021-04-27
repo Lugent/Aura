@@ -17,7 +17,7 @@ async function first_time_welcome(client, guild) {
 	embed.setAuthor(bot_owner.tag, bot_owner.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 	embed.setTitle("Saludos.");
 	embed.setDescription(welcome_description.join("\n"));
-	embed.setColor([]);
+	embed.setColor([0, 0, 0]);
 	
 }
 module.exports = first_time_welcome;
