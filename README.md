@@ -1,3 +1,2 @@
-Behold!!!
-
-My first bot on Discord finally works!
+# The Aura Pokémon
+## The Discord bot
