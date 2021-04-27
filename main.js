@@ -37,6 +37,9 @@ const dotenv = require("dotenv");
 let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded .env variables."); }
 
+// Extensions
+require(process.cwd() + "/functions/modules/ExtendedMessage.js")
+
 // Client
 const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, disableMentions: "everyone", http: {version: 7}});
 client.config = require(process.cwd() + "/configurations/client.js");
