@@ -7,12 +7,14 @@ function parse(string, values) {
     return string;
 }
 
-function getTranslation(client, user, guild, string, values) {
+const fs = require("fs");
+function getTranslation(client, user, guild, key, string, values) {
 	if (typeof string !== "string") { return; }
 	
 	let translated_string = "";
 	let language_data = "";
 	let language_target = "es";
+	let language_name = "spanish";
 	if (guild) {
 		let get_guild_language = client.server_data.prepare("SELECT language FROM settings WHERE guild_id = ?;").get(guild.id);
 		if (get_guild_language) { language_target = get_guild_language.language; }
@@ -24,16 +26,17 @@ function getTranslation(client, user, guild, string, values) {
 	
 	try {
 		switch (language_target) {
-			default: {
-				delete require.cache[require.resolve(process.cwd() + "/functions/languages/spanish.js")];
-				language_data = require(process.cwd() + "/functions/languages/spanish.js");
-				break;
-			}
-			
-			case "en": {
-				delete require.cache[require.resolve(process.cwd() + "/functions/languages/english.js")];
-				language_data = require(process.cwd() + "/functions/languages/english.js");
-				break;
+			default: { language_name = "spanish"; break; }
+			case "en": { language_name = "english"; break; }
+		}
+		
+		let language_dir = process.cwd() + "/functions/languages/" + language_name;
+		let language_file = language_name + "_" + key + ".js";
+		let directory = fs.readdirSync(language_dir).filter(dir => !dir.includes(".js"));
+		for (let file of directory) {
+			if (file === language_file) {
+				delete require.cache[require.resolve(language_dir + "/" + language_file)];
+				language_data = require(language_dir + "/" + language_file);
 			}
 		}
 	}
@@ -47,4 +50,4 @@ function getTranslation(client, user, guild, string, values) {
 		return translated_string;
 	}
 }
-module.exports = {getTranslation: getTranslation};
+module.exports = getTranslation;

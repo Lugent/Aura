@@ -12,13 +12,13 @@ module.exports = {
 	async execute(client, message, args) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.error.nosearch"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.error.nosearch"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.loading.desc"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.loading.desc"));
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message = undefined;
@@ -43,7 +43,7 @@ module.exports = {
 				}
 				if (get_video) {
 					var embed = new Discord.MessageEmbed();
-					embed.setDescription(":hourglass: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.loading.channel"));
+					embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.loading.channel"));
 					embed.setColor([255, 255, 0]);
 					if (sent_message) { await sent_message.edit(embed); } else { await message.channel.send(embed); }
 					
@@ -65,7 +65,7 @@ module.exports = {
 							}
 							
 							var embed = new Discord.MessageEmbed();
-							embed.setDescription(":hourglass: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.loading.stats"));
+							embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.loading.stats"));
 							embed.setColor([255, 255, 0]);
 							if (sent_message) { await sent_message.edit(embed); } else { await message.channel.send(embed); }
 							
@@ -88,10 +88,10 @@ module.exports = {
 									
 									let video_link = "https://www.youtube.com/watch?v=" + get_video.id.videoId;
 									let channel_link = "https://www.youtube.com/channel/" + get_channel.id;
-									let views_count = client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.none");
-									let likes_count = client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.none");
-									let dislikes_count = client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.none");
-									let comments_count = client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.none");
+									let views_count = client.functions.getTranslation(client, message.author, message.guild, "command.youtube.embed.none");
+									let likes_count = client.functions.getTranslation(client, message.author, message.guild, "command.youtube.embed.none");
+									let dislikes_count = client.functions.getTranslation(client, message.author, message.guild, "command.youtube.embed.none");
+									let comments_count = client.functions.getTranslation(client, message.author, message.guild, "command.youtube.embed.none");
 									if (get_statistics.statistics.viewCount) { views_count = client.functions.number_formatter(get_statistics.statistics.viewCount, 2); }
 									if (get_statistics.statistics.likeCount) { likes_count = client.functions.number_formatter(get_statistics.statistics.likeCount, 2); }
 									if (get_statistics.statistics.dislikeCount) { dislikes_count = client.functions.number_formatter(get_statistics.statistics.dislikeCount, 2); }
@@ -111,7 +111,7 @@ module.exports = {
 									embed.setDescription(get_video.snippet.description);
 									embed.setURL(video_link);
 									embed.setImage(get_video.snippet.thumbnails.high.url);
-									embed.addField(":bar_chart: " + client.utils.getTrans(client, message.author, message.guild, "command.youtube.embed.stats") + ":", video_date + "\n" + video_views + " | " + video_likes + " | " + video_dislikes + " | " + video_comments);
+									embed.addField(":bar_chart: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.embed.stats") + ":", video_date + "\n" + video_views + " | " + video_likes + " | " + video_dislikes + " | " + video_comments);
 									embed.setColor([255, 0, 0]);
 									return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 								}).on("error", (error) => {
@@ -119,7 +119,7 @@ module.exports = {
 									
 									var embed = new Discord.MessageEmbed();
 									embed.setColor([255, 0, 0]);
-									embed.setDescription(":no_entry:" + client.utils.getTrans(client, message.author, message.guild, "command.youtube.failure.fatal"));
+									embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.fatal"));
 									return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 								});
 							});
@@ -128,7 +128,7 @@ module.exports = {
 							console.error(error);
 							var embed = new Discord.MessageEmbed();
 							embed.setColor([255, 0, 0]);
-							embed.setDescription(":no_entry:" + client.utils.getTrans(client, message.author, message.guild, "command.youtube.failure.fatal"));
+							embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.fatal"));
 							return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 						});
 					});
@@ -136,7 +136,7 @@ module.exports = {
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
-					embed.setDescription(":no_entry:" + client.utils.getTrans(client, message.author, message.guild, "command.youtube.failure.notfound"));
+					embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.notfound"));
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 				}
 			});
@@ -144,7 +144,7 @@ module.exports = {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry:" + client.utils.getTrans(client, message.author, message.guild, "command.youtube.failure.fatal"));
+			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.fatal"));
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 		});
 	},

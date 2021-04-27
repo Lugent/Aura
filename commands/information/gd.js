@@ -29,17 +29,17 @@ module.exports = {
 		let subcommand = args[0];
 		if (!subcommand) {
 			var embed = new Discord.MessageEmbed();
-			embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.title")); // "List of available subcommands"
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_0"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_0")); // "help" - "Gives a help of the usage of the given subcommand."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_1"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_1")); // "search" - "Returns a list of levels with the given filters. (Defaults to most downloaded if no filters given)."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_2"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_2")); // "level" - "Returns details of a level via ID."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_3"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_3")); // "profile" - "Returns the profile of a account."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_4"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_4")); // "comments" - "Returns a list level's comments, or a list of account post or a list of account's comment history."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_5"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_5")); // "mappack" - "Look a dead featu-- I mean... Returns a list of map packs."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_6"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_6")); // "gauntlets" - "Returns a list of gauntlets with their level IDs."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_7"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_7")); // "leaderboard" - "This never works, robtop jus-... Returns the actual leaderboard."
-			embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.field_8"), client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.desc_8")); // "song" - "Check if a song is allowed to use in GD."
-			embed.setFooter(client.utils.getTrans(client, message.author, message.guild, "command.gd.usage.footer"), "https://gdbrowser.com/icon/colon"); // "API by GDColon"
+			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.title")); // "List of available subcommands"
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_0"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_0")); // "help" - "Gives a help of the usage of the given subcommand."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_1"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_1")); // "search" - "Returns a list of levels with the given filters. (Defaults to most downloaded if no filters given)."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_2"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_2")); // "level" - "Returns details of a level via ID."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_3"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_3")); // "profile" - "Returns the profile of a account."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_4"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_4")); // "comments" - "Returns a list level's comments, or a list of account post or a list of account's comment history."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_5"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_5")); // "mappack" - "Look a dead featu-- I mean... Returns a list of map packs."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_6"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_6")); // "gauntlets" - "Returns a list of gauntlets with their level IDs."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_7"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_7")); // "leaderboard" - "This never works, robtop jus-... Returns the actual leaderboard."
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_8"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_8")); // "song" - "Check if a song is allowed to use in GD."
+			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.footer"), "https://gdbrowser.com/icon/colon"); // "API by GDColon"
 			embed.setColor([0, 255, 255]);
 			return message.channel.send(embed);
 		}
@@ -49,7 +49,7 @@ module.exports = {
 					let help_command = args[1];
 					if (!help_command) {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.help_no_command"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.help_no_command"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -57,25 +57,25 @@ module.exports = {
 					switch (help_command) {
 						case "search": {
 							var embed = new Discord.MessageEmbed();
-							embed.setTitle(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.title", [prefix]));
-							embed.setDescription(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_main"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_0"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_0"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_1"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_1"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_2"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_2"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_3"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_3"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_4"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_4"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_5"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_5"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_6"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_6"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_7"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_7"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_8"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_8"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_9"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_9"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_10"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_10"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_11"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_11"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_12"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_12"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_13"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_13"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_14"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_14"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_15"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_15"));
-							embed.addField(client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.field_16"), client.utils.getTrans(client, message.author, message.guild, "command.gd.help.search.desc_16"));
+							embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.title", [prefix]));
+							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_main"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_0"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_0"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_1"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_1"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_2"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_2"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_3"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_3"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_4"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_4"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_5"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_5"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_6"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_6"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_7"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_7"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_8"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_8"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_9"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_9"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_10"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_10"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_11"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_11"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_12"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_12"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_13"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_13"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_14"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_14"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_15"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_15"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_16"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_16"));
 							embed.setColor([0, 255, 255]);
 							return message.channel.send(embed);
 							break;
@@ -83,7 +83,7 @@ module.exports = {
 						
 						default: {
 							var embed = new Discord.MessageEmbed();
-							embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.help_invalid_command"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.help_invalid_command"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
 							break;
@@ -380,14 +380,14 @@ module.exports = {
 							}
 							else {
 								var embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.search.not_found"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.search.not_found"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
 						})
 					}).on("error", async (error) => {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.search.failure"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.search.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					});
@@ -397,7 +397,7 @@ module.exports = {
 				case "level": {
 					if (!args[1]) {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.level.no_argument"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.no_argument"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -453,14 +453,14 @@ module.exports = {
 							}
 							else {
 								var embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.level.no_data"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.no_data"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
 						})
 					}).on("error", async (error) => {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.level.failure"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					});
@@ -470,7 +470,7 @@ module.exports = {
 				case "profile": {
 					if (!args[1]) {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.profile.no_argument"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.no_argument"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -540,14 +540,14 @@ module.exports = {
 							}
 							else {
 								var embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.profile.no_data"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.no_data"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
 						})
 					}).on("error", async (error) => {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.profile.failure"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					});
@@ -556,7 +556,7 @@ module.exports = {
 				
 				default: {
 					var embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.gd.invalid_subcommand"));
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.invalid_subcommand"));
 					embed.setColor([255, 0, 0]);
 					return message.channel.send(embed);
 					break;

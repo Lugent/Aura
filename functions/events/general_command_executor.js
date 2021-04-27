@@ -22,7 +22,7 @@ async function commandExecutor(client, message) {
     if ((command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== client.config.owner)) {
         var embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
         return message.channel.send(embed);
     }
 	
@@ -30,7 +30,7 @@ async function commandExecutor(client, message) {
     if ((command.flags & constants.cmdFlags.guildOnly) && (message.channel.type !== "text")) {
         var embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.guild"));
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.guild"));
         return message.channel.send(embed);
     }
 	
@@ -38,7 +38,7 @@ async function commandExecutor(client, message) {
 	if ((command.flags & constants.cmdFlags.dmOnly) && (message.channel.type !== "dm")) {
         var embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.md"));
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.md"));
         return message.channel.send(embed);
     }
 	
@@ -49,7 +49,7 @@ async function commandExecutor(client, message) {
 		if (get_disabled_commands.includes(command.name)) {
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.disabled"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.disabled"));
 			return message.channel.send(embed);
 		}
 	}
@@ -66,7 +66,7 @@ async function commandExecutor(client, message) {
             let time_remaining = (time_count - time_actual) / 1000;
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
-            embed.setDescription(":information_source: " + client.utils.getTrans(client, message.author, message.guild, "cmdexec.error.cooldown", [time_remaining.toFixed(2)])); // time_remaining.toFixed(2)
+            embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.cooldown", [time_remaining.toFixed(2)])); // time_remaining.toFixed(2)
             return message.channel.send(embed);
         }
     }

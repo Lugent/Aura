@@ -12,7 +12,7 @@ module.exports = {
     {
 		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === client.config.owner)))) {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.utils.getTrans(client, message.author, message.guild, "command.leaderboard.warning.noguild"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.leaderboard.warning.noguild"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
@@ -23,7 +23,7 @@ module.exports = {
 		}
 		if (!guild) {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.guild.failure.desc"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.failure.desc"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -32,7 +32,7 @@ module.exports = {
 		let get_disabled_functions = get_features.disabled_functions.trim().split(" ");
 		if (get_disabled_functions.includes("exp")) {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.utils.getTrans(client, message.author, message.guild, "command.leaderboard.error.disabled"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.leaderboard.error.disabled"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -54,7 +54,7 @@ module.exports = {
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setAuthor(client.utils.getTrans(client, message.author, message.guild, "command.leaderboard.embed.author", [guild.name]), guild.iconURL());
+		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "command.leaderboard.embed.author", [guild.name]), guild.iconURL());
 		embed.setDescription(members_levels);
 		return message.channel.send(embed);
     }

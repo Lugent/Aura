@@ -12,6 +12,6 @@ module.exports = {
 		let actual_time = new Date().getTime();
         let reason = args.slice(0).join(" ");
 		client.user_data.prepare("INSERT OR REPLACE INTO afk (user_id, name, reason, time) VALUES (?, ?, ?, ?);").run(message.author.id, message.author.tag, reason, actual_time);
-		return message.channel.send(client.utils.getTrans(client, message.author, message.guild, "command.afk.set", [message.author.tag]) + "\n\n" + reason);
+		return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.afk.set", [message.author.tag]) + "\n\n" + reason);
 	},
 };

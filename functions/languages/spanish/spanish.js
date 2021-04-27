@@ -19,7 +19,7 @@ let language = {
 	"utils.date.month.october": "octubre",
 	"utils.date.month.november": "noviembre",
 	"utils.date.month.december": "diciembre",
-	"utils.date.complete_date": "%s(0), %s(1) de %s(3) de %s(4)",
+	"utils.date.complete_date": "",
 	"utils.date.complete_time": "%s:%s:%s%s",
 	"utils.duration.seconds": "segundos",
 	"utils.duration.minutes": "minutos",

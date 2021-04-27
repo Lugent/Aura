@@ -13,10 +13,10 @@ module.exports = {
     {
 		/* SERVICE */
 		let serviceStatusTable = [
-			{id: "none", name: "command.discordstatus.servicestatus.none", color: [0, 255, 0]},
-			{id: "minor", name: "command.discordstatus.servicestatus.minor",  color: [255, 255, 0]},
-			{id: "major", name: "command.discordstatus.servicestatus.major",  color: [255, 127, 0]},
-			{id: "critical", name: "command.discordstatus.servicestatus.critical", color: [255, 0, 0]},
+			{id: "none", name: "service_status.stable", color: [0, 255, 0]},
+			{id: "minor", name: "service_status.minor_outage",  color: [255, 255, 0]},
+			{id: "major", name: "service_status.major_outage",  color: [255, 127, 0]},
+			{id: "critical", name: "service_status.critical_outage", color: [255, 0, 0]},
 		];
 		/* SERVICE */
 		
@@ -55,11 +55,11 @@ module.exports = {
 		/* COMPONENT */
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.utils.getTrans(client, message.author, message.guild, "command.discordstatus.loading.desc"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands_discordstatus", "loading"));
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message = undefined;
-		await message.channel.send(embed).then(message => { sent_message = message; });
+		await message.inlineReply(embed).then(message => { sent_message = message; });
 		
 		let rawData = "";
 		https.get("https://srhpyqt94yxb.statuspage.io/api/v2/summary.json", async (res) => {
@@ -105,7 +105,7 @@ module.exports = {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry:" + client.utils.getTrans(client, message.author, message.guild, "command.discordstatus.failure.fatal"));
+			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands_discordstatus", "fatal_failure"));
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 		});
     }
