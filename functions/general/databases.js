@@ -1,11 +1,11 @@
 const SQLite = require("better-sqlite3");
+const fs = require("fs");
+if (!fs.existsSync("databases")) fs.mkdirSync("databases");
 const data_bot = new SQLite("./databases/bot_data.sqlite");
 const data_server = new SQLite("./databases/server_data.sqlite");
 const data_user = new SQLite("./databases/user_data.sqlite");
-const fs = require("fs");
 
 function setupDatabases (client) {
-	if (!fs.existsSync("databases")) fs.mkdirSync("databases");
 	/* BOT DATA */
 	let table_bot_blacklist = data_bot.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'blacklist';").get();
 	if (!table_bot_blacklist["count(*)"]) {
