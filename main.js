@@ -38,7 +38,7 @@ let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded .env variables."); }
 
 // Extensions
-require(process.cwd() + "/functions/modules/ExtendedMessage.js")
+require(process.cwd() + "/functions/modules/ExtendedMessage.js");
 
 // Client
 const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, disableMentions: "everyone", http: {version: 7}});
@@ -61,7 +61,7 @@ client.connected = false; // don't change this
 let setupDatabases = require(process.cwd() + "/functions/general/databases.js");
 try { setupDatabases(client); }
 catch (error) {
-	console.log(chalk.redBright("ERROR: ") + "Database failure, exiting program..." + "\n", error)
+	console.log(chalk.redBright("ERROR: ") + "Database failure, exiting program..." + "\n", error);
 	process.exit();
 }
 finally { console.log("Databases active."); }
@@ -93,8 +93,8 @@ let user_afk_handler = require(process.cwd() + "/functions/events/users_afk_hand
 client.on("message", async (message) => {
 	await general_data_handler(client, message);
 	
-	let blacklist_guild = undefined;
-	let blacklist_user = undefined;
+	let blacklist_guild;
+	let blacklist_user;
 	if (message.guild) { blacklist_guild = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(message.guild.id); }
 	else { blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(message.author.id); }
 	
@@ -177,18 +177,9 @@ client.on("ready", async () => {
 			console.log("Connection latency is " + pingcolor + "ms.");
 		}
 	}, 120000);
-	/*setInterval(function() {
-		let uptime_count = new Date().getTime() - client.readyAt.getTime();
-		let uptime_seconds = (uptime_count / 1000);
-		let uptime_minutes = (uptime_seconds / 60);
-		let uptime_hours = (uptime_minutes / 60);
-		let uptime_days = (uptime_hours / 24);
-		let uptime_string = uptime_days.toFixed(0) + " days, " + (uptime_hours.toFixed(0) % 24) + " hours, " + (uptime_minutes.toFixed(0) % 60) + " minutes, " + (uptime_seconds.toFixed(0) % 60) + " seconds.";
-		console.log(uptime_string)
-	}, 1)*/
 	
 	client.connected = true;
-	console.log("All functions ready.")
+	console.log("All functions ready.");
 	console.log("Successfully connected as '" + client.user.tag + "'.");
 });
 client.on("invalidated", () => {
