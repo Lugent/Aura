@@ -1,20 +1,11 @@
 const fs = require("fs");
 
-function parse(string, values) {
-    if ((typeof string !== "string") || (typeof values !== "object")) { return; }
-	
-    var regex = /%s\(([a-zA-Z0-9_]{1,15})\)/g, i;
-    if (regex.test(string)) { string = string.replace(regex, function (found, match) { return values[match]; }); }
-	else { for (i in values) { string = string.replace(/%s/, values[i]); } }
-    return string;
-}
-
 function getTranslation(client, user, guild, index, string, values) {
 	if (typeof index !== "string") { index = "undefined"; }
 	if (typeof string !== "string") { return; }
 	
-	let translated_string = undefined;
-	let language_data = undefined;
+	let translated_string;
+	let language_data;
 	let language_target = "es";
 	let language_file = "spanish";
 	if (guild) {
@@ -28,8 +19,8 @@ function getTranslation(client, user, guild, index, string, values) {
 	
 	try {
 		switch (language_target) {
-			default: { language_file = "spanish"; break; }
 			case "en": { language_file = "english"; break; }
+			default: { language_file = "spanish"; break; }
 		}
 		
 		let search_file = language_file + "_" + index + ".js";
@@ -64,7 +55,7 @@ function getTranslation(client, user, guild, index, string, values) {
 		
 		translated_string = language_data[string];
 		if (!translated_string) { return string; }
-		if (values) { translated_string = parse(translated_string, values); }
+		if (values) { translated_string = getFormatedString(translated_string, values); }
 		return translated_string;
 	}
 }

@@ -1,7 +1,8 @@
 /* GENERAL */
 async function fetchApplication(client) {
-	let get_application = undefined;
+	let get_application;
 	await client.fetchApplication().then(async (got_application) => {
+		get_application = got_application;
 		get_application = got_application;
 	}).catch((error) => {
 		//console.log(error);
@@ -10,7 +11,7 @@ async function fetchApplication(client) {
 }
 
 async function fetchApplicationAssets(client, application) {
-	let get_application_assets = undefined;
+	let get_application_assets;
 	await application.fetchAssets().then(async (got_application_assets) => {
 		get_application_assets = got_application_assets;
 	}).catch((error) => {
@@ -20,7 +21,7 @@ async function fetchApplicationAssets(client, application) {
 }
 
 async function fetchChannel(client, id) {
-	let get_channel = undefined;
+	let get_channel;
 	await client.channels.fetch(id, true, true).then(async (got_channel) => {
 		get_channel = got_channel;
 	}).catch((error) => {
@@ -30,7 +31,7 @@ async function fetchChannel(client, id) {
 }
 
 async function fetchChannelMessages(client, channel, messages = {}) {
-	let get_channel_messages = undefined;
+	let get_channel_messages;
 	if (channel.isText()) {
 		await channel.messages.fetch(messages, true, true).then(async (got_channel_messages) => {
 			get_channel_messages = got_channel_messages;
@@ -42,7 +43,7 @@ async function fetchChannelMessages(client, channel, messages = {}) {
 }
 
 async function fetchGuild(client, id) {
-	let get_guild = undefined;
+	let get_guild;
 	await client.guilds.fetch(id, true, true).then(async (got_guild) => {
 		get_guild = got_guild;
 	}).catch((error) => {
@@ -52,7 +53,7 @@ async function fetchGuild(client, id) {
 }
 
 async function fetchGuildPreview(client, guild) {
-	let get_guild_preview = undefined;
+	let get_guild_preview;
 	await client.fetchGuildPreview(guild).then(async (got_guild_preview) => {
 		get_guild_preview = got_guild_preview;
 	}).catch((error) => {
@@ -62,7 +63,7 @@ async function fetchGuildPreview(client, guild) {
 }
 
 async function fetchGuildTemplate(client, template) {
-	let get_guild_template = undefined;
+	let get_guild_template;
 	await client.fetchGuildTemplate(template).then(async (got_guild_template) => {
 		get_guild_template = got_guild_template;
 	}).catch((error) => {
@@ -72,7 +73,7 @@ async function fetchGuildTemplate(client, template) {
 }
 
 async function fetchMessage(client, message) {
-	let get_message = undefined;
+	let get_message;
 	await message.fetch(true).then(async (got_message) => {
 		get_message = got_message;
 	}).catch((error) => {
@@ -82,7 +83,7 @@ async function fetchMessage(client, message) {
 }
 
 async function fetchMessageReaction(client, reaction) {
-	let get_message_reaction = undefined;
+	let get_message_reaction;
 	await reaction.fetch().then(async (got_message_reaction) => {
 		get_message_reaction = got_message_reaction;
 	}).catch((error) => {
@@ -92,7 +93,7 @@ async function fetchMessageReaction(client, reaction) {
 }
 
 async function fetchMessageUserReactions(client, users_reactions) {
-	let get_message_user_reactions = undefined;
+	let get_message_user_reactions;
 	await users_reactions.fetch().then(async (got_message_user_reactions) => {
 		get_message_user_reactions = got_message_user_reactions;
 	}).catch((error) => {
@@ -102,7 +103,7 @@ async function fetchMessageUserReactions(client, users_reactions) {
 }
 
 async function fetchInvite(client, invite) {
-	let get_invite = undefined;
+	let get_invite;
 	await client.fetchInvite(invite).then(async (got_invite) => {
 		get_invite = got_invite;
 	}).catch((error) => {
@@ -112,7 +113,7 @@ async function fetchInvite(client, invite) {
 }
 
 async function fetchUser(client, id) {
-	let get_user = undefined;
+	let get_user;
 	await client.users.fetch(id, true, true).then(async (got_user) => {
 		get_user = got_user;
 	}).catch((error) => {
@@ -122,7 +123,7 @@ async function fetchUser(client, id) {
 }
 
 async function fetchUserFlags(client, user) {
-	let get_user_flags = undefined;
+	let get_user_flags;
 	await user.fetch(true).then(async (got_user_flags) => {
 		get_user_flags = got_user_flags;
 	}).catch((error) => {
@@ -132,7 +133,7 @@ async function fetchUserFlags(client, user) {
 }
 
 async function fetchVoiceRegions(client) {
-	let get_voice_regions = undefined;
+	let get_voice_regions;
 	await client.fetchVoiceRegions(invite).then(async (got_voice_regions) => {
 		get_voice_regions = got_voice_regions;
 	}).catch((error) => {
@@ -142,7 +143,7 @@ async function fetchVoiceRegions(client) {
 }
 
 async function fetchWebhook(client, id, token) {
-	let get_webhook = undefined;
+	let get_webhook;
 	await client.fetchWebhook(id, token).then(async (got_webhook) => {
 		get_webhook = got_webhook;
 	}).catch((error) => {
@@ -154,7 +155,7 @@ async function fetchWebhook(client, id, token) {
 
 /* GUILD */
 async function fetchGuildBan(client, guild, user) {
-	let get_guild_ban = undefined;
+	let get_guild_ban;
 	await guild.fetchBan(user).then(async (got_guild_ban) => {
 		get_guild_ban = got_guild_ban;
 	}).catch((error) => {
@@ -164,7 +165,7 @@ async function fetchGuildBan(client, guild, user) {
 }
 
 async function fetchGuildBans(client, guild) {
-	let get_guild_bans = undefined;
+	let get_guild_bans;
 	await guild.fetchBans().then(async (got_guild_bans) => {
 		get_guild_bans = got_guild_bans;
 	}).catch((error) => {
@@ -174,7 +175,7 @@ async function fetchGuildBans(client, guild) {
 }
 
 async function fetchGuildIntegrations(client, guild) {
-	let get_guild_integrations = undefined;
+	let get_guild_integrations;
 	await guild.fetchIntegrations({includeApplications: true}).then(async (got_guild_integrations) => {
 		get_guild_integrations = got_guild_integrations;
 	}).catch((error) => {
@@ -184,7 +185,7 @@ async function fetchGuildIntegrations(client, guild) {
 }
 
 async function fetchGuildIntegrationAssets(client, integration) {
-	let get_guild_integration_assets = undefined;
+	let get_guild_integration_assets;
 	await integration.fetchAssets().then(async (get_guild_integration_assets) => {
 		get_guild_integration_assets = got_guild_integration_assets;
 	}).catch((error) => {
@@ -194,7 +195,7 @@ async function fetchGuildIntegrationAssets(client, integration) {
 }
 
 async function fetchGuildChannel(client, channel) {
-	let get_guild_channel = undefined;
+	let get_guild_channel;
 	await channel.fetch(true).then(async (got_guild_channel) => {
 		get_guild_channel = got_guild_channel;
 	}).catch((error) => {
@@ -204,7 +205,7 @@ async function fetchGuildChannel(client, channel) {
 }
 
 async function fetchGuildChannelInvites(client, channel) {
-	let get_guild_channel_invites = undefined;
+	let get_guild_channel_invites;
 	await channel.fetchInvites().then(async (got_guild_channel_invites) => {
 		get_guild_channel_invites = got_guild_channel_invites;
 	}).catch((error) => {
@@ -214,7 +215,7 @@ async function fetchGuildChannelInvites(client, channel) {
 }
 
 async function fetchGuildChannelWebhooks(client, channel) {
-	let get_guild_channel_webhooks = undefined;
+	let get_guild_channel_webhooks;
 	if (channel.isText()) {
 		await channel.fetchWebhooks().then(async (got_guild_channel_webhooks) => {
 			get_guild_channel_webhooks = got_guild_channel_webhooks;
@@ -226,7 +227,7 @@ async function fetchGuildChannelWebhooks(client, channel) {
 }
 
 async function fetchGuildInvites(client, guild) {
-	let get_guild_invites = undefined;
+	let get_guild_invites;
 	await guild.fetchInvites().then(async (got_guild_invites) => {
 		get_guild_invites = got_guild_invites;
 	}).catch((error) => {
@@ -236,7 +237,7 @@ async function fetchGuildInvites(client, guild) {
 }
 
 async function fetchGuildMember(client, guild, id) {
-	let get_guild_member = undefined;
+	let get_guild_member;
 	await guild.members.fetch({user: id, cache: true, force: true, time: 999999999}).then(async (got_guild_member) => {
 		get_guild_member = got_guild_member;
 	}).catch((error) => {
@@ -246,7 +247,7 @@ async function fetchGuildMember(client, guild, id) {
 }
 
 async function fetchGuildMembers(client, guild) {
-	let get_guild_members = undefined;
+	let get_guild_members;
 	await guild.members.fetch({cache: true, force: true, time: 999999999}).then(async (got_guild_members) => {
 		get_guild_members = got_guild_members;
 	}).catch((error) => {
@@ -255,18 +256,8 @@ async function fetchGuildMembers(client, guild) {
 	return get_guild_members;
 }
 
-async function fetchGuildPreview(client, guild) {
-	let get_guild_preview = undefined;
-	await guild.fetchPreview().then(async (got_guild_preview) => {
-		get_guild_preview = got_guild_preview;
-	}).catch((error) => {
-		//console.log(error);
-	});
-	return get_guild_preview;
-}
-
 async function fetchGuildRoles(client, guild) {
-	let get_guild_roles = undefined;
+	let get_guild_roles;
 	await guild.members.fetch(undefined, true, true).then(async (got_guild_roles) => {
 		get_guild_roles = got_guild_roles;
 	}).catch((error) => {
@@ -276,7 +267,7 @@ async function fetchGuildRoles(client, guild) {
 }
 
 async function fetchGuildTemplates(client, guild) {
-	let get_guild_template = undefined;
+	let get_guild_template;
 	await guild.fetchTemplates().then(async (got_guild_template) => {
 		get_guild_template = got_guild_template;
 	}).catch((error) => {
@@ -286,7 +277,7 @@ async function fetchGuildTemplates(client, guild) {
 }
 
 async function fetchGuildVanityData(client, guild) {
-	let get_guild_vanity_data = undefined;
+	let get_guild_vanity_data;
 	await guild.fetchVanityData().then(async (got_guild_vanity_data) => {
 		get_guild_vanity_data = got_guild_vanity_data;
 	}).catch((error) => {
@@ -296,7 +287,7 @@ async function fetchGuildVanityData(client, guild) {
 }
 
 async function fetchGuildVoiceRegions(client, guild) {
-	let get_guild_voice_regions = undefined;
+	let get_guild_voice_regions;
 	await guild.fetchVoiceRegions().then(async (got_guild_voice_regions) => {
 		get_guild_voice_regions = got_guild_voice_regions;
 	}).catch((error) => {
@@ -306,7 +297,7 @@ async function fetchGuildVoiceRegions(client, guild) {
 }
 
 async function fetchGuildWebhooks(client, guild) {
-	let get_guild_webhooks = undefined;
+	let get_guild_webhooks;
 	await guild.fetchWebhooks().then(async (got_guild_webhooks) => {
 		get_guild_webhooks = got_guild_webhooks;
 	}).catch((error) => {
@@ -316,7 +307,7 @@ async function fetchGuildWebhooks(client, guild) {
 }
 
 async function fetchGuildWidget(client, guild) {
-	let get_guild_widget = undefined;
+	let get_guild_widget;
 	await guild.fetchWidget().then(async (got_guild_widget) => {
 		get_guild_widget = got_guild_widget;
 	}).catch((error) => {
@@ -340,7 +331,6 @@ module.exports = {
 	
 	/* CLIENT */
 	getGuild: fetchGuild,
-	getGuildPreview: fetchGuildPreview,
 	getGuildTemplate: fetchGuildTemplate,
 	getInvite: fetchInvite,
 	getVoiceRegions: fetchVoiceRegions,
@@ -377,4 +367,4 @@ module.exports = {
 	getUser: fetchUser,
 	getUserFlags: fetchUserFlags,
 	/* USER */
-}
+};

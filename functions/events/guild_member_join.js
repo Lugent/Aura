@@ -4,7 +4,7 @@ async function guild_member_join(client, member) {
 	await member.guild.fetchInvites().then(async (invites) => {
 		var guild_invite = invites.find(invite => get_guild.get(invite.code) < invite.uses);
 		if (guild_invite) {
-			var member_inviter = undefined;
+			var member_inviter;
 			if (guild_invite.inviter) {
 				await client.users.fetch(guild_invite.inviter.id, true, true).then((user) => { member_inviter = user; });
 				guild_invite_tracker(client);

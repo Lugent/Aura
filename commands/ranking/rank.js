@@ -35,7 +35,7 @@ module.exports = {
 		
 		
 		let get_member = message.member;
-		let members = await client.fetchers.getGuildMembers(client, message.guild);
+		let members = await message.guild.members.fetch();
 		if (args[0]) {
 			let mentioned_member = message.mentions.members.first();
 			let search_member = get_member || message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length));

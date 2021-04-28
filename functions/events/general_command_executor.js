@@ -1,5 +1,10 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
+
+/**
+ * @param {Discord.Client} client
+ * @param {Discord.Message} message
+ */
 async function commandExecutor(client, message) {
 	let prefix = client.config.default.prefix;
 	if (message.guild) {
@@ -23,7 +28,7 @@ async function commandExecutor(client, message) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
-        return message.channel.send(embed);
+        return message.inlineReply(embed);
     }
 	
 	// Flag check; if works only on guilds
@@ -31,7 +36,7 @@ async function commandExecutor(client, message) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_guild"));
-        return message.channel.send(embed);
+        return message.inlineReply(embed);
     }
 	
 	// Flag check; if works only on direct messages
@@ -39,7 +44,7 @@ async function commandExecutor(client, message) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_dm"));
-        return message.channel.send(embed);
+        return message.inlineReply(embed);
     }
 	
 	// Guild check; if is disabled on that guild
@@ -50,7 +55,7 @@ async function commandExecutor(client, message) {
 			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "disabled"));
-			return message.channel.send(embed);
+			return message.inlineReply(embed);
 		}
 	}
 	
@@ -67,38 +72,22 @@ async function commandExecutor(client, message) {
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
             embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "cooldown", [time_remaining.toFixed(2)]));
-            return message.channel.send(embed);
+            return message.inlineReply(embed);
         }
     }
 
     // Execute
-    try {
-		client.last_msg = message.channel;
-		command.execute(client, message, args, prefix);
-	}
-    catch (error) {
-        console.error("Command failure '" + command.name + "'" + "\n", error);
-		
-		let error_name = "Undefined Error";
-		if (error instanceof EvalError) { error_name = "Evaluation Error"; }
-		else if (error instanceof RangeError) { error_name = "Range Error"; }
-		else if (error instanceof ReferenceError) { error_name = "Reference Error"; }
-		else if (error instanceof SyntaxError) { error_name = "Syntax Error"; }
-		else if (error instanceof TypeError) { error_name = "Type Error"; }
-		else if (error instanceof Discord.DiscordAPIError) { error_name = "Discord API Error"; }
-		
-		let code_error = "";
-		if (error instanceof Discord.DiscordAPIError) { code_error = " - " + error.httpStatus; }
-		
-        let embed = new Discord.MessageEmbed();
-        embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + "Execution Error");
-        embed.addField(error_name + code_error, error.message || "");
-        return message.channel.send(embed);
-    }
-    finally {
+    client.last_msg = message.channel;
+    command.execute(client, message, args, prefix).then((get_message) => {
         time_data.set(message.author.id, time_actual);
         setTimeout(() => time_data.delete(message.author.id), time_cooldown);
-    }
+    }).catch((error) => {
+        console.error("Command failure '" + command.name + "'" + "\n", error);
+
+        let embed = new Discord.MessageEmbed();
+        embed.setColor([255, 0, 0]);
+        embed.setDescription(":no_entry: " + error.name + (error.httpStatus ? (" - HTTP " + error.httpStatus) : "") + "\n" + (error.message ? error.message : ""));
+        return message.inlineReply(embed);
+    });
 }
 module.exports = commandExecutor;

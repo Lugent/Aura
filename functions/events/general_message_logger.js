@@ -7,8 +7,8 @@ function messageLogger(client, message) {
 		console.log("");
 		console.log("<< LOGGER >>");
 		console.log("Direct Message");
-		console.log("Author: " + message.author.tag + " - " + message.author.id)
-		console.log("Content: " + message.cleanContent)
+		console.log("Author: " + message.author.tag + " - " + message.author.id);
+		console.log("Content: " + message.cleanContent);
 		console.log("Date: " + message.createdAt.toString());
 	}
 	else if (message.channel.type === "text") {
@@ -16,8 +16,8 @@ function messageLogger(client, message) {
 		console.log("<<< LOGGER >>>");
 		console.log("Guild: " + message.guild.name + " - " + message.guild.id);
 		console.log("Channel: #" + message.channel.name + " - " + message.channel.id);
-		console.log("Author: " + message.author.tag + " - " + message.author.id)
-		console.log("Content: " + message.cleanContent)
+		console.log("Author: " + message.author.tag + " - " + message.author.id);
+		console.log("Content: " + message.cleanContent);
 		console.log("Date: " + message.createdAt.toString());
 	}
 }

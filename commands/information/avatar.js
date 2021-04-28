@@ -20,7 +20,7 @@ module.exports = {
 		let findTag = ((args.length) && client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)));
         let selected = message.mentions.users.first() || findTag || undefined;
 		if (!selected) {
-			if (args[0]) { selected = await client.fetchers.getUser(client, args[0]); } else { selected = message.author; }
+			if (args[0]) { selected = await client.users.fetch(args[0]); } else { selected = message.author; }
 		}
 		if (!selected) {
 			let embed = new Discord.MessageEmbed();

@@ -33,7 +33,7 @@ module.exports = {
 		
 		if (!member) {
 			if (args[0]) {
-				member = await client.fetchers.getGuildMember(client, message.guild, args[0]);
+				member = await message.guild.members.fetch(args[0]);
 			}
 			else {
 				let embed = new Discord.MessageEmbed();

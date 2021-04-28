@@ -11,7 +11,7 @@ async function exp_handler(client, message) {
 		
 		let get_level_data = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? AND user_id = ?;").get(message.guild.id, message.author.id);
 		let get_level = get_level_data;
-		if (!get_level) { get_level = {guild_id: message.guild.id, user_id: message.author.id, level: 0, score: 0, messages: 0} }
+		if (!get_level) { get_level = {guild_id: message.guild.id, user_id: message.author.id, level: 0, score: 0, messages: 0}; }
 		get_level.score += client.functions.getRandomInt(client.config.exp_gainrate);
 		get_level.messages++;
 		
@@ -83,15 +83,6 @@ async function exp_handler(client, message) {
 			image_context.quality = "nearest";
 			image_context.imageSmoothingEnabled = false;
 
-			// Level table
-			//let level_table = client.config.exp_shield_table;
-			/*let rank_front_image_old = undefined;
-			let rank_back_image_old = undefined;
-			let get_backlayer_old = level_table.find(level_table_index => level_index_old >= level_table_index.level)
-			if (get_backlayer_old) { rank_back_image_old = await Canvas.loadImage(process.cwd() + "/assets/images/ranking/backlayer/rank_back_icon_" + get_backlayer_old.type + ".png"); }
-			if (level_index_old > -1) { rank_front_image_old = await Canvas.loadImage(process.cwd() + "/assets/images/ranking/frontlayer/rank_front_icon_" + (level_index_old % 60) + ".png"); }
-			if (level_index_old >= client.config.exp_level_max) { rank_front_image_old = await Canvas.loadImage(process.cwd() + "/data/images/ranking/frontlayer/rank_front_icon_60.png"); }*/
-			
 			let rank_image = await client.functions.generateRankIcon(client, Canvas, level_index);
 			let rank_image_old = await client.functions.generateRankIcon(client, Canvas, level_index_old);
 			let rank_back_image = rank_image.rank_back_image;
@@ -99,18 +90,11 @@ async function exp_handler(client, message) {
 			let rank_back_image_old = rank_image_old.rank_back_image;
 			let rank_front_image_old = rank_image_old.rank_front_image;
 			
-			/*let rank_front_image = undefined;
-			let rank_back_image = undefined;
-			let get_backlayer = level_table.find(level_table_index => level_index >= level_table_index.level)
-			if (get_backlayer) { rank_back_image = await Canvas.loadImage(process.cwd() + "/assets/images/ranking/backlayer/rank_back_icon_" + get_backlayer.type + ".png"); }
-			if (level_index > -1) { rank_front_image = await Canvas.loadImage(process.cwd() + "/assets/images/ranking/frontlayer/rank_front_icon_" + (level_index % 60) + ".png"); }
-			if (level_index >= client.config.exp_level_max) { rank_front_image = await Canvas.loadImage(process.cwd() + "/data/images/ranking/frontlayer/rank_front_icon_60.png"); }*/
-
 			// Images
-			if (rank_back_image) { image_context.drawImage(rank_back_image, image_data_right, 4, image_data_rank_back_size, image_data_rank_back_size) }
-			if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 4 + 40, image_data_rank_front_size, image_data_rank_front_size) }
-			if (rank_back_image_old) { image_context.drawImage(rank_back_image_old, image_data_left, 4, image_data_rank_back_size, image_data_rank_back_size) }
-			if (rank_front_image_old) { image_context.drawImage(rank_front_image_old, image_data_left2 + 54, 4 + 40, image_data_rank_front_size, image_data_rank_front_size) }
+			if (rank_back_image) { image_context.drawImage(rank_back_image, image_data_right, 4, image_data_rank_back_size, image_data_rank_back_size); }
+			if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 4 + 40, image_data_rank_front_size, image_data_rank_front_size); }
+			if (rank_back_image_old) { image_context.drawImage(rank_back_image_old, image_data_left, 4, image_data_rank_back_size, image_data_rank_back_size); }
+			if (rank_front_image_old) { image_context.drawImage(rank_front_image_old, image_data_left2 + 54, 4 + 40, image_data_rank_front_size, image_data_rank_front_size); }
 			
 			// String - Levels
 			image_context.font = "48px xirod";

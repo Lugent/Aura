@@ -1,6 +1,6 @@
 function messageFilter(client, message) {
 	delete require.cache[require.resolve(process.cwd() + "/configurations/blacklisted_links.js")];
-	var blacklisted_links = require(process.cwd() + "/configurations/blacklisted_links.js")
+	var blacklisted_links = require(process.cwd() + "/configurations/blacklisted_links.js");
 	for (let blacklisted_index = 0; blacklisted_index < blacklisted_links.length; blacklisted_index += 1) {
 		let escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		let filterRegex = new RegExp("^(" + escapeRegex(blacklisted_links[blacklisted_index].name) + ")\\s*");
@@ -21,8 +21,10 @@ function messageFilter(client, message) {
 			case "spam_link": { get_type = client.functions.getTranslation(client, message.author, message.guild, "message_filter", "spam_link_type"); break; }
 			case "discord_invite": { get_type = client.functions.getTranslation(client, message.author, message.guild, "message_filter", "discord_invite_type"); break; }
 		}
-		
-		get_message.delete().then(async (deleted_message) => {
+	}
+
+	if (get_message) {
+		return get_message.delete().then(async (deleted_message) => {
 			deleted_message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "message_filter", "filter_warning", [deleted_message.author.tag, get_type]));
 		});
 	}

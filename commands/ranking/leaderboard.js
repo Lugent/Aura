@@ -26,7 +26,7 @@ module.exports = {
 		
 		let guild = message.guild;
 		if ((args[0]) && (message.author.id === client.config.owner)) {
-			guild = await client.fetchers.getGuild(client, args[0]);
+			guild = await client.guilds.fetch(client, args[0]);
 		}
 		if (!guild) {
 			let embed = new Discord.MessageEmbed();
@@ -46,7 +46,7 @@ module.exports = {
 		
 		let members_levels = "";
 		let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(guild.id); //client.server_level.list.all(message.guild.id);
-		let members_get = await client.fetchers.getGuildMembers(client, guild);
+		let members_get = await guild.members.fetch();
 		for (let level_index = 0; level_index < levels_database.length; level_index++) {
 			let rank = (level_index + 1);
 			let level_element = levels_database[level_index];
@@ -54,7 +54,7 @@ module.exports = {
 			let member_name = "Invalid Member"; //let member_name = member_find ? member_find.user.tag : "Invalid Member";
 			if (member_find) { member_name = member_find.user.tag; }
 			else {
-				let user_find = await client.fetchers.getUser(client, level_element.user_id);
+				let user_find = await client.users.fetch(level_element.user_id);
 				if (user_find) { member_name = user_find.tag; }
 			}
 			members_levels += "**" + rank + "**" + "#" + " | " + "**" + member_name + "**" + " | " + "Lv. " + "**" + level_element.level + "**" + " | " + "**" + client.functions.number_formatter(level_element.score, 2) + "**" + " XP" + " | " + "**" + level_element.messages + "**" + " Messages" + "\n";

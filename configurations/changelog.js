@@ -1,10 +1,12 @@
 const changelog = [
 	{
 		version: "1.4.1.0-beta",
-		data: [
-			":white_check_mark: Comando de Geometry Dash, `gd`. (En desarollo).",
-			":white_check_mark: Posibilidad de desactivar comandos y funciones en un servidor. (Solo Administradores)."
-		]
+		data: {
+			added: [
+				":white_check_mark: Comando de Geometry Dash, `gd`. (En desarollo).",
+				":white_check_mark: Posibilidad de desactivar comandos y funciones en un servidor. (Solo Administradores)."
+			]
+		}
 	},
 	{
 		version: "1.4.0.0",
@@ -63,7 +65,7 @@ const changelog = [
 	{
 		version: "1.3.1.0",
 		data: [
-			":white_check_mark: Idioma ingles agregado.",,
+			":white_check_mark: Idioma ingles agregado.",
 			":white_check_mark: Advertencia de idiomas no completados mediante `language`.",
 		]
 	},
@@ -91,5 +93,5 @@ const changelog = [
 			":white_check_mark: `weather` añadido.",
 		]
 	}
-]
+];
 module.exports = changelog;

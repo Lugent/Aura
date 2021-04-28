@@ -27,5 +27,5 @@ let language = {
 	"embed.locale": "Localidad",
 	"embed.badges": "Insignias",
 	"embed.creation_date": "Fecha de creación"
-}
+};
 module.exports = language;

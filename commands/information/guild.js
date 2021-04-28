@@ -33,7 +33,7 @@ module.exports = {
 		
 		let guild = message.guild;
 		if ((args[0]) && (message.author.id === client.config.owner)) {
-			guild = await client.fetchers.getGuild(client, args[0]);
+			guild = await client.guilds.fetch(args[0]);
 		}
 		if (!guild) {
 			let embed = new Discord.MessageEmbed();
@@ -43,7 +43,7 @@ module.exports = {
 		}
 		
 		// Members
-		let get_members = await client.fetchers.getGuildMembers(client, guild);
+		let get_members = await guild.members.fetch();
 		let online_members = 0;
 		let idle_members = 0;
 		let dnd_members = 0;

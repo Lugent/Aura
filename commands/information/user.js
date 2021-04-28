@@ -11,6 +11,13 @@ module.exports = {
     cooldown: 5,
     usage: "user.usage",
 	description: "user.description",
+
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
     async execute(client, message, args)
     {
 		let is_debug = false;
@@ -27,7 +34,7 @@ module.exports = {
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
-		await message.channel.send(embed2).then(message => { send_message = message; });
+		await message.inlineReply(embed2).then(message => { send_message = message; });
 		
 		let get_user;
 		if (args[0]) { get_user = client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
@@ -35,13 +42,13 @@ module.exports = {
 		let mentioned_user = message.mentions.users.first();
         let user = mentioned_user || get_user;
 		if (!user) {
-			if (args[0]) { user = await client.fetchers.getUser(client, args[0]); } else { user = message.author; }
+			if (args[0]) { user = await client.users.fetch(args[0]); } else { user = message.author; }
 		}
 		if (!user) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.failure.desc"));
 			embed.setColor([255, 0, 0]);
-			return send_message ? send_message.edit(embed) : message.channel.send(embed);
+			return send_message ? send_message.edit(embed) : message.inlineReply(embed);
 		}
 
 		// Especial
@@ -97,8 +104,7 @@ module.exports = {
 		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.locale") + ":", user.locale, false); }
 		if (user_badges.length) { embed.addField(":military_medal: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.badges") + ":", user_badges, false); }
 		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.creationdate") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
-        //embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.id") + ": " + user.id);
 		embed.setColor(0x66b3ff);
-		return send_message ? send_message.edit(embed) : message.channel.send(embed);
+		return send_message ? send_message.edit(embed) : message.inlineReply(embed);
     }
 };

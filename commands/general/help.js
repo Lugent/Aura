@@ -57,9 +57,12 @@ module.exports = {
 					let command = command_list[command_index];
 					let command_usage = command.usage ? command.usage : "";
 					if (((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
-					command_names += command.name + " " + client.functions.getTranslation(client, message.author, message.guild, "commands_help",  command_usage) + "\n";
+					command_names += command.name + " " + client.functions.getTranslation(client, message.author, message.guild, "commands_help", command_usage) + "\n";
 				}
-				if (command_names !== "") { embed.addField(client.functions.getTranslation(client, message.author, message.guild, category_list[category_index].name), command_names); }
+
+				if (command_names.length) {
+					embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_help", category_name), command_names);
+				}
 			}
 			
             embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "list.footer", [prefix]));
