@@ -2,36 +2,41 @@ const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}
+String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1); };
 
 module.exports = {
 	name: "guild",
 	path: path.basename(__dirname),
 	description: "command.guild.desc",
 	aliases: ["server"],
+
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args, prefix) {
 		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === client.config.owner)))) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.dm.warning.title"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
 		}
 		
-		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.loading.desc"));
-		embed.setColor([255, 255, 0]);
+		let embed2 = new Discord.MessageEmbed();
+		embed2.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.loading.desc"));
+		embed2.setColor([255, 255, 0]);
 		
-		let sent_message = undefined;
-		await message.channel.send(embed).then(message => { sent_message = message; });
+		let sent_message;
+		await message.channel.send(embed2).then(message => { sent_message = message; });
 		
 		let guild = message.guild;
 		if ((args[0]) && (message.author.id === client.config.owner)) {
 			guild = await client.fetchers.getGuild(client, args[0]);
 		}
 		if (!guild) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.failure.desc"));
 			embed.setColor([255, 0, 0]);
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
@@ -58,7 +63,7 @@ module.exports = {
 			}
 		}
 		
-		let list_members = { online: online_members, idle: idle_members, dnd: dnd_members, offline: offline_members, bot: bot_members, boosters: boosters_members }
+		let list_members = { online: online_members, idle: idle_members, dnd: dnd_members, offline: offline_members, bot: bot_members, boosters: boosters_members };
 		let members_count = ""; //client.functions.getTranslation(client, message.author, message.guild, "command.guild.data.members.empty");
 		let member_started = false;
 		let member_online = list_members.online + list_members.idle + list_members.dnd;
@@ -301,11 +306,11 @@ module.exports = {
 		let member_string = ":card_index: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.members") + ": " + members_count;
 		let channel_string = ":hash: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.channels") + ": " + count_channels;
 		let roles_string = ":triangular_flag_on_post: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.roles") + ": " + count_roles;
-		let emojis_string = ":smiley: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.emojis") + ": " + count_emojis
+		let emojis_string = ":smiley: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.emojis") + ": " + count_emojis;
 		let boost_string = ":diamonds: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.boostlevel") + ": " + boost_level;
 		
 		// Information
-		var embed = new Discord.MessageEmbed();
+		let embed = new Discord.MessageEmbed();
 		embed.setThumbnail(guild.iconURL());
 		embed.setTitle(guild.name + "\n" + "(" + guild.id + ")");
 		if (description_string.length) { embed.setDescription(guild.description); }
@@ -314,7 +319,6 @@ module.exports = {
 		embed.addField(":closed_lock_with_key: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.admin") + ":", (feature_community ? (rules_channel_string + "\n") : "") + system_channel_string + "\n" + notifications_string + "\n" + moderation_string + "\n" + ex_filter_string + "\n" + mfa_string + "\n" + widget_string);
 		embed.addField(":bar_chart: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.stats") + ":", date_string + "\n" + member_string + "\n" + channel_string + "\n" + roles_string + "\n" + emojis_string + "\n" + boost_string);
 		if (features.length) { embed.addField(":star2: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.embed.features") + ":", features); }
-		//embed.setFooter("ID" + ": " + guild.id);
 		embed.setColor([0, 255, 0]);
 		return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 	},

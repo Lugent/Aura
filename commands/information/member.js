@@ -2,17 +2,21 @@ const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}
-
+String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1); };
 module.exports = {
     name: "member",
 	path: path.basename(__dirname),
     aliases: ["profile"],
     cooldown: 5,
-    usage: "command.member.usage",
-	description: "command.member.desc",
+    usage: "member.usage",
+	description: "member.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
     async execute(client, message, args, prefix)
     {
 		if (!message.guild) {
@@ -28,10 +32,10 @@ module.exports = {
 		embed2.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.member.loading.desc"));
 		embed2.setColor([255, 255, 0]);
 		
-		let getMessage = undefined;
+		let getMessage;
 		await message.channel.send(embed2).then(message => { getMessage = message; });
 		
-		let get_member = undefined;
+		let get_member;
 		if (args[0]) { get_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
 		
 		let mentioned_member = message.mentions.members.first();

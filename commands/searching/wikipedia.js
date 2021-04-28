@@ -6,10 +6,17 @@ const fs = require('fs');
 module.exports = {
 	name: "wikipedia",
 	path: path.basename(__dirname),
-	usage: "command.wikipedia.usage",
-	description: "command.wikipedia.desc",
+	usage: "wikipedia.usage",
+	description: "wikipedia.description",
 	cooldown: 20,
-	async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
 		if (!args.length) {
 			var embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.no_arguments"));
@@ -29,7 +36,7 @@ module.exports = {
 		https.get(search_url, async (response) => {
 			response.on("data", async (chunk) => { get_data += chunk; });
 			response.on("end", async () => {
-				let final_data = JSON.parse(get_data); //.query.pages.keys
+				let final_data = JSON.parse(get_data);
 				var pages = final_data.query.pages;
 				for (var p in pages) {
 					if (pages[p].missing === "") {
@@ -39,10 +46,10 @@ module.exports = {
 						return message.channel.send(embed);
 					}
 					else {
-						return message.channel.send(pages[p].fullurl)
+						return message.channel.send(pages[p].fullurl);
 					}
 				}
-			})
+			});
 		}).on("error", (error) => {
 			var embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.fatal_error"));
@@ -50,4 +57,4 @@ module.exports = {
 			return message.channel.send(embed);
 		});
 	}
-}
+};

@@ -14,5 +14,5 @@ let language = {
 	"cooldown.field": "%s segundos.",
 	"success_single": "Detalles del comando envieado.",
 	"failure_single": "Imposible enviarte detalles del comando.",
-}
+};
 module.exports = language;

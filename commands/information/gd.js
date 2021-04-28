@@ -6,7 +6,14 @@ module.exports = {
 	name: "gd",
 	path: path.basename(__dirname),
     cooldown: 6,
-	description: "command.gd.usage",
+	description: "gd.usage",
+
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args, prefix) {
 		
 		let diff_to_color = [
@@ -22,13 +29,13 @@ module.exports = {
 			{id: "Hard Demon", color: [154, 17, 33]},
 			{id: "Insane Demon", color: [238, 17, 1]},
 			{id: "Extreme Demon", color: [119, 1, 0]}
-		]
+		];
 		
 		let raw_data = "";
 		let api_url = "https://gdbrowser.com/api/";
 		let subcommand = args[0];
 		if (!subcommand) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.title")); // "List of available subcommands"
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_0"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_0")); // "help" - "Gives a help of the usage of the given subcommand."
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_1"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_1")); // "search" - "Returns a list of levels with the given filters. (Defaults to most downloaded if no filters given)."
@@ -48,7 +55,7 @@ module.exports = {
 				case "help": {
 					let help_command = args[1];
 					if (!help_command) {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.help_no_command"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
@@ -56,7 +63,7 @@ module.exports = {
 					
 					switch (help_command) {
 						case "search": {
-							var embed = new Discord.MessageEmbed();
+							let embed = new Discord.MessageEmbed();
 							embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.title", [prefix]));
 							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_main"));
 							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_0"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_0"));
@@ -78,15 +85,13 @@ module.exports = {
 							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_16"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_16"));
 							embed.setColor([0, 255, 255]);
 							return message.channel.send(embed);
-							break;
 						}
 						
 						default: {
-							var embed = new Discord.MessageEmbed();
+							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.help_invalid_command"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
-							break;
 						}
 					}
 					break;
@@ -128,7 +133,6 @@ module.exports = {
 							// Search types
 							if (filter_element.startsWith("/type=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
-								console.log(filter_argument)
 								switch (filter_argument.toLowerCase()) {
 									case "mostdownloaded": { search_filters += filter_prefix + "type=mostdownloaded"; break; }
 									case "mostliked": { search_filters += filter_prefix + "type=mostliked"; break; }
@@ -168,7 +172,7 @@ module.exports = {
 							// Official Song ID
 							if (filter_element.startsWith("/songID=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
-								let size_number = Number(filter_argument)
+								let size_number = Number(filter_argument);
 								if (Number.isNaN(size_number)) {
 									switch (filter_argument.toLowerCase()) {
 										case "stereo_madness": { search_filters += filter_prefix + "songID=1"; break; }
@@ -224,7 +228,7 @@ module.exports = {
 							// Length
 							if (filter_element.startsWith("/length=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
-								let size_number = Number(filter_argument)
+								let size_number = Number(filter_argument);
 								if (Number.isNaN(size_number)) {
 									switch (filter_argument.toLowerCase()) {
 										case "tiny": { search_filters += filter_prefix + "length=0"; break; }
@@ -267,7 +271,7 @@ module.exports = {
 							// Difficulty
 							if (filter_element.startsWith("/difficulty=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
-								let difficulty_number = Number(filter_argument)
+								let difficulty_number = Number(filter_argument);
 								if (Number.isNaN(difficulty_number)) {
 									switch (filter_argument.toLowerCase()) {
 										case "na": { search_filters += filter_prefix + "diff=-1"; break; }
@@ -309,9 +313,9 @@ module.exports = {
 					if (!filters_custom_count) { search_filters += filter_prefix + "count=5"; }
 					
 					let complete_url = api_url + "search/" + search_query + search_filters;
-					console.log(complete_url);
+					//console.log(complete_url);
 					https.get(complete_url, async (response) => {
-						response.on("data", async (chunk) => { raw_data += chunk; })
+						response.on("data", async (chunk) => { raw_data += chunk; });
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let levels_data = JSON.parse(raw_data);
@@ -354,7 +358,7 @@ module.exports = {
 									
 									let level_author = "<:gd_creator_points:823153273711362059> " + "By " + level_element.author;
 									let level_author_specials = (Number(level_element.accountID) !== 0) ? (" | <:gd_profile:823150924330434572>" + " " + level_element.accountID) : "";
-									let level_song = "<:gd_note:823153052495249448> " + (level_element.songLink ? ("[" + level_element.songName + "]" + "(" + level_element.songLink + ")") : level_element.songName)
+									let level_song = "<:gd_note:823153052495249448> " + (level_element.songLink ? ("[" + level_element.songName + "]" + "(" + level_element.songLink + ")") : level_element.songName);
 									let level_description = level_difficulty + " " + level_rated + " " + level_large + "\n" + level_author + level_author_specials;
 									
 									let level_stars = (level_element.stars > 0) ? ("<:gd_star:823042179374120960> " + level_element.stars + " | ") : "";
@@ -374,19 +378,19 @@ module.exports = {
 								embed.setTitle("Found " + levels_data[0].results + " results in " + levels_data[0].pages + " pages.");
 								embed.attachFiles([search_image, gd_image]);
 								embed.setThumbnail("attachment://search.png");
-								embed.setAuthor("Geometry Dash - Level Search", "attachment://gd_icon.png")
+								embed.setAuthor("Geometry Dash - Level Search", "attachment://gd_icon.png");
 								embed.setColor([254, 223, 0]);
 								return message.channel.send(embed);
 							}
 							else {
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.search.not_found"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
-						})
+						});
 					}).on("error", async (error) => {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.search.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
@@ -405,11 +409,11 @@ module.exports = {
 					let level_id = args[1];
 					let complete_url = api_url + "level/" + level_id;
 					https.get(complete_url, async (response) => {
-						response.on("data", async (chunk) => { raw_data += chunk; })
+						response.on("data", async (chunk) => { raw_data += chunk; });
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let level_data = JSON.parse(raw_data);
-								console.log(level_data)
+								//console.log(level_data);
 								
 								let level_large = (level_data.large ? " <:gd_large:823196254636605460>" : "");
 								let level_author = "By " + level_data.author;
@@ -442,7 +446,7 @@ module.exports = {
 								let level_information = level_data.description + "\n\n" + level_stats + "\n" + level_song + "\n\n" + level_gdversion + "\n" + level_version;
 								
 								var difficulty_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/difficulties/" + level_data.difficultyFace + ".png", level_data.difficultyFace + ".png");
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.setColor(diff_to_color.find(element => element.id === level_data.difficulty).color);
 								embed.attachFiles([difficulty_image]);
 								embed.setThumbnail("attachment://" + level_data.difficultyFace + ".png");
@@ -452,14 +456,14 @@ module.exports = {
 								return message.channel.send(embed);
 							}
 							else {
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.no_data"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
-						})
+						});
 					}).on("error", async (error) => {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
@@ -469,7 +473,7 @@ module.exports = {
 				
 				case "profile": {
 					if (!args[1]) {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.no_argument"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
@@ -478,11 +482,11 @@ module.exports = {
 					let profile_id = args.slice(1).join(" ");
 					let complete_url = api_url + "profile/" + profile_id;
 					https.get(complete_url, async (response) => {
-						response.on("data", async (chunk) => { raw_data += chunk; })
+						response.on("data", async (chunk) => { raw_data += chunk; });
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let profile_data = JSON.parse(raw_data);
-								console.log(profile_data)
+								//console.log(profile_data);
 								
 								let profile_moderator = "";
 								if (profile_data.moderator == 1) { profile_moderator = "<:gd_mod:823150781988995082> "; }
@@ -530,7 +534,7 @@ module.exports = {
 								}
 								let profile_options = profile_friends + "\n" + profile_messages + "\n" + profile_commenthistory;
 								
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.attachFiles([profile_rank_image]);
 								embed.setThumbnail("attachment://" + "rank_" + profile_rank_index + ".png");
 								embed.setTitle(profile_header);
@@ -539,14 +543,14 @@ module.exports = {
 								return message.channel.send(embed);
 							}
 							else {
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.no_data"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
-						})
+						});
 					}).on("error", async (error) => {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.failure"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
@@ -555,11 +559,10 @@ module.exports = {
 				}
 				
 				default: {
-					var embed = new Discord.MessageEmbed();
+					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.invalid_subcommand"));
 					embed.setColor([255, 0, 0]);
 					return message.channel.send(embed);
-					break;
 				}
 			}
 		}

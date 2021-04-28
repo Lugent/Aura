@@ -5,11 +5,16 @@ const https = require("https");
 module.exports = {
     name: "discordstatus",
 	path: path.basename(__dirname),
-    //aliases: ["profile"],
     cooldown: 5,
-    //usage: "[usuario]",
-	description: "command.discordstatus.desc",
-    async execute(client, message, args)
+	description: "discordstatus.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix)
     {
 		/* SERVICE */
 		let serviceStatusTable = [
@@ -58,7 +63,7 @@ module.exports = {
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands_discordstatus", "loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let sent_message = undefined;
+		let sent_message;
 		await message.inlineReply(embed).then(message => { sent_message = message; });
 		
 		let rawData = "";
@@ -82,7 +87,7 @@ module.exports = {
 				for (let index = 0; index < finalComponents.length; index++) {
 					let component = finalComponents[index];
 					let findData = componentStatusTable.find(status => component.status === status.id);
-					componentsName += "**" + component.name + "**: " + findData.name + "\n"
+					componentsName += "**" + component.name + "**: " + findData.name + "\n";
 				}
 				
 				let incidents = data.incidents;

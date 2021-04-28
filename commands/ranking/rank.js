@@ -5,10 +5,17 @@ module.exports = {
     name: "rank",
 	path: path.basename(__dirname),
     cooldown: 5,
-    usage: "command.rank.usage",
-	description: "command.rank.desc",
+    usage: "rank.usage",
+	description: "rank.description",
 	flags: constants.cmdFlags.noHelp,
-    async execute(client, message, args)
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix)
     {
 		if (!message.guild) {
 			let embed = new Discord.MessageEmbed();
@@ -31,7 +38,7 @@ module.exports = {
 		let members = await client.fetchers.getGuildMembers(client, message.guild);
 		if (args[0]) {
 			let mentioned_member = message.mentions.members.first();
-			let search_member = get_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length));
+			let search_member = get_member || message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length));
 			get_member = mentioned_member || search_member || members.find(member => member.id === args[0]);
 		}
 		
@@ -116,8 +123,8 @@ module.exports = {
 
 		// Images
 		let avatar_image = await Canvas.loadImage(get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128})); // 4096
-		if (rank_back_image) { image_context.drawImage(rank_back_image, image_data_right, 4, image_data_rank_back_size, image_data_rank_back_size) }
-		if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 4 + 40, image_data_rank_front_size, image_data_rank_front_size) }
+		if (rank_back_image) { image_context.drawImage(rank_back_image, image_data_right, 4, image_data_rank_back_size, image_data_rank_back_size); }
+		if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 4 + 40, image_data_rank_front_size, image_data_rank_front_size); }
 		
 		image_context.lineWidth = 6;
 		image_context.strokeStyle = "rgb(255, 255, 255)";

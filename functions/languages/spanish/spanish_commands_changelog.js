@@ -17,5 +17,5 @@ let language = {
 	"embed.author": "Lista de cambios de %s",
 	"embed.title": "Versión %s",
 	"embed.footer": "Mostrando pagina %s de %s"
-}
+};
 module.exports = language;

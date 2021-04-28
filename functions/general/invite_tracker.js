@@ -11,14 +11,10 @@ async function invite_tracker(client) {
 		}
 		
 		await guilds_array[guild_index].fetchInvites().then(async (invites) => {
-			//console.log("Invites from '" + guilds_array[guild_index].name + "'.");
 			var invites_array = invites.array();
 			for (var invite_index = 0; invite_index < invites_array.length; invite_index += 1) {
-				//console.log("Code '" + invites_array[invite_index].code + "' from '" + invites_array[invite_index].inviter.tag + "', used " + invites_array[invite_index].uses + " times.");
 				guild_data.set(invites_array[invite_index].code, invites_array[invite_index].uses);
 			}
-			//if (!invites_array.length) { console.log("No invites found!"); }
-			//console.log("");
 		});
 	}
 }

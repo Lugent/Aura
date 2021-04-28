@@ -7,6 +7,13 @@ module.exports = {
     cooldown: 1,
     usage: "command.purge.usage",
 	description: "command.purge.desc",
+
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
     async execute(client, message, args, prefix) {
 		if (message.channel.type !== "text") {
 			let embed = new Discord.MessageEmbed();
@@ -22,9 +29,9 @@ module.exports = {
 			return message.channel.send(embed);
 		}
 		
-		let member = undefined;
+		let member;
 		if (args[0]) {
-			let get_member = undefined;
+			let get_member;
 			if (args[0]) { get_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
 			
 			let mentioned_member = message.mentions.members.first();

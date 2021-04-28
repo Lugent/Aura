@@ -5,11 +5,18 @@ const https = require("https");
 module.exports = {
 	name: "image",
 	path: path.basename(__dirname),
-	description: "command.image.desc",
+	description: "image.description",
 	aliases: ["img"],
-	usage: "command.image.usage",
+	usage: "image.usage",
 	cooldown: 20,
-	async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.error.nosearch"));
@@ -21,7 +28,7 @@ module.exports = {
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.image.loading.desc"));
 		embed.setColor([255, 255, 0]);
 		
-		let sent_message = undefined;
+		let sent_message;
 		await message.channel.send(embed).then(message => { sent_message = message; });
 		
 		let search = args.slice(0).join(" ");

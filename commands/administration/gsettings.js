@@ -8,6 +8,13 @@ module.exports = {
     cooldown: 1,
 	description: "gsettings.description",
 	flags: constants.cmdFlags.cantDisable,
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
     async execute(client, message, args, prefix) {
 		if (message.channel.type !== "text") {
 			let embed = new Discord.MessageEmbed();
@@ -19,7 +26,7 @@ module.exports = {
 		if (!args.length) {
 			delete require.cache[require.resolve(process.cwd() + "/configurations/language.js")];
 			let languages_avaliable = require(process.cwd() + "/configurations/language.js");
-			let language_name = undefined;
+			let language_name;
 			let server_data = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(message.guild.id);
 			let server_prefix = server_data.prefix;
 			let server_language = server_data.language;
@@ -73,7 +80,6 @@ module.exports = {
 					embed.setColor([0, 255, 0]);
 					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.changed", [new_prefix])); // prefix
 					return message.channel.send(embed);
-					break;
 				}
 				
 				case "language": {
@@ -86,7 +92,7 @@ module.exports = {
 					
 					if (!args[1]) {
 						let server_language = client.server_data.prepare("SELECT language FROM settings WHERE guild_id = ?;").get(message.guild.id); //client.server_language.select.get(message.guild.id);
-						let language_name = undefined;
+						let language_name;
 						if (server_language) { language_name = languages_avaliable.find(language => language.id === server_language.language); }
 						
 						let embed = new Discord.MessageEmbed();
@@ -266,7 +272,6 @@ module.exports = {
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "invalid_subcommand"));
 					embed.setColor([255, 0, 0]);
 					return message.channel.send(embed);
-					break;
 				}
 			}
 		}

@@ -9,9 +9,16 @@ module.exports = {
 	usage: "command.mcserver.usage",
     cooldown: 5,
 	description: "command.mcserver.desc",
-	async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
 		if (!args.length) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.title"));
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.desc"));
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args0"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args0.field"), false);
@@ -38,12 +45,12 @@ module.exports = {
 			if (argument === "/w") { world = true; arguments.splice(argument_index, 1); }
 		}
 		
-		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.loading.desc"));
-		embed.setColor([255, 255, 0]);
+		let embed2 = new Discord.MessageEmbed();
+		embed2.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.loading.desc"));
+		embed2.setColor([255, 255, 0]);
 		
-		let send_message = undefined;
-		await message.channel.send(embed).then(message => { send_message = message; });
+		let send_message;
+		await message.channel.send(embed2).then(message => { send_message = message; });
 		
 		//let wait_time_count = 0;
 		/*let wait_time_function = setInterval(() => {
@@ -64,7 +71,7 @@ module.exports = {
 				try {
 					//clearInterval(wait_time_function);
 					if (!data.startsWith("{")) {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setColor([255, 0, 0]);
 						embed.setDescription(":no_entry: " + data);
 						return send_message ? send_message.edit(embed) : message.channel.send(embed);
@@ -73,7 +80,7 @@ module.exports = {
 					var parsed_data = JSON.parse(data);
 					if (parsed_data !== undefined) {
 						if (parsed_data.online) {
-							var embed = new Discord.MessageEmbed();
+							let embed = new Discord.MessageEmbed();
 							embed.setTitle(arguments[0]);
 							embed.setColor([0, 255, 0]);
 							if (parsed_data.motd !== undefined)
@@ -116,7 +123,7 @@ module.exports = {
 						}
 						else {
 							if (parsed_data.ip !== "") {
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.notonline"));
 								if ((parsed_data.ip + ":" + parsed_data.port) !== arguments[0]) {
 									embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
@@ -124,14 +131,14 @@ module.exports = {
 								embed.setColor([255, 0, 0]);
 							}
 							else {
-								var embed = new Discord.MessageEmbed();
+								let embed = new Discord.MessageEmbed();
 								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.dontexists"));
 								embed.setColor([0, 0, 0]);
 							}
 						}
 					}
 					else {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setColor([255, 0, 0]);
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.failure.desc"));
 						return send_message ? send_message.edit(embed) : message.channel.send(embed);
@@ -139,12 +146,12 @@ module.exports = {
 				} 
 				catch (error) {
 					console.error(error);
-					var embed = new Discord.MessageEmbed();
+					let embed = new Discord.MessageEmbed();
 					embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.error.desc"));
 					return send_message ? send_message.edit(embed) : message.channel.send(embed);
 				}
 				finally {
-					send_message ? send_message.edit(embed) : message.channel.send(embed);
+					
 					if (fs.existsSync(process.cwd() + "/temp/players.txt"))
 					{
 						var attachfile = process.cwd() + "/temp/players.txt";
@@ -156,13 +163,14 @@ module.exports = {
 							}]
 						}).then(async () => { await fs.unlinkSync(process.cwd() + "/temp/players.txt"); });
 					}
+					return send_message ? send_message.edit(embed) : message.channel.send(embed);
 				}
 			});
 		}).on("error", (error) => {
 			//clearInterval(wait_time_function);
 			console.error(error);
 			
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.failure.fatal"));
 			embed.addField(error.name, error.message);

@@ -6,6 +6,13 @@ module.exports = {
 	path: path.basename(__dirname),
     cooldown: 6,
 	description: "emoji.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args, prefix) {
 		if (message.channel.type !== "text") {
 			let embed = new Discord.MessageEmbed();
@@ -77,4 +84,4 @@ module.exports = {
 			}
 		}
 	}
-}
+};

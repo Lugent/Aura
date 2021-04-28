@@ -20,25 +20,25 @@ async function commandExecutor(client, message) {
 	
 	// Flag check; if works with the bot's owner
     if ((command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== client.config.owner)) {
-        var embed = new Discord.MessageEmbed();
+        let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
         return message.channel.send(embed);
     }
 	
 	// Flag check; if works only on guilds
     if ((command.flags & constants.cmdFlags.guildOnly) && (message.channel.type !== "text")) {
-        var embed = new Discord.MessageEmbed();
+        let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.guild"));
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_guild"));
         return message.channel.send(embed);
     }
 	
 	// Flag check; if works only on direct messages
 	if ((command.flags & constants.cmdFlags.dmOnly) && (message.channel.type !== "dm")) {
-        var embed = new Discord.MessageEmbed();
+        let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.md"));
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_dm"));
         return message.channel.send(embed);
     }
 	
@@ -47,9 +47,9 @@ async function commandExecutor(client, message) {
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
 		let get_disabled_commands = get_features.disabled_commands.trim().split(" ");
 		if (get_disabled_commands.includes(command.name)) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.disabled"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "disabled"));
 			return message.channel.send(embed);
 		}
 	}
@@ -66,7 +66,7 @@ async function commandExecutor(client, message) {
             let time_remaining = (time_count - time_actual) / 1000;
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
-            embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "cmdexec.error.cooldown", [time_remaining.toFixed(2)])); // time_remaining.toFixed(2)
+            embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "cooldown", [time_remaining.toFixed(2)]));
             return message.channel.send(embed);
         }
     }
@@ -85,14 +85,12 @@ async function commandExecutor(client, message) {
 		else if (error instanceof ReferenceError) { error_name = "Reference Error"; }
 		else if (error instanceof SyntaxError) { error_name = "Syntax Error"; }
 		else if (error instanceof TypeError) { error_name = "Type Error"; }
-		//else if (error instanceof AggregateError) { error_name = "Aggregate Error"; }
-		//else if (error instanceof InternalError) { error_name = "INTERNAL ERROR"; }
 		else if (error instanceof Discord.DiscordAPIError) { error_name = "Discord API Error"; }
 		
 		let code_error = "";
 		if (error instanceof Discord.DiscordAPIError) { code_error = " - " + error.httpStatus; }
 		
-        var embed = new Discord.MessageEmbed();
+        let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + "Execution Error");
         embed.addField(error_name + code_error, error.message || "");

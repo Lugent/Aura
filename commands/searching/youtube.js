@@ -5,10 +5,17 @@ const https = require("https");
 module.exports = {
 	name: "youtube",
 	path: path.basename(__dirname),
-	description: "command.youtube.desc",
+	description: "youtube.description",
 	aliases: ["yt"],
-	usage: "command.youtube.usage",
+	usage: "youtube.usage",
 	cooldown: 20,
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
@@ -17,11 +24,11 @@ module.exports = {
 			return message.channel.send(embed);
 		}
 		
-		var embed = new Discord.MessageEmbed();
+		let embed = new Discord.MessageEmbed();
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.loading.desc"));
 		embed.setColor([255, 255, 0]);
 		
-		let sent_message = undefined;
+		let sent_message;
 		await message.channel.send(embed).then(message => { sent_message = message; });
 		
 		let raw_video_data = "";
@@ -42,7 +49,7 @@ module.exports = {
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 				}
 				if (get_video) {
-					var embed = new Discord.MessageEmbed();
+					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.loading.channel"));
 					embed.setColor([255, 255, 0]);
 					if (sent_message) { await sent_message.edit(embed); } else { await message.channel.send(embed); }
@@ -64,7 +71,7 @@ module.exports = {
 								return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 							}
 							
-							var embed = new Discord.MessageEmbed();
+							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.loading.stats"));
 							embed.setColor([255, 255, 0]);
 							if (sent_message) { await sent_message.edit(embed); } else { await message.channel.send(embed); }
@@ -97,7 +104,7 @@ module.exports = {
 									if (get_statistics.statistics.dislikeCount) { dislikes_count = client.functions.number_formatter(get_statistics.statistics.dislikeCount, 2); }
 									if (get_statistics.statistics.commentCount) { comments_count = client.functions.number_formatter(get_statistics.statistics.commentCount, 2); }
 									
-									let get_date = client.functions.ISODateToJSDate(get_video.snippet.publishedAt)
+									let get_date = client.functions.ISODateToJSDate(get_video.snippet.publishedAt);
 									
 									let video_views = ":eye: " + views_count;
 									let video_likes = ":thumbsup: " + likes_count;
@@ -117,7 +124,7 @@ module.exports = {
 								}).on("error", (error) => {
 									console.error(error);
 									
-									var embed = new Discord.MessageEmbed();
+									let embed = new Discord.MessageEmbed();
 									embed.setColor([255, 0, 0]);
 									embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.fatal"));
 									return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
@@ -126,7 +133,7 @@ module.exports = {
 							
 						}).on("error", (error) => {
 							console.error(error);
-							var embed = new Discord.MessageEmbed();
+							let embed = new Discord.MessageEmbed();
 							embed.setColor([255, 0, 0]);
 							embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.fatal"));
 							return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
@@ -134,7 +141,7 @@ module.exports = {
 					});
 				}
 				else {
-					var embed = new Discord.MessageEmbed();
+					let embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
 					embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.notfound"));
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
@@ -142,7 +149,7 @@ module.exports = {
 			});
 		}).on("error", (error) => {
 			console.error(error);
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "command.youtube.failure.fatal"));
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);

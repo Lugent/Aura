@@ -5,13 +5,20 @@ module.exports = {
     name: "leaderboard",
 	path: path.basename(__dirname),
     cooldown: 5,
-    usage: "command.leaderboard.usage",
-	description: "command.leaderboard.desc",
+    usage: "leaderboard.usage",
+	description: "leaderboard.description",
 	flags: constants.cmdFlags.noHelp,
-    async execute(client, message, args)
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix)
     {
 		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === client.config.owner)))) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.leaderboard.warning.noguild"));
 			embed.setColor([255, 255, 0]);
 			return message.channel.send(embed);
@@ -22,7 +29,7 @@ module.exports = {
 			guild = await client.fetchers.getGuild(client, args[0]);
 		}
 		if (!guild) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.guild.failure.desc"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
@@ -31,7 +38,7 @@ module.exports = {
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(guild.id);
 		let get_disabled_functions = get_features.disabled_functions.trim().split(" ");
 		if (get_disabled_functions.includes("exp")) {
-			var embed = new Discord.MessageEmbed();
+			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.leaderboard.error.disabled"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
@@ -43,7 +50,7 @@ module.exports = {
 		for (let level_index = 0; level_index < levels_database.length; level_index++) {
 			let rank = (level_index + 1);
 			let level_element = levels_database[level_index];
-			let member_find = members_get.find(member => member.user.id === level_element.user_id);
+			let member_find = members_get.find(member => { return member.user.id === level_element.user_id; });
 			let member_name = "Invalid Member"; //let member_name = member_find ? member_find.user.tag : "Invalid Member";
 			if (member_find) { member_name = member_find.user.tag; }
 			else {

@@ -9,7 +9,14 @@ module.exports = {
 	aliases: ["g"],
 	usage: "command.google.usage",
 	cooldown: 20,
-	async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.no_arguments"));
@@ -21,7 +28,7 @@ module.exports = {
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let sent_message = undefined;
+		let sent_message;
 		await message.channel.send(embed).then(message => { sent_message = message; });
 		
 		let search = args.join("%20");
@@ -51,7 +58,7 @@ module.exports = {
 						display_result += "**" + (result_index + 1) + ".-** " + "[" + get_results[result_index].title + "]" + "(" + get_results[result_index].link + ")" + "\n" + get_results[result_index].snippet + "\n";
 					}
 					
-					embed.setDescription(display_result)
+					embed.setDescription(display_result);
 					embed.setColor([254, 254, 254]);
 					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 				}

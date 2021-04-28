@@ -26,13 +26,13 @@ function getTranslation(client, user, guild, key, string, values) {
 	
 	try {
 		switch (language_target) {
-			default: { language_name = "spanish"; break; }
 			case "en": { language_name = "english"; break; }
+			default: { language_name = "spanish"; break; }
 		}
 		
 		let language_dir = process.cwd() + "/functions/languages/" + language_name;
 		let language_file = language_name + "_" + key + ".js";
-		let directory = fs.readdirSync(language_dir).filter(dir => !dir.includes(".js"));
+		let directory = fs.readdirSync(language_dir).filter(dir => dir.includes(".js"));
 		for (let file of directory) {
 			if (file === language_file) {
 				delete require.cache[require.resolve(language_dir + "/" + language_file)];

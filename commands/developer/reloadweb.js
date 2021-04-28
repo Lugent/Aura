@@ -9,6 +9,13 @@ module.exports = {
     usage: "[comando]",
     cooldown: 0,
     flags: constants.cmdFlags.ownerOnly,
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args, prefix) {
 		let web_setup = require(process.cwd() + "/functions/general/web_setup.js");
 		await web_setup(client);

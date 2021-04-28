@@ -8,10 +8,17 @@ module.exports = {
     usage: "ban.usage",
 	description: "ban.description",
 	flags: constants.cmdFlags.guildOnly,
-    async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix) {
 		if (!message.member.permissions.has("BAN_MEMBERS")) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "no_permissions"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "no_permissions"));
 			return message.channel.send(embed);
 		}
 		
@@ -30,7 +37,7 @@ module.exports = {
 				message.channel.send(embed);
 			}).catch((error) => {
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "dont_exists"));
+				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "dont_exists"));
 				embed.setColor([255, 0, 0]);
 				message.channel.send(embed);
 			});
@@ -38,7 +45,7 @@ module.exports = {
 		
 		if (member.user.id === client.user.id) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "myself"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "myself"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -52,14 +59,14 @@ module.exports = {
 		
 		if (member.user.id === message.guild.ownerID) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "is_ownership"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "is_ownership"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
 		
 		if (!member.bannable) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "cannot_ban"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_ban", "cannot_ban"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}

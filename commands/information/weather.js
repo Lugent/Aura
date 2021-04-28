@@ -5,11 +5,17 @@ const weather = require("weather-js");
 module.exports = {
     name: "weather",
 	path: path.basename(__dirname),
-    //aliases: ["profile"],
     cooldown: 5,
-    usage: "command.weather.usage",
-	description: "command.weather.desc",
-    async execute(client, message, args)
+    usage: "cweather.usage",
+	description: "weather.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix)
     {
 		if (!args[0]) { return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "command.weather.error")); }
 		
@@ -42,14 +48,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setTitle(currentWeather.observationpoint);
 			embed.setThumbnail(currentWeather.imageUrl);
-			embed.setDescription(currentWeather.skytext)
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.temp") + ": ", currentWeather.temperature + "°" +  locationWeather.degreetype)
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.wind") + ": ", currentWeather.winddisplay)
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.humidity") + ": ", currentWeather.humidity + "%")
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.timezone") + ": ", currentWeather.day + " " + currentWeather.date + " (GMT "  + locationWeather.timezone + ")")
+			embed.setDescription(currentWeather.skytext);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.temp") + ": ", currentWeather.temperature + "°" +  locationWeather.degreetype);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.wind") + ": ", currentWeather.winddisplay);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.humidity") + ": ", currentWeather.humidity + "%");
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.timezone") + ": ", currentWeather.day + " " + currentWeather.date + " (GMT "  + locationWeather.timezone + ")");
 			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.weather.embed.coords") + ": " + locationWeather.lat + " / " + locationWeather.long);
 			embed.setColor(0x66b3ff);
 			return message.channel.send(embed);
-		})
+		});
     }
 };

@@ -2,17 +2,15 @@ const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}
+String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1); };
 
 module.exports = {
     name: "user",
 	path: path.basename(__dirname),
     aliases: ["profile"],
     cooldown: 5,
-    usage: "command.user.usage",
-	description: "command.user.desc",
+    usage: "user.usage",
+	description: "user.description",
     async execute(client, message, args)
     {
 		let is_debug = false;
@@ -23,23 +21,15 @@ module.exports = {
 				is_debug = true;
 			}
 		}
+
+		let embed2 = new Discord.MessageEmbed();
+		embed2.setDescription(":hourglass_flowing_sand: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.loading.desc"));
+		embed2.setColor([255, 255, 0]);
 		
-		/*for (let argument_index = 0; argument_index < args.length; argument_index++) {
-			var argument = args[argument_index];
-			if (argument === "/d") {
-				if (message.author.id === client.config.owner) { is_debug = true; args.splice(); }
-			}
-		}*/
+		let send_message;
+		await message.channel.send(embed2).then(message => { send_message = message; });
 		
-		var embed = new Discord.MessageEmbed();
-		//embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.user.loading.title"));
-		embed.setDescription(":hourglass_flowing_sand: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.loading.desc"));
-		embed.setColor([255, 255, 0]);
-		
-		let send_message = undefined;
-		await message.channel.send(embed).then(message => { send_message = message; });
-		
-		let get_user = undefined;
+		let get_user;
 		if (args[0]) { get_user = client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
 		
 		let mentioned_user = message.mentions.users.first();
@@ -48,8 +38,7 @@ module.exports = {
 			if (args[0]) { user = await client.fetchers.getUser(client, args[0]); } else { user = message.author; }
 		}
 		if (!user) {
-			var embed = new Discord.MessageEmbed();
-			//embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.user.failure.title"));
+			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.failure.desc"));
 			embed.setColor([255, 0, 0]);
 			return send_message ? send_message.edit(embed) : message.channel.send(embed);

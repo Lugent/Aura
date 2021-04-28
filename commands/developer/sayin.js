@@ -9,7 +9,14 @@ module.exports = {
     usage: "<channel> <message>",
     flags: constants.cmdFlags.ownerOnly,
 	description: "El mismo comando de **say**, aunque en un canal de un servidor en especifico. Solo pon la ID del canal, el servidor se busca por si solo.",
-    execute(client, message, args) {
+    
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args) {
         let channel_target = null;
         let channel_id = args[0];
         let message_content = args.slice(1).join(" ");
@@ -29,7 +36,7 @@ module.exports = {
 			if (message.channel.type === "text") {
 				message.delete().catch(() => {
 					message.channel.send("No he podido borrar el mensaje quien ha usando el comando, porfavor, pongame el permiso o si no le quita la gracia del comando.");
-				})
+				});
 			}
 			else { message.channel.send("Enviado."); }
         }).catch(() => {

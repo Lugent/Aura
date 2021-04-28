@@ -7,8 +7,15 @@ module.exports = {
     cooldown: 0,
     flags: constants.cmdFlags.ownerOnly,
     usage: "<usuario>",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args) {
-		let name_user = undefined;
+		let name_user;
 		if (args[0]) { name_user = client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
 		else { return; }
 

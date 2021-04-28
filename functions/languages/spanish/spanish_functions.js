@@ -20,9 +20,9 @@ let language = {
 	"date.month.december": "diciembre",
 	"date.complete": "%s(0), %s(1) de %s(3) de %s(4)",
 	"time.complete": "%s:%s:%s%s",
-	"duration.seconds": "Segundos",
-	"duration.minutes": "Minutos",
-	"duration.hours": "Horas",
-	"duration.days": "Dias",
-}
+	"duration.seconds": "segundos",
+	"duration.minutes": "minutos",
+	"duration.hours": "horas",
+	"duration.days": "dias",
+};
 module.exports = language;

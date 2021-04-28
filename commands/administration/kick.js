@@ -8,14 +8,21 @@ module.exports = {
     usage: "kick.usage",
 	description: "kick.description",
 	flags: constants.cmdFlags.guildOnly,
-    async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix) {
 		if (!message.member.permissions.has("KICK_MEMBERS")) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "no_permissions"));
 			return message.channel.send(embed);
 		}
 		
-		let find_member = undefined;
+		let find_member;
 		if (args[0]) { find_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
 		
 		let mentioned_member = message.mentions.members.first();
@@ -66,7 +73,7 @@ module.exports = {
 		
 		member.kick(kick_reason).then((member) => {
 			let embed = new Discord.MessageEmbed();
-			embed.setThumbnail(member.user.displayAvatarURL({format: "png", dynamic: true, size: 4096}))
+			embed.setThumbnail(member.user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
 			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "success.title", [member.user.tag])); // member.user.tag
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "success.reason", [kick_reason])); // kick_reason
 			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "success.operator", [message.author.tag]), message.author.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id

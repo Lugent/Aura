@@ -1,7 +1,3 @@
-const Discord = require("discord.js");
-const util = require("util");
-const changelog = require(process.cwd() + "/configurations/changelog.js");
-
 function getRandomInt(max) { return Math.floor(Math.random() * Math.floor(max)); }
 function getRandomRangeInt(min, max) { return Math.floor(Math.random() * ((max - min) + 1)) + min; }
 
@@ -9,36 +5,36 @@ function generateDateString(client, author, guild, get_date) {
 	if (typeof get_date !== "object") { return; }
 	
 	let date_week_day_number = get_date.getDay();
-	let date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.sunday"); // Domingo
+	let date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.sunday"); // Domingo
 	switch (date_week_day_number) {
-		case 1: { date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.monday"); break; } // Lunes
-		case 2: { date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.tuesday"); break; } // Martes
-		case 3: { date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.wednesday"); break; } // Miercoles
-		case 4: { date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.thursday"); break; } // Juevez
-		case 5: { date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.friday"); break; } // Viernes
-		case 6: { date_week_day_string = client.functions.getTranslation(client, author, guild, "utils.date.day.saturday"); break; } // Sabado
+		case 1: { date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.monday"); break; } // Lunes
+		case 2: { date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.tuesday"); break; } // Martes
+		case 3: { date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.wednesday"); break; } // Miercoles
+		case 4: { date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.thursday"); break; } // Juevez
+		case 5: { date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.friday"); break; } // Viernes
+		case 6: { date_week_day_string = client.functions.getTranslation(client, author, guild, "functions", "date.day.saturday"); break; } // Sabado
 	}
 	
 	let date_month_day_number = get_date.getDate();
 	let date_month_day_english = numberOrdinal(date_month_day_number);
 	let date_month_number = get_date.getMonth();
-	let date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.january"); // enero
+	let date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.january"); // enero
 	switch (date_month_number) {
-		case 1: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.february"); break; } // febrero
-		case 2: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.march"); break; } // marzo
-		case 3: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.april"); break; } // abril
-		case 4: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.may"); break; } // mayo
-		case 5: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.june"); break; } // junio
-		case 6: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.july"); break; } // julio
-		case 7: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.august"); break; } // agosto
-		case 8: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.september"); break; } // septiembre
-		case 9: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.october"); break; } // octubre
-		case 10: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.november"); break; } // noviembre
-		case 11: { date_month_string = client.functions.getTranslation(client, author, guild, "utils.date.month.december"); break; } // diciembre
+		case 1: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.february"); break; } // febrero
+		case 2: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.march"); break; } // marzo
+		case 3: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.april"); break; } // abril
+		case 4: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.may"); break; } // mayo
+		case 5: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.june"); break; } // junio
+		case 6: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.july"); break; } // julio
+		case 7: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.august"); break; } // agosto
+		case 8: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.september"); break; } // septiembre
+		case 9: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.october"); break; } // octubre
+		case 10: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.november"); break; } // noviembre
+		case 11: { date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.december"); break; } // diciembre
 	}
 	
 	let date_year_number = get_date.getFullYear();
-	return client.functions.getTranslation(client, author, guild, "utils.date.complete_date", [date_week_day_string, date_month_day_number, date_month_day_english, date_month_string, date_year_number]);
+	return client.functions.getTranslation(client, author, guild, "functions", "date.complete", [date_week_day_string, date_month_day_number, date_month_day_english, date_month_string, date_year_number]);
 }
 
 function generateTimeString(client, author, guild, get_date) {
@@ -62,16 +58,16 @@ function generateTimeString(client, author, guild, get_date) {
 	let date_minute = ((get_date.getMinutes() + 1) < 10) ? ("0" + (get_date.getMinutes() + 1)) : (get_date.getMinutes() + 1);
 	let date_second = ((get_date.getSeconds() + 1) < 10) ? ("0" + (get_date.getSeconds() + 1)) : (get_date.getSeconds() + 1);
 	let date_suffix = (is_12hours ? ((get_date.getHours() > 12) ? " PM" : " AM") : "");
-	return client.functions.getTranslation(client, author, guild, "utils.date.complete_time", [date_hour, date_minute, date_second, date_suffix]);
+	return client.functions.getTranslation(client, author, guild, "functions", "time.complete", [date_hour, date_minute, date_second, date_suffix]);
 }
 
 function generateDurationString(client, author, guild, get_time, is_full = false) {
 	if (typeof get_time !== "number") { return; }
 	
-	let seconds_string = client.functions.getTranslation(client, author, guild, "utils.duration.seconds");
-	let minutes_string = client.functions.getTranslation(client, author, guild, "utils.duration.minutes");
-	let hours_string = client.functions.getTranslation(client, author, guild, "utils.duration.hours");
-	let days_string = client.functions.getTranslation(client, author, guild, "utils.duration.days");
+	let seconds_string = client.functions.getTranslation(client, author, guild, "functions", "duration.seconds");
+	let minutes_string = client.functions.getTranslation(client, author, guild, "functions", "duration.minutes");
+	let hours_string = client.functions.getTranslation(client, author, guild, "functions", "duration.hours");
+	let days_string = client.functions.getTranslation(client, author, guild, "functions", "duration.days");
 	
 	let calculated_time = Math.abs(new Date().getTime() - get_time);
 	let get_seconds = (calculated_time / 1000);
@@ -79,11 +75,11 @@ function generateDurationString(client, author, guild, get_time, is_full = false
 	let get_hours = (get_minutes / 60);
 	let get_days = (get_hours / 24);
 	
-	var get_time = ((get_days.toFixed(0) > 0) ? (get_days.toFixed(0) + " " + days_string + ", ") : "") + (((get_hours.toFixed(0) % 24) > 0) ? ((get_hours.toFixed(0) % 24) + " " + hours_string + ", ") : "") + (((get_minutes.toFixed(0) % 60) > 0) ? ((get_minutes.toFixed(0) % 60) + " " + minutes_string + ", ") : "") + (get_seconds.toFixed(0) % 60) + " " + seconds_string;
+	var full_time = ((get_days.toFixed(0) > 0) ? (get_days.toFixed(0) + " " + days_string + ", ") : "") + (((get_hours.toFixed(0) % 24) > 0) ? ((get_hours.toFixed(0) % 24) + " " + hours_string + ", ") : "") + (((get_minutes.toFixed(0) % 60) > 0) ? ((get_minutes.toFixed(0) % 60) + " " + minutes_string + ", ") : "") + (get_seconds.toFixed(0) % 60) + " " + seconds_string;
 	if (is_full) {
-		get_time = get_days.toFixed(0) + " " + days_string + ", " + (get_hours.toFixed(0) % 24) + " " + hours_string + ", " +  (get_minutes.toFixed(0) % 60) + " " + minutes_string + ", " +  (get_seconds.toFixed(0) % 60) + " " + seconds_string;
+		full_time = get_days.toFixed(0) + " " + days_string + ", " + (get_hours.toFixed(0) % 24) + " " + hours_string + ", " +  (get_minutes.toFixed(0) % 60) + " " + minutes_string + ", " +  (get_seconds.toFixed(0) % 60) + " " + seconds_string;
 	}
-	return get_time;
+	return full_time;
 }
 
 function ISODateToJSDate(isodate_string) {
@@ -213,112 +209,15 @@ function create_user_data(client, user) {
 
 // Status updater
 function status_update(client) {
-	let status_data = [
-		{
-			activity:
-			{
-				name: "=help",
-				type: "PLAYING"
-			},
-			status: "online"
-		},
-		{
-			activity:
-			{
-				name: "Ra!",
-				type: "PLAYING"
-			},
-			status: "online"
-		},
-		{
-			activity:
-			{
-				name: "Rawr!",
-				type: "PLAYING"
-			},
-			status: "online"
-		},
-		{
-			activity:
-			{
-				name: client.config.default.prefix + " or @mention",
-				type: "LISTENING"
-			},
-			status: "online"
-		},
-		{
-			activity:
-			{
-				name: "changelog",
-				type: "WATCHING"
-			},
-			status: "dnd"
-		},
-		{
-			activity:
-			{
-				name: "the Aura Power",
-				type: "WATCHING"
-			},
-			status: "dnd"
-		},
-		{
-			activity:
-			{
-				name: "v" + changelog[0].version,
-				type: "PLAYING"
-			},
-			status: "online"
-		},
-		{
-			activity:
-			{
-				name: "with Lucario#6931",
-				type: "PLAYING"
-			},
-			status: "idle"
-		},
-		{
-			activity:
-			{
-				name: "for others Lucario",
-				type: "WATCHING"
-			},
-			status: "idle"
-		},
-		{
-			activity:
-			{
-				name: "with others Lucario",
-				type: "PLAYING"
-			},
-			status: "idle"
-		},
-		{
-			activity:
-			{
-				name: "a Gym",
-				type: "COMPETING"
-			},
-			status: "dnd"
-		},
-		{
-			activity:
-			{
-				name: "a Tournament",
-				type: "COMPETING"
-			},
-			status: "dnd"
-		},
-	]
+	let status_data = require(process.cwd() + "/configurations/activity.js");
     client.user.setPresence(status_data[getRandomInt(status_data.length)]);
 }
 
 async function generateRankIcon(client, Canvas, level_number) {
 	let level_table = client.config.exp_shield_table;
-	let rank_front_image = undefined;
-	let rank_back_image = undefined;
-	let get_backlayer = level_table.find(level_table_index => level_number >= level_table_index.level)
+	let rank_front_image;
+	let rank_back_image;
+	let get_backlayer = level_table.find(level_table_index => level_number >= level_table_index.level);
 	if (get_backlayer) {
 		rank_back_image = await Canvas.loadImage(process.cwd() + "/assets/images/ranking/backlayer/rank_back_icon_" + get_backlayer.type + ".png");
 	}
