@@ -1,11 +1,16 @@
+const Discord = require("discord.js");
 const SQLite = require("better-sqlite3");
 const fs = require("fs");
 if (!fs.existsSync("databases")) fs.mkdirSync("databases");
-const data_bot = new SQLite("./databases/bot_data.sqlite");
-const data_server = new SQLite("./databases/server_data.sqlite");
-const data_user = new SQLite("./databases/user_data.sqlite");
+const data_bot = new SQLite(process.cwd() + "/databases/bot_data.sqlite");
+const data_server = new SQLite(process.cwd() + "/databases/server_data.sqlite");
+const data_user = new SQLite(process.cwd() + "/databases/user_data.sqlite");
 
-function setupDatabases (client) {
+/**
+ * 
+ * @param {Discord.Client} client 
+ */
+function setupDatabases(client) {
 	/* BOT DATA */
 	let table_bot_blacklist = data_bot.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'blacklist';").get();
 	if (!table_bot_blacklist["count(*)"]) {

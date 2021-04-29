@@ -12,7 +12,7 @@ async function exp_handler(client, message) {
 		let get_level_data = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? AND user_id = ?;").get(message.guild.id, message.author.id);
 		let get_level = get_level_data;
 		if (!get_level) { get_level = {guild_id: message.guild.id, user_id: message.author.id, level: 0, score: 0, messages: 0}; }
-		get_level.score += client.functions.getRandomInt(client.config.exp_gainrate);
+		get_level.score += client.functions.getRandomNumber(client.config.exp_gain_rate);
 		get_level.messages++;
 		
 		let previous_level = get_level.level;
@@ -57,8 +57,8 @@ async function exp_handler(client, message) {
 			let image_data_avatar_size = 240;
 			let image_data_rank_back_padding = 60;
 			let image_data_rank_back_size = 384 - 64;
-			let image_data_rank_front_padding = 40;
-			let image_data_rank_front_size = 256;
+			let image_data_rank_front_padding = 60;
+			let image_data_rank_front_size = 384;
 			let image_data_left = image_data_rank_back_padding;
 			let image_data_left2 = image_data_rank_front_padding;
 			let image_data_right = (image_data_width - image_data_rank_back_size) - image_data_rank_back_padding;
@@ -85,9 +85,7 @@ async function exp_handler(client, message) {
 
 			let rank_image = await client.functions.generateRankIcon(client, Canvas, level_index);
 			let rank_image_old = await client.functions.generateRankIcon(client, Canvas, level_index_old);
-			let rank_back_image = rank_image.rank_back_image;
 			let rank_front_image = rank_image.rank_front_image;
-			let rank_back_image_old = rank_image_old.rank_back_image;
 			let rank_front_image_old = rank_image_old.rank_front_image;
 			
 			// Images

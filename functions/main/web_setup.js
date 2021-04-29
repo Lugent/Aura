@@ -6,7 +6,7 @@ const server_port = 3000;
 async function web_setup(client) {
 
 	// Load handlers
-	let web_loader = require(process.cwd() + "/functions/general/web_loader.js");
+	let web_loader = require(process.cwd() + "/functions/main/web_loader.js");
 	await web_loader(client, app, !web_started);
 
 	if (!web_started) {

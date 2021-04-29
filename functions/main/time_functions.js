@@ -13,7 +13,7 @@ function generateDateString(client, author, guild, get_date) {
 	}
 	
 	let date_month_day_number = get_date.getDate();
-	let date_month_day_english = numberOrdinal(date_month_day_number);
+	let date_month_day_english = client.functions.getOrdinalNumber(date_month_day_number);
 	let date_month_number = get_date.getMonth();
 	let date_month_string = client.functions.getTranslation(client, author, guild, "functions", "date.month.january"); // enero
 	switch (date_month_number) {

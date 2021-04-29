@@ -83,8 +83,8 @@ module.exports = {
 		let image_data_avatar_size = 240;
 		let image_data_rank_back_padding = 60;
 		let image_data_rank_back_size = 384 - 64;
-		let image_data_rank_front_padding = 40;
-		let image_data_rank_front_size = 256;
+		let image_data_rank_front_padding = 60;
+		let image_data_rank_front_size = 384;
 		let image_data_left = image_data_avatar_padding;
 		let image_data_right = (image_data_width - image_data_rank_back_size) - image_data_rank_back_padding;
 		let image_data_right2 = (image_data_width - image_data_rank_front_size) - image_data_rank_front_padding;
@@ -111,19 +111,9 @@ module.exports = {
 		// Level table
 		let rank_image = await client.functions.generateRankIcon(client, Canvas, level_index);
 		let rank_front_image = rank_image.rank_front_image;
-		let rank_back_image = rank_image.rank_back_image;
-		
-		/*let level_table = client.config.exp_shield_table;
-		let rank_front_image = undefined;
-		let rank_back_image = undefined;
-		let get_backlayer = level_table.find(level_table_index => level_index >= level_table_index.level)
-		if (get_backlayer) { rank_back_image = await Canvas.loadImage(process.cwd() + "/data/images/rank/rank_back_icon_" + get_backlayer.type + ".png"); }
-		if (level_index > -1) { rank_front_image = await Canvas.loadImage(process.cwd() + "/data/images/rank/rank_front_icon_" + (level_index % 60) + ".png"); }
-		if (level_index >= client.config.exp_level_max) { rank_front_image = await Canvas.loadImage(process.cwd() + "/data/images/rank/rank_front_icon_60.png"); }*/
 
 		// Images
 		let avatar_image = await Canvas.loadImage(get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128})); // 4096
-		if (rank_back_image) { image_context.drawImage(rank_back_image, image_data_right, 4, image_data_rank_back_size, image_data_rank_back_size); }
 		if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 4 + 40, image_data_rank_front_size, image_data_rank_front_size); }
 		
 		image_context.lineWidth = 6;
@@ -132,13 +122,13 @@ module.exports = {
 		image_context.drawImage(avatar_image, image_data_position, image_data_avatar_padding, image_data_avatar_size, image_data_avatar_size);
 		
 		// String - Name
-		let target_xp = client.functions.number_formatter(score_goal, 2);
+		let target_xp = client.functions.getFormattedNumber(score_goal, 2);
 		if (level_index >= client.config.exp_level_max) { target_xp = client.functions.getTranslation(client, message.author, message.guild, "command.rank.image.xp.max"); }
 		image_context.font = "48px xirod";
 		image_context.textAlign = "left";
 		image_context.textBaseline = "bottom";
 		image_context.fillStyle = "rgb(255, 255, 255)";
-		image_context.fillText(client.functions.number_formatter(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.image.xp"), image_data_bar_padding_text, image_data_bar_vertical - 4);
+		image_context.fillText(client.functions.getFormattedNumber(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, message.author, message.guild, "command.rank.image.xp"), image_data_bar_padding_text, image_data_bar_vertical - 4);
 		
 		// String - Score
 		image_context.font = "48px xirod";

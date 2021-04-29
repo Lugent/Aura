@@ -1,4 +1,4 @@
-const guild_invite_tracker = require(process.cwd() + "/functions/general/invite_tracker.js");
+const guild_invite_tracker = require(process.cwd() + "/functions/main/invite_tracker.js");
 async function guild_member_join(client, member) {
 	var get_guild = client.guild_invites.get(member.guild.id);
 	await member.guild.fetchInvites().then(async (invites) => {

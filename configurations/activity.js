@@ -12,7 +12,7 @@ let status_data = [
 	{
 		activity:
 		{
-			name: "=help",
+			name: config.default.prefix + "help",
 			type: "PLAYING"
 		},
 		status: "online"

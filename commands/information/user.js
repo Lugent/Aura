@@ -51,7 +51,7 @@ module.exports = {
 			return send_message ? send_message.edit(embed) : message.inlineReply(embed);
 		}
 
-		// Especial
+		// Special
 		let tag = "";
 		if (user.partial) { tag = " :x:"; }
 		if (user.bot) { tag = " :robot:"; }
@@ -96,9 +96,9 @@ module.exports = {
 		
 		// Send info
         var embed = new Discord.MessageEmbed();
-		embed.setAuthor(user.tag + "\n" + "(" + user.id + ")", user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }));
+		embed.setAuthor(user.tag, user.displayAvatarURL({format: "png", dynamic: true, size: 256}));
 		embed.setTitle(tag);
-        embed.setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 4096 }));
+        embed.setThumbnail(user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
 		embed.addField(":satellite: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.status") + ":", user_status, true);
 		if (((user.presence.status !== "offline") && user.presence.clientStatus) || is_debug) { embed.addField(":signal_strength: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.device") + ":", user_device, true); }
 		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.locale") + ":", user.locale, false); }

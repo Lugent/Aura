@@ -43,20 +43,55 @@ require(process.cwd() + "/functions/modules/ExtendedMessage.js");
 // Client
 const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, disableMentions: "everyone", http: {version: 7}});
 client.config = require(process.cwd() + "/configurations/client.js");
-client.functions = require(process.cwd() + "/functions/general/core.js");
-client.functions.getTranslation = require(process.cwd() + "/functions/general/languages.js");
+client.functions = {};
+
+// Client main functions
+let main_functions = require(process.cwd() + "/functions/main/main_functions.js");
+client.functions.activityUpdater = main_functions.activityUpdater;
+client.functions.resourceMonitor = main_functions.resourceMonitor;
+client.functions.generateRankIcon = main_functions.generateRankIcon;
+
+// Client database functions
+let database_functions = require(process.cwd() + "/functions/main/database_functions.js");
+client.functions.handleServerDatabase = database_functions.handleServerDatabase;
+client.functions.handleUserDatabase = database_functions.handleUserDatabase;
+
+// Client database functions
+let number_functions = require(process.cwd() + "/functions/main/number_functions.js");
+client.functions.getRandomNumber = number_functions.getRandomNumber;
+client.functions.getRandomNumberRange = number_functions.getRandomNumberRange;
+client.functions.getFormattedNumber = number_functions.getFormattedNumber;
+client.functions.getOrdinalNumber = number_functions.getOrdinalNumber;
+
+// Client time functions
+let time_functions = require(process.cwd() + "/functions/main/time_functions.js");
+client.functions.ISODateToJSDate = time_functions.ISODateToJSDate;
+client.functions.generateDateString = time_functions.generateDateString;
+client.functions.generateTimeString = time_functions.generateTimeString;
+client.functions.generateDurationString = time_functions.generateDurationString;
+
+// Client string functions
+let string_functions = require(process.cwd() + "/functions/main/string_functions.js");
+client.functions.getFormatedString = string_functions.getFormatedString;
+
+// Client translator function
+client.functions.getTranslation = require(process.cwd() + "/functions/main/translator_function.js");
+
+// Client data
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 client.exp_cooldowns = new Discord.Collection();
 client.guild_invites = new Discord.Collection();
 client.guild_music = new Discord.Collection(); // {id: <snowflake>, music: <stream>, position: <integer>, is_playing: <boolean>, is_paused: <boolean>}
+
+// Client states
 client.last_msg = undefined;
 client.toggle_logger = false;
 client.status_updating = true;
 client.connected = false; // don't change this
 
 // Databases
-let setupDatabases = require(process.cwd() + "/functions/general/databases.js");
+let setupDatabases = require(process.cwd() + "/functions/main/database_setup.js");
 try { setupDatabases(client); }
 catch (error) {
 	console.log(chalk.redBright("ERROR: ") + "Database failure, exiting program..." + "\n", error);
@@ -65,11 +100,9 @@ catch (error) {
 finally { console.log("Databases active."); }
 
 // Login
-let shards_monitoring = require("./functions/general/shards_monitor.js");
 let login_check = setInterval(function() {  if (!client.connected) { console.log(chalk.yellowBright("WARNING: ") + "The login request is taking too long!"); } }, 10000);
 client.login(process.env.DISCORD_TOKEN).then(() => {
 	clearInterval(login_check);
-	shards_monitoring(client);
 	console.log("Connected to Discord, preparing functions...");
 }).catch((error) => {
 	console.error(chalk.redBright("ERROR: ") + "Cannot connect, exiting program..." + "\n", error);
@@ -80,8 +113,8 @@ console.log("Connecting to discord...");
 // Load event files
 let general_command_executor = require(process.cwd() + "/functions/events/general_command_executor.js"); 
 let general_data_handler = require(process.cwd() + "/functions/events/general_database_handler.js");
+let guild_invite_tracker = require(process.cwd() + "/functions/main/invite_tracker.js");
 let guild_member_join = require(process.cwd() + "/functions/events/guild_member_join.js");
-let guild_invite_tracker = require(process.cwd() + "/functions/general/invite_tracker.js");
 let guild_msg_logger = require(process.cwd() + "/functions/events/general_message_logger.js");
 let guild_bot_welcome = require(process.cwd() + "/functions/events/guilds_bot_welcome.js");
 let guild_experience_handler = require(process.cwd() + "/functions/events/guilds_experience_handler.js");
@@ -147,11 +180,11 @@ client.on("guildUnavailable", async (guild) => {
 });
 
 // Verbose
-let command_loader = require(process.cwd() + "/functions/general/command_loader.js");
-let web_setup = require(process.cwd() + "/functions/general/web_setup.js");
+let command_loader = require(process.cwd() + "/functions/main/command_loader.js");
+let web_setup = require(process.cwd() + "/functions/main/web_setup.js");
 client.on("ready", async () => {
-	client.functions.resources_monitoring(client);
-	if (client.status_updating) { client.functions.status_update(client); }
+	client.functions.resourceMonitor(client);
+	if (client.status_updating) { client.functions.activityUpdater(client); }
 	
 	console.log("Registering commands...");
 	await command_loader(client);
@@ -162,7 +195,7 @@ client.on("ready", async () => {
 	console.log("Initializing invite tracker...");
 	await guild_invite_tracker(client);
 	
-	setInterval(function() { if (client.status_updating) { client.functions.status_update(client); }}, 15000);
+	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 15000);
 	setInterval(function() {
 		if (client.connected) {
 			let ping = client.ws.ping;

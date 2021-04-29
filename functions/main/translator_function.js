@@ -32,20 +32,6 @@ function getTranslation(client, user, guild, index, string, values) {
 				break;
 			}
 		}
-		
-		/*switch (language_target) {
-			default: {
-				delete require.cache[require.resolve(process.cwd() + "/functions/languages/spanish.js")];
-				language_data = require(process.cwd() + "/functions/languages/spanish.js");
-				break;
-			}
-			
-			case "en": {
-				delete require.cache[require.resolve(process.cwd() + "/functions/languages/english.js")];
-				language_data = require(process.cwd() + "/functions/languages/english.js");
-				break;
-			}
-		}*/
 	}
 	catch (error) {
 		console.error(error);
@@ -55,7 +41,7 @@ function getTranslation(client, user, guild, index, string, values) {
 		
 		translated_string = language_data[string];
 		if (!translated_string) { return string; }
-		if (values) { translated_string = getFormatedString(translated_string, values); }
+		if (values) { translated_string = client.functions.getFormatedString(translated_string, values); }
 		return translated_string;
 	}
 }
