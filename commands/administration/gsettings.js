@@ -32,8 +32,8 @@ module.exports = {
 			let server_language = server_data.language;
 			if (server_language) { language_name = languages_avaliable.find(language => language.id === server_language); }
 			
-			let guild_setting_prefix = client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "settings.prefix") + ": " + "**" + server_prefix + "**";
-			let guild_setting_language = client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "settings.language") + ": " + language_name.country + " " + language_name.name;
+			let guild_setting_prefix = client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "actual_settings.prefix") + ": " + "**" + server_prefix + "**";
+			let guild_setting_language = client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "actual_settings.language") + ": " + language_name.country + " " + language_name.name;
 			let guild_settings_all = guild_setting_prefix + "\n" + guild_setting_language;
 			
 			let subcommands_name = "";
@@ -44,8 +44,8 @@ module.exports = {
 			
 			var embed = new Discord.MessageEmbed();
 			embed.setColor(0x66b3ff);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "embed.field.actualsettings") + ":", guild_settings_all);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "embed.field.subcommands") + ":", subcommands_name);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "main.actual_settings") + ":", guild_settings_all);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "main.subcommands") + ":", subcommands_name);
 			return message.channel.send(embed);
 		}
 		else {
@@ -63,8 +63,8 @@ module.exports = {
 						let embed = new Discord.MessageEmbed();
 						embed.setColor(0x66b3ff);
 						if (guild_prefix) {
-							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "prefix.embed.title", [guild_prefix.prefix])); // prefix.prefix
-							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.embed.description", [guild_prefix.prefix]));
+							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "prefix.title", [guild_prefix.prefix])); // prefix.prefix
+							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.description", [guild_prefix.prefix]));
 						}
 						else {
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.no_data"));
@@ -98,9 +98,9 @@ module.exports = {
 						let embed = new Discord.MessageEmbed();
 						embed.setColor(0x66b3ff);
 						if (server_language) {
-							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.embed.title", [language_name.country + " " + language_name.name]));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.embed.list"), languages_list);
-							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.embed.footer", [prefix]));
+							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.title", [language_name.country + " " + language_name.name]));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.list"), languages_list);
+							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.footer", [prefix]));
 						}
 						else {
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.invalid_option") + ": " + "\n" + languages_list);

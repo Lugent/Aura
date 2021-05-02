@@ -1,5 +1,5 @@
 let language = {
-	"loading": "Obteniendo información",
+	"loading": "Obteniendo información.",
 	"failure": "El usuario no existe o no ha sido encontrado.",
 	"badges.staff": "Personal de Discord",
 	"badges.team_user": "Equipo de Usuario",

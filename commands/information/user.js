@@ -30,7 +30,7 @@ module.exports = {
 		}
 
 		let embed2 = new Discord.MessageEmbed();
-		embed2.setDescription(":hourglass_flowing_sand: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.loading.desc"));
+		embed2.setDescription(":hourglass_flowing_sand: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "loading"));
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
@@ -46,9 +46,17 @@ module.exports = {
 		}
 		if (!user) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.failure.desc"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "failure"));
 			embed.setColor([255, 0, 0]);
-			return send_message ? send_message.edit(embed) : message.inlineReply(embed);
+
+			if (send_message) {
+				if (message.channel.messages.cache.get(send_message.id)) {
+					return send_message.edit(embed);
+				}
+			}
+			else {
+				return message.inlineReply(embed);
+			}
 		}
 
 		// Special
@@ -61,37 +69,37 @@ module.exports = {
 		let user_badges = "";
 		if (user.flags) {
 			let user_flags = user.flags.serialize();
-			if (user_flags.DISCORD_EMPLOYEE || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.staff") + "\n"; }
-			if (user_flags.TEAM_USER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.teamuser") + "\n"; } // Ehm... what's the context of this badge?
-			if (user_flags.SYSTEM || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.system") + "\n"; } // Yeah, another non sense badge idk
-			if (user_flags.BUGHUNTER_LEVEL_2 || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.bughunter.levelone") + "\n"; }
-			if (user_flags.BUGHUNTER_LEVEL_1 || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.bughunter.leveltwo") + "\n"; }
-			if (user_flags.DISCORD_PARTNER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.partner") + "\n"; }
-			if (user_flags.PARTNERED_SERVER_OWNER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.partneredserverowner") + "\n"; }
-			if (user_flags.VERIFIED_DEVELOPER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.developer.verified") + "\n"; }
-			if (user_flags.EARLY_VERIFIED_DEVELOPER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.developer.verified.early") + "\n"; }
-			if (user_flags.EARLY_SUPPORTER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.early.supporter") + "\n"; }
-			if (user_flags.HYPESQUAD_EVENTS || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.hypesquad.events") + "\n"; }
-			if (user_flags.HOUSE_BRAVERY || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.hypesquad.bravery") + "\n"; }
-			if (user_flags.HOUSE_BRILLIANCE || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.hypesquad.brillance") + "\n"; }
-			if (user_flags.HOUSE_BALANCE || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "command.user.data.badges.hypesquad.balance") + "\n"; }
+			if (user_flags.DISCORD_EMPLOYEE || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.staff") + "\n"; }
+			if (user_flags.TEAM_USER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.team_user") + "\n"; } // Ehm... what's the context of this badge?
+			if (user_flags.SYSTEM || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.system") + "\n"; } // Yeah, another non sense badge idk
+			if (user_flags.BUGHUNTER_LEVEL_2 || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.bug_hunter_1") + "\n"; }
+			if (user_flags.BUGHUNTER_LEVEL_1 || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.bug_hunter_2") + "\n"; }
+			if (user_flags.DISCORD_PARTNER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.partner") + "\n"; }
+			if (user_flags.PARTNERED_SERVER_OWNER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.partnered_server_owner") + "\n"; }
+			if (user_flags.VERIFIED_DEVELOPER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.verified_developer") + "\n"; }
+			if (user_flags.EARLY_VERIFIED_DEVELOPER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.early_verified_developer") + "\n"; }
+			if (user_flags.EARLY_SUPPORTER || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.early_supporter") + "\n"; }
+			if (user_flags.HYPESQUAD_EVENTS || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.hypesquad_events") + "\n"; }
+			if (user_flags.HOUSE_BRAVERY || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.hypesquad_bravery") + "\n"; }
+			if (user_flags.HOUSE_BRILLIANCE || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.hypesquad_brillance") + "\n"; }
+			if (user_flags.HOUSE_BALANCE || is_debug) { user_badges += client.functions.getTranslation(client, message.author, message.guild, "commands_user", "badges.hypesquad_balance") + "\n"; }
 		}
 		
 		// Status
 		let user_status = "";
 		switch (user.presence.status) {
-			case "online": { user_status = ":green_circle: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.status.online"); break; }
-			case "idle": { user_status = ":yellow_circle: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.status.idle"); break; }
-			case "dnd": { user_status = ":red_circle: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.status.dnd"); break; }
-			case "offline": { user_status = ":white_circle: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.status.offline"); break; }
+			case "online": { user_status = ":green_circle: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "status.online"); break; }
+			case "idle": { user_status = ":yellow_circle: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "status.idle"); break; }
+			case "dnd": { user_status = ":red_circle: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "status.dnd"); break; }
+			case "offline": { user_status = ":white_circle: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "status.offline"); break; }
 		}
 		
 		// Device
 		let user_device = "";
 		if (user.presence.clientStatus) {
-			if (user.presence.clientStatus.web || is_debug) { user_device += "\n" + ":earth_americas: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.device.web"); }
-			if (user.presence.clientStatus.mobile || is_debug) { user_device += "\n" + ":mobile_phone: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.device.mobile"); }
-			if (user.presence.clientStatus.desktop || is_debug) { user_device += "\n" + ":desktop: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.data.device.desktop"); }
+			if (user.presence.clientStatus.web || is_debug) { user_device += "\n" + ":earth_americas: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "device.web"); }
+			if (user.presence.clientStatus.mobile || is_debug) { user_device += "\n" + ":mobile_phone: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "device.mobile"); }
+			if (user.presence.clientStatus.desktop || is_debug) { user_device += "\n" + ":desktop: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "device.desktop"); }
 		}
 		
 		// Send info
@@ -99,12 +107,24 @@ module.exports = {
 		embed.setAuthor(user.tag, user.displayAvatarURL({format: "png", dynamic: true, size: 256}));
 		embed.setTitle(tag);
         embed.setThumbnail(user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
-		embed.addField(":satellite: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.status") + ":", user_status, true);
-		if (((user.presence.status !== "offline") && user.presence.clientStatus) || is_debug) { embed.addField(":signal_strength: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.device") + ":", user_device, true); }
-		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.locale") + ":", user.locale, false); }
-		if (user_badges.length) { embed.addField(":military_medal: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.badges") + ":", user_badges, false); }
-		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "command.user.embed.creationdate") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
+		embed.addField(":satellite: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "embed.status") + ":", user_status, true);
+
+		if (((user.presence.status !== "offline") && user.presence.clientStatus) || is_debug) {
+			embed.addField(":signal_strength: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "embed.device") + ":", user_device, true);
+		}
+
+		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "embed.locale") + ":", user.locale, false); }
+		if (user_badges.length) { embed.addField(":military_medal: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "embed.badges") + ":", user_badges, false); }
+		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands_user", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
 		embed.setColor(0x66b3ff);
-		return send_message ? send_message.edit(embed) : message.inlineReply(embed);
+		
+		if (send_message) {
+			if (message.channel.messages.cache.get(send_message.id)) {
+				return send_message.edit(embed);
+			}
+		}
+		else {
+			return message.inlineReply(embed);
+		}
     }
 };
