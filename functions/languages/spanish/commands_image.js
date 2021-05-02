@@ -5,5 +5,5 @@ let language = {
 	"success.footer": "Resultado de %s",
 	"not_found": "Imagen no encontrado.",
 	"fatal_failure": "Error en el proceso HTTPS"
-}
+};
 module.exports = language;
