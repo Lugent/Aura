@@ -236,7 +236,7 @@ module.exports = {
 						embed.setFooter(prefix + "gsettings function <function>");
 						return message.channel.send(embed);
 					}
-					else { // auto_moderator
+					else {
 						for (let function_index = 0; function_index < bot_functions.length; function_index += 1) {
 							let function_string = bot_functions[function_index];
 							if (args[1] === function_string) {
