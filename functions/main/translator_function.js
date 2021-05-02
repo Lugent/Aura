@@ -1,5 +1,16 @@
+const Discord = require("discord.js");
 const fs = require("fs");
 
+/**
+ * 
+ * @param {Discord.Client} client 
+ * @param {Discord.User} user 
+ * @param {Discord.Guild} guild 
+ * @param {String} index 
+ * @param {String} string 
+ * @param {Array} values
+ * @returns {String}
+ */
 function getTranslation(client, user, guild, index, string, values) {
 	if (typeof index !== "string") { index = "undefined"; }
 	if (typeof string !== "string") { return; }
@@ -23,7 +34,7 @@ function getTranslation(client, user, guild, index, string, values) {
 			default: { language_file = "spanish"; break; }
 		}
 		
-		let search_file = language_file + "_" + index + ".js";
+		let search_file = index + ".js";
 		let root_dir = fs.readdirSync(process.cwd() + "/functions/languages/" + language_file).filter(dir => dir.includes(".js"));
 		for (let file of root_dir) {
 			if (file === search_file) {
