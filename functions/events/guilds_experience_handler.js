@@ -1,4 +1,22 @@
 const Discord = require("discord.js");
+const Canvas = require("canvas");
+
+/**
+ * @param {Canvas.CanvasRenderingContext2D} context
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} string 
+ * @param {String} color 
+ * @param {String} shadow_color 
+ * @param {Number} offset 
+ */
+function shadowed_text(context, x, y, string, color, shadow_color, offset) {
+	context.fillStyle = shadow_color;
+	context.fillText(string, x + offset, y + offset);
+
+	context.fillStyle = color;
+	context.fillText(string, x, y);
+}
 
 /**
  * @description Executes all guild's experience system related
@@ -40,7 +58,7 @@ async function exp_handler(client, message) {
 		
 		if (get_level.score > score_max) { get_level.score = score_max; }
 		if (!get_level_data) { client.server_data.prepare("INSERT INTO exp (guild_id, user_id, level, score, messages) VALUES (?, ?, ?, ?, ?);").run(get_level.guild_id, get_level.user_id, get_level.level, get_level.score, get_level.messages); }
-		else { client.server_data.prepare("UPDATE exp SET level = ?, score = ?, messages = ? WHERE guild_id = ? AND user_id = ?").run(get_level.level, get_level.score, get_level.messages, get_level.guild_id, get_level.user_id); }
+		else { client.server_data.prepare("UPDATE exp SET level = ?, score = ?, messages = ? WHERE guild_id = ? AND user_id = ?;").run(get_level.level, get_level.score, get_level.messages, get_level.guild_id, get_level.user_id); }
 		client.exp_cooldowns.set(message.author.id, "active");
 		setTimeout(() => client.exp_cooldowns.delete(message.author.id), client.config.exp_cooldown);
 		
@@ -52,69 +70,52 @@ async function exp_handler(client, message) {
 			
 			let next_level = level_index + 1;
 			if (next_level > client.config.exp_level_max) { next_level = client.config.exp_level_max; }
+
+			let image_data_width = 1600;
+			let image_data_height = 496;
 			
-			let exp_score_base = client.config.exp_score_base;
-			let score_actual = (level_index * level_index) * exp_score_base;
-			let score_goal = (next_level * next_level) * exp_score_base;
-			
-			let image_data_width = 1200;
-			let image_data_height = 400;
-			
-			let image_data_avatar_padding = 40;
-			let image_data_rank_back_padding = 60;
-			let image_data_rank_back_size = 384 - 64;
-			let image_data_rank_front_padding = 60;
+			let image_data_rank_front_padding = 100;
 			let image_data_rank_front_size = 384;
-			let image_data_left = image_data_rank_back_padding;
-			let image_data_left2 = image_data_rank_front_padding;
-			let image_data_right = (image_data_width - image_data_rank_back_size) - image_data_rank_back_padding;
-			
-			let image_data_bar_vertical = image_data_height - (28 * 2);
-			let image_data_bar_length = (image_data_width) - (image_data_avatar_padding * 2);
-			let image_data_bar_fill_length = ((get_level.score - score_actual) / (score_goal - score_actual)) * image_data_bar_length;
-			if (image_data_bar_fill_length < 40) { image_data_bar_fill_length = 40; }
-			if (image_data_bar_fill_length > image_data_bar_length) { image_data_bar_fill_length = image_data_bar_length; }
-			if (level_index >= client.config.exp_level_max) { image_data_bar_fill_length = image_data_bar_length; }
-			
-			const Canvas = require("canvas");
-			Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Bold.otf", {family: "xirod"});
+			let image_data_right = (image_data_width - image_data_rank_front_size) - image_data_rank_front_padding;
+
+			Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Bold.otf", {family: "Stratum1-Bold"});
 			
 			let image_canvas = Canvas.createCanvas(image_data_width, image_data_height);
 			let image_context = image_canvas.getContext("2d");
 			image_context.patternQuality = "nearest";
 			image_context.quality = "nearest";
 			image_context.imageSmoothingEnabled = false;
-
-			let rank_front_image = await client.functions.generateRankIcon(client, Canvas, level_index);
-			let rank_front_image_old = await client.functions.generateRankIcon(client, Canvas, level_index_old);
 			
 			// Images
-			if (rank_back_image) { image_context.drawImage(rank_back_image, image_data_right, 4, image_data_rank_back_size, image_data_rank_back_size); }
-			if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 4 + 40, image_data_rank_front_size, image_data_rank_front_size); }
-			if (rank_back_image_old) { image_context.drawImage(rank_back_image_old, image_data_left, 4, image_data_rank_back_size, image_data_rank_back_size); }
-			if (rank_front_image_old) { image_context.drawImage(rank_front_image_old, image_data_left2 + 54, 4 + 40, image_data_rank_front_size, image_data_rank_front_size); }
+			let rank_front_image = await client.functions.generateRankIcon(client, Canvas, level_index);
+			let rank_front_image_old = await client.functions.generateRankIcon(client, Canvas, level_index_old);
+			if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_width - (image_data_rank_front_padding + image_data_rank_front_size), image_data_rank_front_padding / 2, image_data_rank_front_size, image_data_rank_front_size); }
+			if (rank_front_image_old) { image_context.drawImage(rank_front_image_old, image_data_rank_front_padding, image_data_rank_front_padding / 2, image_data_rank_front_size, image_data_rank_front_size); }
 			
 			// String - Levels
-			image_context.font = "50px xirod";
+			image_context.font = "64px Stratum1-Bold";
 			image_context.textAlign = "center";
-			image_context.textBaseline = "top";
-			image_context.fillStyle = "rgb(255, 255, 255)";
-			image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index_old, image_data_rank_back_padding + (image_data_rank_back_size / 2), image_data_bar_vertical - 4);
-			image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index, image_data_width - (image_data_rank_back_padding + (image_data_rank_back_size / 2)), image_data_bar_vertical - 4);
+			image_context.textBaseline = "bottom";
+			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+
+			//image_context.fillStyle = "rgb(255, 255, 255)";
+			//image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index_old, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4);
+			//image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4);
 			
 			// Arrow
 			image_context.beginPath();
-			image_context.moveTo(image_data_width / 2, (image_data_rank_back_size / 2));
+			image_context.moveTo(image_data_width / 2, (image_data_rank_front_size / 2));
 			image_context.lineTo((image_data_width / 2) - 96, 4);
 			image_context.lineTo((image_data_width / 2), 4);
-			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_back_size / 2));
-			image_context.moveTo(image_data_width / 2, (image_data_rank_back_size / 2));
-			image_context.lineTo((image_data_width / 2) - 96, image_data_rank_back_size);
-			image_context.lineTo((image_data_width / 2), image_data_rank_back_size);
-			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_back_size / 2));
+			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2));
+			image_context.moveTo(image_data_width / 2, (image_data_rank_front_size / 2));
+			image_context.lineTo((image_data_width / 2) - 96, image_data_rank_front_size);
+			image_context.lineTo((image_data_width / 2), image_data_rank_front_size);
+			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2));
 			image_context.clip();
 			image_context.fillStyle = "rgb(255, 255, 255)";
-			image_context.fillRect(image_data_width / 2 - 96, 4, image_data_rank_back_size, image_data_rank_back_size);
+			image_context.fillRect(image_data_width / 2 - 96, 4, image_data_rank_front_size, image_data_rank_front_size);
 			
 			// Upload file
 			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 

@@ -17,20 +17,20 @@ module.exports = {
     async execute(client, message, args, prefix) {
 		if (message.channel.type !== "text") {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "no_text_channel"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "no_text_channel"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
 
 		if (!message.member.permissions.has("KICK_MEMBERS")) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "no_permissions"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "no_permissions"));
 			return message.channel.send(embed);
 		}
 		
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "no_target"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "no_target"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -41,7 +41,7 @@ module.exports = {
 		let mentioned_member = message.mentions.members.first();
         let member = mentioned_member || find_member;
 		
-		let kick_reason = client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "no_reason");
+		let kick_reason = client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "no_reason");
 		if (args[1]) { kick_reason = args.slice(1).join(" "); }
 		
 		if (!member) {
@@ -50,7 +50,7 @@ module.exports = {
 			}
 			else {
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "dont_exists"));
+				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "dont_exists"));
 				embed.setColor([255, 0, 0]);
 				return message.channel.send(embed);
 			}
@@ -58,7 +58,7 @@ module.exports = {
 		
 		if (member.user.id === client.user.id) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "myself"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "myself"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -66,13 +66,13 @@ module.exports = {
 		if (member.user.id === message.author.id) {
 			if (member.user.id === message.guild.ownerID) {
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "yourself.ownership"));
+				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "yourself.ownership"));
 				embed.setColor([255, 0, 0]);
 				return message.channel.send(embed);
 			}
 			else {
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "yourself"));
+				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "yourself"));
 				embed.setColor([255, 0, 0]);
 				return message.channel.send(embed);
 			}
@@ -80,14 +80,14 @@ module.exports = {
 		
 		if (member.user.id === message.guild.ownerID) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "is_ownership"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "is_ownership"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
 		
 		if (!member.kickable) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "cannot_kick"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "cannot_kick"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -95,13 +95,13 @@ module.exports = {
 		member.kick(kick_reason).then((member) => {
 			let embed = new Discord.MessageEmbed();
 			embed.setThumbnail(member.user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
-			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "success.title", [member.user.tag])); // member.user.tag
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "success.reason", [kick_reason])); // kick_reason
-			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "success.operator", [message.author.tag]), message.author.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
+			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "success.title", [member.user.tag])); // member.user.tag
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "success.reason", [kick_reason])); // kick_reason
+			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "success.operator", [message.author.tag]), message.author.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
 			return message.channel.send(embed);
 		}).catch((error) => {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_kick", "fatal_error"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "fatal_error"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		});
