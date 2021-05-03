@@ -35,14 +35,20 @@ function getTranslation(client, user, guild, index, string, values) {
 		}
 		
 		let search_file = index + ".js";
-		let root_dir = fs.readdirSync(process.cwd() + "/functions/languages/" + language_file).filter(dir => dir.includes(".js"));
+		let target_file = process.cwd() + "/functions/languages/" + language_file + "/" + search_file;
+		if (fs.existsSync(target_file)) {
+			delete require.cache[target_file];
+			language_data = require(target_file);
+		}
+
+		/*let root_dir = fs.readdirSync(process.cwd() + "/functions/languages/" + language_file).filter(dir => dir.includes(".js"));
 		for (let file of root_dir) {
 			if (file === search_file) {
 				delete require.cache[require.resolve(process.cwd() + "/functions/languages/" + language_file + "/" + search_file)];
 				language_data = require(process.cwd() + "/functions/languages/" + language_file + "/" + search_file);
 				break;
 			}
-		}
+		}*/
 	}
 	catch (error) {
 		console.error(error);
