@@ -33,11 +33,11 @@ function getTranslation(client, user, guild, index, string, values) {
 			case "en": { language_file = "english"; break; }
 			default: { language_file = "spanish"; break; }
 		}
-		
+
 		let search_file = index + ".js";
 		let target_file = process.cwd() + "/functions/languages/" + language_file + "/" + search_file;
 		if (fs.existsSync(target_file)) {
-			delete require.cache[target_file];
+			delete require.cache[require.resolve(target_file)];
 			language_data = require(target_file);
 		}
 
