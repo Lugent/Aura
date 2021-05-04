@@ -6,6 +6,7 @@
         "discord.js": "^12.5.3",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
+        "ffmpeg-static": "^4.3.0",
         "file-download": "^0.1.2",
         "mathjs": "^9.3.2",
         "weather-js": "^2.0.0",
