@@ -46,7 +46,7 @@ module.exports = {
 		
         if (!args[0]) {
             let embed = new Discord.MessageEmbed();
-            embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "list.title"));
+            embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "list.title"));
 			
 			let category_list = categories.array();
 			for (let category_index = 0; category_index < category_list.length; category_index++) {
@@ -57,22 +57,22 @@ module.exports = {
 					let command = command_list[command_index];
 					let command_usage = command.usage ? command.usage : "";
 					if (((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
-					command_names += command.name + " " + client.functions.getTranslation(client, message.author, message.guild, "commands_help", command_usage) + "\n";
+					command_names += command.name + " " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", command_usage) + "\n";
 				}
 
 				if (command_names.length) {
-					embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_help", category_name), command_names);
+					embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", category_name), command_names);
 				}
 			}
 			
-            embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "list.footer", [prefix]));
+            embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "list.footer", [prefix]));
 			
 			if (message.channel.type !== "dm") {
 				message.author.send(embed).then(() => {
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "success_list"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_list"));
 				}).catch((error) => {
 					console.log(error);
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "failure_list"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_list"));
 				});
 			}
 			else {
@@ -83,19 +83,19 @@ module.exports = {
 			var name = args[0].toLowerCase();
 			var command = commands.get(name) || commands.find((c) => { return (c.aliases && c.aliases.includes(name)); });
 			if ((!command) || ((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && (!hidden)) {
-				return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "dont_exists"));
+				return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "dont_exists"));
 			}
 
 			let embed = new Discord.MessageEmbed();
 			embed.setTitle(prefix + command.name + " " + client.functions.getTranslation(client, message.author, message.guild, ((command.usage && command.usage) || "")));
-			if (command.description) { embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_help", command.description)); }
-			if (command.aliases) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "aliases"), command.aliases.join(", "), false); }
-			if (command.cooldown) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "cooldown"), client.functions.getTranslation(client, message.author, message.guild, "commands_help", "cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
+			if (command.description) { embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", command.description)); }
+			if (command.aliases) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "aliases"), command.aliases.join(", "), false); }
+			if (command.cooldown) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown"), client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
 			if (message.channel.type !== "dm") {
 				message.author.send(embed).then(() => {
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "success_single"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_single"));
 				}).catch(() => {
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands_help", "failure_single"));
+					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_single"));
 				});
 			}
 			else {
