@@ -55,5 +55,5 @@ let language = {
 	"help.search.starred.description": "Busca niveles con rating de estrellas.",
 	"help.search.no_star": "/noStar",
 	"help.search.no_star.description": "Busca niveles sin rating de estrellas.",
-}
+};
 module.exports = language;
