@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 const https = require("https");
 module.exports = {
@@ -35,19 +34,22 @@ module.exports = {
 		let api_url = "https://gdbrowser.com/api/";
 		let subcommand = args[0];
 		if (!subcommand) {
+			let gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gd_icon.png", "gd_icon.png");
 			let embed = new Discord.MessageEmbed();
-			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.title")); // "List of available subcommands"
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_0"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_0")); // "help" - "Gives a help of the usage of the given subcommand."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_1"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_1")); // "search" - "Returns a list of levels with the given filters. (Defaults to most downloaded if no filters given)."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_2"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_2")); // "level" - "Returns details of a level via ID."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_3"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_3")); // "profile" - "Returns the profile of a account."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_4"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_4")); // "comments" - "Returns a list level's comments, or a list of account post or a list of account's comment history."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_5"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_5")); // "mappack" - "Look a dead featu-- I mean... Returns a list of map packs."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_6"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_6")); // "gauntlets" - "Returns a list of gauntlets with their level IDs."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_7"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_7")); // "leaderboard" - "This never works, robtop jus-... Returns the actual leaderboard."
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.field_8"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.desc_8")); // "song" - "Check if a song is allowed to use in GD."
-			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.gd.usage.footer"), "https://gdbrowser.com/icon/colon"); // "API by GDColon"
-			embed.setColor([0, 255, 255]);
+			embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.author"), "https://gdbrowser.com/icon/colon", "https://gdbrowser.com/api");
+			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.title"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.help"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.help.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.search"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.search.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.level"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.level.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.profile"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.profile.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.comments"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.comments.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.map_packs"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.map_packs.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.gauntlets"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.gauntlets.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.leaderboard"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.leaderboard.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.song"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "usage.song.description"));
+			embed.attachFiles([gd_image]);
+			embed.setThumbnail("attachment://gd_icon.png");
+			embed.setColor([254, 223, 0]);
 			return message.channel.send(embed);
 		}
 		else {
@@ -56,40 +58,43 @@ module.exports = {
 					let help_command = args[1];
 					if (!help_command) {
 						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.help_no_command"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.no_command"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
 					
 					switch (help_command) {
 						case "search": {
+							let gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gd_icon.png", "gd_icon.png");
 							let embed = new Discord.MessageEmbed();
-							embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.title", [prefix]));
-							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_main"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_0"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_0"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_1"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_1"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_2"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_2"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_3"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_3"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_4"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_4"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_5"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_5"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_6"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_6"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_7"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_7"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_8"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_8"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_9"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_9"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_10"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_10"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_11"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_11"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_12"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_12"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_13"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_13"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_14"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_14"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_15"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_15"));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.field_16"), client.functions.getTranslation(client, message.author, message.guild, "command.gd.help.search.desc_16"));
-							embed.setColor([0, 255, 255]);
+							embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.title", [prefix]));
+							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.page"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.page.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.difficulty"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.difficulty.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.length"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.length.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.count"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.count.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.song_id"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.song_id.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.custom_song"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.custom_song.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.list"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.list.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.creators"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.creators.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.user"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.user.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.type"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.type.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.featured"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.featured.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.original"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.original.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.two_player"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.two_player.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.coins"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.coins.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.epic"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.epic.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.starred"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.starred.description"));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.no_star"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.search.no_star.description"));
+							embed.setColor([254, 223, 0]);
+							embed.attachFiles([gd_image]);
+							embed.setThumbnail("attachment://gd_icon.png");
 							return message.channel.send(embed);
 						}
 						
 						default: {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.help_invalid_command"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.invalid_command"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
 						}
@@ -114,6 +119,14 @@ module.exports = {
 						else if (filters_arguments.find(index => !index.startsWith("/"))) {
 							search_query = filters_arguments.find(index => !index.startsWith("/"));
 							filters_arguments.splice(filters_arguments.find(index => !index.startsWith("/")), 1);
+
+							for (let string_index = 0; string_index < filters_arguments.length; string_index++) {
+								search_query += "%20" + filters_arguments[string_index];
+								if (filters_arguments[string_index].startsWith("/")) {
+									break;
+								}
+							}
+							search_query = search_query.replaceAll("\"", "");
 						}
 						else { search_query = "*"; }
 						
@@ -122,26 +135,26 @@ module.exports = {
 							let filter_argument = "";
 							
 							// Flags
-							if (filter_element.startsWith("/featured")) { search_filters += filter_prefix + "featured=yes"; } // Featured
-							if (filter_element.startsWith("/original")) { search_filters += filter_prefix + "original=yes"; } // Original
-							if (filter_element.startsWith("/twoPlayer")) { search_filters += filter_prefix + "twoPlayer=yes"; } // Two Player
-							if (filter_element.startsWith("/coins")) { search_filters += filter_prefix + "coins=yes"; } // Coins
-							if (filter_element.startsWith("/epic")) { search_filters += filter_prefix + "epic=yes"; } // Epic
-							if (filter_element.startsWith("/starred")) { search_filters += filter_prefix + "starred=yes"; } // Starred
-							if (filter_element.startsWith("/noStar")) { search_filters += filter_prefix + "noStar=yes"; } // No Star
+							if (filter_element.startsWith("/featured")) { search_filters += filter_prefix + "featured=yes"; filter_prefix = "&"; } // Featured
+							if (filter_element.startsWith("/original")) { search_filters += filter_prefix + "original=yes"; filter_prefix = "&"; } // Original
+							if (filter_element.startsWith("/twoPlayer")) { search_filters += filter_prefix + "twoPlayer=yes"; filter_prefix = "&"; } // Two Player
+							if (filter_element.startsWith("/coins")) { search_filters += filter_prefix + "coins=yes"; filter_prefix = "&"; } // Coins
+							if (filter_element.startsWith("/epic")) { search_filters += filter_prefix + "epic=yes"; filter_prefix = "&"; } // Epic
+							if (filter_element.startsWith("/starred")) { search_filters += filter_prefix + "starred=yes"; filter_prefix = "&"; } // Starred
+							if (filter_element.startsWith("/noStar")) { search_filters += filter_prefix + "noStar=yes"; filter_prefix = "&"; } // No Star
 							
 							// Search types
 							if (filter_element.startsWith("/type=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								switch (filter_argument.toLowerCase()) {
-									case "mostdownloaded": { search_filters += filter_prefix + "type=mostdownloaded"; break; }
-									case "mostliked": { search_filters += filter_prefix + "type=mostliked"; break; }
-									case "trending": { search_filters += filter_prefix + "type=trending"; break; }
-									case "recent": { search_filters += filter_prefix + "type=recent"; break; }
-									case "awarded": { search_filters += filter_prefix + "type=awarded"; break; }
-									case "featured": { search_filters += filter_prefix + "type=featured"; break; }
-									case "magic": { search_filters += filter_prefix + "type=magic"; break; }
-									case "halloffame": { search_filters += filter_prefix + "type=halloffame"; break; }
+									case "mostdownloaded": { search_filters += filter_prefix + "type=mostdownloaded"; filter_prefix = "&"; break; }
+									case "mostliked": { search_filters += filter_prefix + "type=mostliked"; filter_prefix = "&"; break; }
+									case "trending": { search_filters += filter_prefix + "type=trending"; filter_prefix = "&"; break; }
+									case "recent": { search_filters += filter_prefix + "type=recent"; filter_prefix = "&"; break; }
+									case "awarded": { search_filters += filter_prefix + "type=awarded"; filter_prefix = "&"; break; }
+									case "featured": { search_filters += filter_prefix + "type=featured"; filter_prefix = "&"; break; }
+									case "magic": { search_filters += filter_prefix + "type=magic"; filter_prefix = "&"; break; }
+									case "halloffame": { search_filters += filter_prefix + "type=halloffame"; filter_prefix = "&"; break; }
 								}
 							}
 							
@@ -149,24 +162,28 @@ module.exports = {
 							if (filter_element.startsWith("/customSong=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								search_filters += filter_prefix + "customSong=" + filter_argument;
+								filter_prefix = "&"; 
 							}
 							
 							// User
 							if (filter_element.startsWith("/user=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								search_filters += filter_prefix + "user=" + filter_argument;
+								filter_prefix = "&"; 
 							}
 							
 							// Creators
 							if (filter_element.startsWith("/creators=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								search_filters += filter_prefix + "creators=" + filter_argument;
+								filter_prefix = "&"; 
 							}
 							
 							// List
 							if (filter_element.startsWith("/list=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								search_filters += filter_prefix + "list=" + filter_argument;
+								filter_prefix = "&"; 
 							}
 							
 							// Official Song ID
@@ -175,52 +192,52 @@ module.exports = {
 								let size_number = Number(filter_argument);
 								if (Number.isNaN(size_number)) {
 									switch (filter_argument.toLowerCase()) {
-										case "stereo_madness": { search_filters += filter_prefix + "songID=1"; break; }
-										case "back_on_track": { search_filters += filter_prefix + "songID=2"; break; }
-										case "polargeist": { search_filters += filter_prefix + "songID=3"; break; }
-										case "dry_out": { search_filters += filter_prefix + "songID=4"; break; }
-										case "base_after_base": { search_filters += filter_prefix + "songID=5"; break; }
-										case "cant_let_go": { search_filters += filter_prefix + "songID=6"; break; }
-										case "jumper": { search_filters += filter_prefix + "songID=7"; break; }
-										case "time_machine": { search_filters += filter_prefix + "songID=8"; break; }
-										case "cycles": { search_filters += filter_prefix + "songID=9"; break; }
-										case "xstep": { search_filters += filter_prefix + "songID=10"; break; }
-										case "clutterfunk": { search_filters += filter_prefix + "songID=11"; break; }
-										case "theory_of_everything": { search_filters += filter_prefix + "songID=12"; break; }
-										case "electroman_adventures": { search_filters += filter_prefix + "songID=13"; break; }
-										case "clubstep": { search_filters += filter_prefix + "songID=14"; break; }
-										case "electrodynamix": { search_filters += filter_prefix + "songID=15"; break; }
-										case "hexagon_force": { search_filters += filter_prefix + "songID=16"; break; }
-										case "blast_processing": { search_filters += filter_prefix + "songID=17"; break; }
-										case "theory_of_everything_2": { search_filters += filter_prefix + "songID=18"; break; }
-										case "geometrical_dominator": { search_filters += filter_prefix + "songID=19"; break; }
-										case "deadlocked": { search_filters += filter_prefix + "songID=20"; break; }
-										case "fingerdash": { search_filters += filter_prefix + "songID=21"; break; }
+										case "stereo_madness": { search_filters += filter_prefix + "songID=1"; filter_prefix = "&"; break; }
+										case "back_on_track": { search_filters += filter_prefix + "songID=2"; filter_prefix = "&"; break; }
+										case "polargeist": { search_filters += filter_prefix + "songID=3"; filter_prefix = "&"; break; }
+										case "dry_out": { search_filters += filter_prefix + "songID=4"; filter_prefix = "&"; break; }
+										case "base_after_base": { search_filters += filter_prefix + "songID=5"; filter_prefix = "&"; break; }
+										case "cant_let_go": { search_filters += filter_prefix + "songID=6"; filter_prefix = "&"; break; }
+										case "jumper": { search_filters += filter_prefix + "songID=7"; filter_prefix = "&"; break; }
+										case "time_machine": { search_filters += filter_prefix + "songID=8"; filter_prefix = "&"; break; }
+										case "cycles": { search_filters += filter_prefix + "songID=9"; filter_prefix = "&"; break; }
+										case "xstep": { search_filters += filter_prefix + "songID=10"; filter_prefix = "&"; break; }
+										case "clutterfunk": { search_filters += filter_prefix + "songID=11"; filter_prefix = "&"; break; }
+										case "theory_of_everything": { search_filters += filter_prefix + "songID=12"; filter_prefix = "&"; break; }
+										case "electroman_adventures": { search_filters += filter_prefix + "songID=13"; filter_prefix = "&"; break; }
+										case "clubstep": { search_filters += filter_prefix + "songID=14"; filter_prefix = "&"; break; }
+										case "electrodynamix": { search_filters += filter_prefix + "songID=15"; filter_prefix = "&"; break; }
+										case "hexagon_force": { search_filters += filter_prefix + "songID=16"; filter_prefix = "&"; break; }
+										case "blast_processing": { search_filters += filter_prefix + "songID=17"; filter_prefix = "&"; break; }
+										case "theory_of_everything_2": { search_filters += filter_prefix + "songID=18"; filter_prefix = "&"; break; }
+										case "geometrical_dominator": { search_filters += filter_prefix + "songID=19"; filter_prefix = "&"; break; }
+										case "deadlocked": { search_filters += filter_prefix + "songID=20"; filter_prefix = "&"; break; }
+										case "fingerdash": { search_filters += filter_prefix + "songID=21"; filter_prefix = "&"; break; }
 									}
 								}
 								else {
 									switch (size_number) {
-										case 1: { search_filters += filter_prefix + "songID=1"; break; }
-										case 2: { search_filters += filter_prefix + "songID=2"; break; }
-										case 3: { search_filters += filter_prefix + "songID=3"; break; }
-										case 4: { search_filters += filter_prefix + "songID=4"; break; }
-										case 5: { search_filters += filter_prefix + "songID=5"; break; }
-										case 6: { search_filters += filter_prefix + "songID=6"; break; }
-										case 7: { search_filters += filter_prefix + "songID=7"; break; }
-										case 8: { search_filters += filter_prefix + "songID=8"; break; }
-										case 9: { search_filters += filter_prefix + "songID=9"; break; }
-										case 10: { search_filters += filter_prefix + "songID=10"; break; }
-										case 11: { search_filters += filter_prefix + "songID=11"; break; }
-										case 12: { search_filters += filter_prefix + "songID=12"; break; }
-										case 13: { search_filters += filter_prefix + "songID=13"; break; }
-										case 14: { search_filters += filter_prefix + "songID=14"; break; }
-										case 15: { search_filters += filter_prefix + "songID=15"; break; }
-										case 16: { search_filters += filter_prefix + "songID=16"; break; }
-										case 17: { search_filters += filter_prefix + "songID=17"; break; }
-										case 18: { search_filters += filter_prefix + "songID=18"; break; }
-										case 19: { search_filters += filter_prefix + "songID=19"; break; }
-										case 20: { search_filters += filter_prefix + "songID=20"; break; }
-										case 21: { search_filters += filter_prefix + "songID=21"; break; }
+										case 1: { search_filters += filter_prefix + "songID=1"; filter_prefix = "&"; break; }
+										case 2: { search_filters += filter_prefix + "songID=2"; filter_prefix = "&"; break; }
+										case 3: { search_filters += filter_prefix + "songID=3"; filter_prefix = "&"; break; }
+										case 4: { search_filters += filter_prefix + "songID=4"; filter_prefix = "&"; break; }
+										case 5: { search_filters += filter_prefix + "songID=5"; filter_prefix = "&"; break; }
+										case 6: { search_filters += filter_prefix + "songID=6"; filter_prefix = "&"; break; }
+										case 7: { search_filters += filter_prefix + "songID=7"; filter_prefix = "&"; break; }
+										case 8: { search_filters += filter_prefix + "songID=8"; filter_prefix = "&"; break; }
+										case 9: { search_filters += filter_prefix + "songID=9"; filter_prefix = "&"; break; }
+										case 10: { search_filters += filter_prefix + "songID=10"; filter_prefix = "&"; break; }
+										case 11: { search_filters += filter_prefix + "songID=11"; filter_prefix = "&"; break; }
+										case 12: { search_filters += filter_prefix + "songID=12"; filter_prefix = "&"; break; }
+										case 13: { search_filters += filter_prefix + "songID=13"; filter_prefix = "&"; break; }
+										case 14: { search_filters += filter_prefix + "songID=14"; filter_prefix = "&"; break; }
+										case 15: { search_filters += filter_prefix + "songID=15"; filter_prefix = "&"; break; }
+										case 16: { search_filters += filter_prefix + "songID=16"; filter_prefix = "&"; break; }
+										case 17: { search_filters += filter_prefix + "songID=17"; filter_prefix = "&"; break; }
+										case 18: { search_filters += filter_prefix + "songID=18"; filter_prefix = "&"; break; }
+										case 19: { search_filters += filter_prefix + "songID=19"; filter_prefix = "&"; break; }
+										case 20: { search_filters += filter_prefix + "songID=20"; filter_prefix = "&"; break; }
+										case 21: { search_filters += filter_prefix + "songID=21"; filter_prefix = "&"; break; }
 									}
 								}
 							}
@@ -231,20 +248,20 @@ module.exports = {
 								let size_number = Number(filter_argument);
 								if (Number.isNaN(size_number)) {
 									switch (filter_argument.toLowerCase()) {
-										case "tiny": { search_filters += filter_prefix + "length=0"; break; }
-										case "short": { search_filters += filter_prefix + "length=1"; break; }
-										case "medium": { search_filters += filter_prefix + "length=2"; break; }
-										case "long": { search_filters += filter_prefix + "length=3"; break; }
-										case "xl": { search_filters += filter_prefix + "length=4"; break; }
+										case "tiny": { search_filters += filter_prefix + "length=0"; filter_prefix = "&"; break; }
+										case "short": { search_filters += filter_prefix + "length=1"; filter_prefix = "&"; break; }
+										case "medium": { search_filters += filter_prefix + "length=2"; filter_prefix = "&"; break; }
+										case "long": { search_filters += filter_prefix + "length=3"; filter_prefix = "&"; break; }
+										case "xl": { search_filters += filter_prefix + "length=4"; filter_prefix = "&"; break; }
 									}
 								}
 								else {
 									switch (size_number) {
-										case 0: { search_filters += filter_prefix + "length=0"; break; }
-										case 1: { search_filters += filter_prefix + "length=1"; break; }
-										case 2: { search_filters += filter_prefix + "length=2"; break; }
-										case 3: { search_filters += filter_prefix + "length=3"; break; }
-										case 4: { search_filters += filter_prefix + "length=4"; break; }
+										case 0: { search_filters += filter_prefix + "length=0"; filter_prefix = "&"; break; }
+										case 1: { search_filters += filter_prefix + "length=1"; filter_prefix = "&"; break; }
+										case 2: { search_filters += filter_prefix + "length=2"; filter_prefix = "&"; break; }
+										case 3: { search_filters += filter_prefix + "length=3"; filter_prefix = "&"; break; }
+										case 4: { search_filters += filter_prefix + "length=4"; filter_prefix = "&"; break; }
 									}
 								}
 							}
@@ -257,6 +274,7 @@ module.exports = {
 									if (search_count > 5) { search_count = 5; }
 									search_filters += filter_prefix + "count=" + search_count;
 									filters_custom_count = true;
+									filter_prefix = "&"; 
 								}
 							}
 							
@@ -264,8 +282,13 @@ module.exports = {
 							if (filter_element.startsWith("/page=")) {
 								filter_argument = filter_element.split("=").slice(1).join("");
 								let search_count = Number(filter_argument);
-								if (!Number.isNaN(search_count)) { search_filters += filter_prefix + "page=" + search_count; }
-								else { search_filters += filter_prefix + "page=1"; }
+								if (!Number.isNaN(search_count)) {
+									search_filters += filter_prefix + "page=" + search_count;
+								}
+								else {
+									search_filters += filter_prefix + "page=1";
+								}
+								filter_prefix = "&"; 
 							}
 							
 							// Difficulty
@@ -274,52 +297,48 @@ module.exports = {
 								let difficulty_number = Number(filter_argument);
 								if (Number.isNaN(difficulty_number)) {
 									switch (filter_argument.toLowerCase()) {
-										case "na": { search_filters += filter_prefix + "diff=-1"; break; }
-										case "auto": { search_filters += filter_prefix + "diff=-3"; break; }
-										case "easy": { search_filters += filter_prefix + "diff=1"; break; }
-										case "normal": { search_filters += filter_prefix + "diff=2"; break; }
-										case "hard": { search_filters += filter_prefix + "diff=3"; break; }
-										case "harder": { search_filters += filter_prefix + "diff=4"; break; }
-										case "insane": { search_filters += filter_prefix + "diff=5"; break; }
-										case "easy_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=1"; break; }
-										case "medium_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=2"; break; }
-										case "hard_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=3"; break; }
-										case "insame_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=4"; break; }
-										case "extreme_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=5"; break; }
+										case "na": { search_filters += filter_prefix + "diff=-1"; filter_prefix = "&"; break; }
+										case "auto": { search_filters += filter_prefix + "diff=-3"; filter_prefix = "&"; break; }
+										case "easy": { search_filters += filter_prefix + "diff=1"; filter_prefix = "&"; break; }
+										case "normal": { search_filters += filter_prefix + "diff=2"; filter_prefix = "&"; break; }
+										case "hard": { search_filters += filter_prefix + "diff=3"; filter_prefix = "&"; break; }
+										case "harder": { search_filters += filter_prefix + "diff=4"; filter_prefix = "&"; break; }
+										case "insane": { search_filters += filter_prefix + "diff=5"; filter_prefix = "&"; break; }
+										case "easy_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=1"; filter_prefix = "&"; break; }
+										case "medium_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=2"; filter_prefix = "&"; break; }
+										case "hard_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=3"; filter_prefix = "&"; break; }
+										case "insame_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=4"; filter_prefix = "&"; break; }
+										case "extreme_demon": { search_filters += filter_prefix + "diff=-2&demonFilter=5"; filter_prefix = "&"; break; }
 									}
 								}
 								else {
 									switch (difficulty_number) {
-										case 0: { search_filters += filter_prefix + "diff=-1"; break; }
-										case 1: { search_filters += filter_prefix + "diff=-3"; break; }
-										case 2: { search_filters += filter_prefix + "diff=1"; break; }
-										case 3: { search_filters += filter_prefix + "diff=2"; break; }
-										case 4: { search_filters += filter_prefix + "diff=3"; break; }
-										case 5: { search_filters += filter_prefix + "diff=4"; break; }
-										case 6: { search_filters += filter_prefix + "diff=5"; break; }
-										case 7: { search_filters += filter_prefix + "diff=-2&demonFilter=1"; break; }
-										case 8: { search_filters += filter_prefix + "diff=-2&demonFilter=2"; break; }
-										case 9: { search_filters += filter_prefix + "diff=-2&demonFilter=3"; break; }
-										case 10: { search_filters += filter_prefix + "diff=-2&demonFilter=4"; break; }
-										case 11: { search_filters += filter_prefix + "diff=-2&demonFilter=5"; break; }
+										case 0: { search_filters += filter_prefix + "diff=-1"; filter_prefix = "&"; break; }
+										case 1: { search_filters += filter_prefix + "diff=-3"; filter_prefix = "&"; break; }
+										case 2: { search_filters += filter_prefix + "diff=1"; filter_prefix = "&"; break; }
+										case 3: { search_filters += filter_prefix + "diff=2"; filter_prefix = "&"; break; }
+										case 4: { search_filters += filter_prefix + "diff=3"; filter_prefix = "&"; break; }
+										case 5: { search_filters += filter_prefix + "diff=4"; filter_prefix = "&"; break; }
+										case 6: { search_filters += filter_prefix + "diff=5"; filter_prefix = "&"; break; }
+										case 7: { search_filters += filter_prefix + "diff=-2&demonFilter=1"; filter_prefix = "&"; break; }
+										case 8: { search_filters += filter_prefix + "diff=-2&demonFilter=2"; filter_prefix = "&"; break; }
+										case 9: { search_filters += filter_prefix + "diff=-2&demonFilter=3"; filter_prefix = "&"; break; }
+										case 10: { search_filters += filter_prefix + "diff=-2&demonFilter=4"; filter_prefix = "&"; break; }
+										case 11: { search_filters += filter_prefix + "diff=-2&demonFilter=5"; filter_prefix = "&"; break; }
 									}
 								}
 							}
-							
-							// Update prefix
-							filter_prefix = "&";
 						}
 					}
 					if (!filters_custom_count) { search_filters += filter_prefix + "count=5"; }
 					
 					let complete_url = api_url + "search/" + search_query + search_filters;
-					//console.log(complete_url);
+					console.log(complete_url);
 					https.get(complete_url, async (response) => {
 						response.on("data", async (chunk) => { raw_data += chunk; });
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let levels_data = JSON.parse(raw_data);
-								//console.log(levels_data);
 								var search_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/magnify.png", "search.png");
 								var gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gd_icon.png", "gd_icon.png");
 								var embed = new Discord.MessageEmbed();
@@ -340,9 +359,6 @@ module.exports = {
 										case "Insane Demon": { level_difficulty = "<:gd_insane_demon:816469106919997480>"; break; }
 										case "Extreme Demon": { level_difficulty = "<:gd_extreme_demon:816469123445293077>"; break; }
 									}
-									// <:gd_profile:823150924330434572> <:gd_mod:823150781988995082> <:gd_elder_mod:823150781964222464>
-									// <:gd_featured:823046883093381130> <:gd_epic:823046883232579604>
-									// <:gd_brown_coin:823042477245464647> <:gd_silver_coin:823042425953976321>
 									
 									var level_coins = "";
 									if (level_element.coins > 0) {
@@ -363,11 +379,11 @@ module.exports = {
 									
 									let level_stars = (level_element.stars > 0) ? ("<:gd_star:823042179374120960> " + level_element.stars + " | ") : "";
 									let level_totalcoins = (level_coins.length ? (level_coins + " | ") : "");
-									let level_downloads = "<:gd_download:816466814930255872> " + client.functions.number_formatter(level_element.downloads, 2);
-									let level_likes = (level_element.disliked ? "<:gd_dislike:816467209366011955> " : "<:gd_like:816467236117020693> ") + client.functions.number_formatter(level_element.likes, 2);
+									let level_downloads = "<:gd_download:816466814930255872> " + client.functions.getFormattedNumber(level_element.downloads, 2);
+									let level_likes = (level_element.disliked ? "<:gd_dislike:816467209366011955> " : "<:gd_like:816467236117020693> ") + client.functions.getFormattedNumber(level_element.likes, 2);
 									let level_orbs = (level_element.orbs > 0) ? ("<:gd_orbs:823042795446730762> " + level_element.orbs + " | ") : "";
 									let level_duration = "<:gd_time:823043610026967060> " + level_element.length;
-									let level_objects = "<:gd_object:823395350315794452> " + ((level_element.objects > 0) ? client.functions.number_formatter(level_element.objects, 2) : "NA");
+									let level_objects = "<:gd_object:823395350315794452> " + ((level_element.objects > 0) ? client.functions.getFormattedNumber(level_element.objects, 2) : "NA");
 									let level_gdversion = "Game version: " + level_element.gameVersion;
 									let level_version = "Level version: " + level_element.version;
 									let level_stats = level_downloads + " | " + level_likes + " | " + level_orbs + level_duration + "\n" + level_stars + level_totalcoins + " | " + level_objects;
@@ -375,25 +391,27 @@ module.exports = {
 									let level_information = level_description + "\n" + level_stats + "\n" + level_song;
 									embed.addField(level_header, level_information);
 								}
-								embed.setTitle("Found " + levels_data[0].results + " results in " + levels_data[0].pages + " pages.");
+								embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "search.title", [levels_data[0].results, levels_data[0].pages]));
 								embed.attachFiles([search_image, gd_image]);
 								embed.setThumbnail("attachment://search.png");
-								embed.setAuthor("Geometry Dash - Level Search", "attachment://gd_icon.png");
+								embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "search.author"), "attachment://gd_icon.png");
 								embed.setColor([254, 223, 0]);
 								return message.channel.send(embed);
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.search.not_found"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "search.not_found"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
 						});
 					}).on("error", async (error) => {
-						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.search.failure"));
+						throw error;
+
+						/*let embed = new Discord.MessageEmbed();
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "search.failure"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send(embed);*/
 					});
 					break;
 				}
@@ -401,7 +419,7 @@ module.exports = {
 				case "level": {
 					if (!args[1]) {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.no_argument"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "level.no_argument"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -413,8 +431,7 @@ module.exports = {
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let level_data = JSON.parse(raw_data);
-								//console.log(level_data);
-								
+
 								let level_large = (level_data.large ? " <:gd_large:823196254636605460>" : "");
 								let level_author = "By " + level_data.author;
 								let level_author_specials = ((Number(level_data.accountID) !== 0) ? ("(" + level_data.accountID + ")") : "");
@@ -429,11 +446,11 @@ module.exports = {
 								
 								let level_stars = (level_data.stars > 0) ? ("<:gd_star:823042179374120960> " + level_data.stars + " | ") : "";
 								let level_totalcoins = (level_coins.length ? (level_coins + " | ") : "");
-								let level_downloads = "<:gd_download:816466814930255872> " + client.functions.number_formatter(level_data.downloads, 2);
-								let level_likes = (level_data.disliked ? "<:gd_dislike:816467209366011955> " : "<:gd_like:816467236117020693> ") + client.functions.number_formatter(level_data.likes, 2);
+								let level_downloads = "<:gd_download:816466814930255872> " + client.functions.getFormatedString(level_data.downloads, 2);
+								let level_likes = (level_data.disliked ? "<:gd_dislike:816467209366011955> " : "<:gd_like:816467236117020693> ") + client.functions.getFormatedString(level_data.likes, 2);
 								let level_orbs = (level_data.orbs > 0) ? ("<:gd_orbs:823042795446730762> " + level_data.orbs + " | ") : "";
 								let level_duration = "<:gd_time:823043610026967060> " + level_data.length;
-								let level_objects = "<:gd_object:823395350315794452> " + ((level_data.objects > 0) ? client.functions.number_formatter(level_data.objects, 2) : "NA");
+								let level_objects = "<:gd_object:823395350315794452> " + ((level_data.objects > 0) ? client.functions.getFormatedString(level_data.objects, 2) : "NA");
 								let level_gdversion = "Game version: " + level_data.gameVersion;
 								let level_version = "Level version: " + level_data.version;
 								let level_stats = level_downloads + " | " + level_likes + " | " + level_orbs + level_duration + "\n" + level_stars + level_totalcoins + level_objects;
@@ -457,16 +474,18 @@ module.exports = {
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.no_data"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "level.no_data"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
 						});
 					}).on("error", async (error) => {
-						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.level.failure"));
+						throw error;
+
+						/*let embed = new Discord.MessageEmbed();
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "level.failure"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send(embed);*/
 					});
 					break;
 				}
@@ -474,7 +493,7 @@ module.exports = {
 				case "profile": {
 					if (!args[1]) {
 						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.no_argument"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "profile.no_argument"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -486,8 +505,7 @@ module.exports = {
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let profile_data = JSON.parse(raw_data);
-								//console.log(profile_data);
-								
+
 								let profile_moderator = "";
 								if (profile_data.moderator == 1) { profile_moderator = "<:gd_mod:823150781988995082> "; }
 								else if (profile_data.moderator == 2) { profile_moderator = "<:gd_elder_mod:823150781964222464> "; }
@@ -508,19 +526,19 @@ module.exports = {
 								let profile_name = profile_data.username;
 								let profile_header = profile_moderator + profile_rank_string;
 
-								let profile_stars = "<:gd_star:823042179374120960> " + client.functions.number_formatter(profile_data.stars, 2) + " | ";
-								let profile_diamonds = "<:gd_diamond:823042795148148796> " + client.functions.number_formatter(profile_data.diamonds, 2) + " | ";
-								let profile_coins = "<:gd_coin:823042793739386920> " + client.functions.number_formatter(profile_data.coins, 2) + " | ";
-								let profile_usercoins = "<:gd_silver_coin:823042425953976321> " + client.functions.number_formatter(profile_data.userCoins, 2) + " | ";
-								let profile_demons = "<:gd_hard_demon:816469080872976405> " + client.functions.number_formatter(profile_data.demons, 2);
-								let profile_creatorpoints = (profile_data.cp > 0) ? (" | " + "<:gd_creator_points:823153273711362059> " + client.functions.number_formatter(profile_data.cp, 2)) : "";
+								let profile_stars = "<:gd_star:823042179374120960> " + client.functions.getFormatedString(profile_data.stars, 2) + " | ";
+								let profile_diamonds = "<:gd_diamond:823042795148148796> " + client.functions.getFormatedString(profile_data.diamonds, 2) + " | ";
+								let profile_coins = "<:gd_coin:823042793739386920> " + client.functions.getFormatedString(profile_data.coins, 2) + " | ";
+								let profile_usercoins = "<:gd_silver_coin:823042425953976321> " + client.functions.getFormatedString(profile_data.userCoins, 2) + " | ";
+								let profile_demons = "<:gd_hard_demon:816469080872976405> " + client.functions.getFormatedString(profile_data.demons, 2);
+								let profile_creatorpoints = (profile_data.cp > 0) ? (" | " + "<:gd_creator_points:823153273711362059> " + client.functions.getFormatedString(profile_data.cp, 2)) : "";
 								let profile_info = profile_stars + profile_diamonds + profile_coins + profile_usercoins + profile_demons + profile_creatorpoints;
 								
 								let profile_youtube = (profile_data.youtube !== null) ? ("<:gd_youtube:823606174565662731> " + "[Youtube Channel](https://youtube.com/channel/" + profile_data.youtube + ")" + "\n") : "";
 								let profile_twitter = (profile_data.twitter !== null) ? ("<:gd_twitter:823606175231770674> " + "[Twitter Account](https://twitter.com/" + profile_data.twitter + ")" + "\n") : "";
 								let profile_twitch = (profile_data.twitch !== null) ? ("<:gd_twitch:823606175613321246> " + "[Twitch](https://twitch.tv/" + profile_data.twitch + ")" + "\n") : "";
 								let profile_socials = profile_youtube + profile_twitter + profile_twitch;
-								// 
+
 								let profile_friends = profile_data.friendRequests ? "<:gd_friends:823765982198759516> Friend requests enabled." : "<:gd_friends_grey:823765982077517854> Friend requests disabled.";
 								let profile_messages = "<:gd_messages:823765981313761351> Messages from Everyone.";
 								switch (profile_data.messages) {
@@ -544,23 +562,25 @@ module.exports = {
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.no_data"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "profile.no_data"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send(embed);
 							}
 						});
 					}).on("error", async (error) => {
-						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.profile.failure"));
+						throw error;
+
+						/*let embed = new Discord.MessageEmbed();
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "profile.failure"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send(embed);*/
 					});
 					break;
 				}
 				
 				default: {
 					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.gd.invalid_subcommand"));
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "invalid_subcommand", [prefix]));
 					embed.setColor([255, 0, 0]);
 					return message.channel.send(embed);
 				}

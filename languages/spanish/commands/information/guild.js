@@ -35,8 +35,8 @@ let language = {
 	"boost_level.one": "Nivel 1",
 	"boost_level.two": "Nivel 2",
 	"boost_level.three": "Nivel 3",
-	"boost_level.count": "%s mejoras",
-	"boost_level.count_boosters": "%s mejoradores",
+	"boost_level.count": "%s boost",
+	"boost_level.count_boosters": "%s boosters",
 	"community_features.enabled": "Servidor de la comunidad",
 	"community_features.discovery": "Visible en Discovery",
 	"community_features.featured": "Destacado en Discovery",
@@ -85,5 +85,5 @@ let language = {
 	"embed.admin": "Administración",
 	"embed.stats": "Estadisticas",
 	"embed.features": "Caracteristicas"
-}
+};
 module.exports = language;

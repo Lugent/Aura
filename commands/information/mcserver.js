@@ -104,6 +104,10 @@ module.exports = {
 								{
 									allplayers = client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list.limit");
 									
+									if (fs.existsSync(process.cwd() + "/temp")) {
+										await fs.mkdirSync(process.cwd() + "/temp");
+									}
+
 									var players_writer = fs.createWriteStream(process.cwd() + "/temp/players.txt");
 									await players_writer.write(parsed_data.players.list.slice(0).join("\n"));
 									await players_writer.end();

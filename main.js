@@ -1,7 +1,6 @@
 // Dependencies
 const Discord = require("discord.js");
 const chalk = require("chalk");
-const fs = require("fs");
 
 // Process handlers
 process.on("exit", (code) => {
@@ -12,21 +11,9 @@ process.on("exit", (code) => {
 process.on("unhandledRejection", error => {
 	console.error(chalk.redBright("ERROR: ") + "Unhandled Rejection:" + "\n", error);
 	if (client.last_msg) {
-		let error_name = "Undefined Error";
-		if (error instanceof EvalError) { error_name = "Evaluation Error"; }
-		else if (error instanceof RangeError) { error_name = "Range Error"; }
-		else if (error instanceof ReferenceError) { error_name = "Reference Error"; }
-		else if (error instanceof SyntaxError) { error_name = "Syntax Error"; }
-		else if (error instanceof TypeError) { error_name = "Type Error"; }
-		else if (error instanceof Discord.DiscordAPIError) { error_name = "Discord API Error"; }
-		
-		let code_error = "";
-		if (error instanceof Discord.DiscordAPIError) { code_error = " - " + error.httpStatus; }
-		
 		let embed = new Discord.MessageEmbed();
-		embed.setDescription(":no_entry: " + "Unhandled Rejection");
-		embed.addField(error_name + code_error, error.message || "");
-		embed.setColor([255, 0, 0]);
+        embed.setColor([255, 0, 0]);
+        embed.setDescription(":no_entry: " + error.name + (error.httpStatus ? (" - HTTP " + error.httpStatus) : "") + "\n" + (error.message ? error.message : ""));
 		client.last_msg.send(embed);
 		client.last_msg = undefined;
 	}

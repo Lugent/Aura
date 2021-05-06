@@ -55,5 +55,16 @@ let language = {
 	"help.search.starred.description": "Busca niveles con rating de estrellas.",
 	"help.search.no_star": "/noStar",
 	"help.search.no_star.description": "Busca niveles sin rating de estrellas.",
+	"search.title": "Encontrado %s resultados, en %s paginas.",
+	"search.author": "Geometry Dash - Busqueda de niveles",
+	"search.not_found": "No se encontraron resultados.",
+	"search.failure": "Error al obtener resultados",
+	"level.no_argument": "Especifica una ID.",
+	"level.no_data": "No hay información de ese nivel.",
+	"level.failure": "Error al obtener información del nivel.",
+	"profile.no_argument": "Especifica ID o nombre.",
+	"profile.no_data": "No hay información de ese usuario.",
+	"profile.failure": "Error al obtener información del usuario.",
+	"invalid_subcommand": "Subcomando invalido, usa `%sgd` para una lista de subcomandos."
 };
 module.exports = language;
