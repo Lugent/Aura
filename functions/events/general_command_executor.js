@@ -1,3 +1,4 @@
+const fs = require("fs");
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 
@@ -27,7 +28,7 @@ async function commandExecutor(client, message) {
     if ((command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== client.config.owner)) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
         return message.inlineReply(embed);
     }
 	
@@ -35,7 +36,7 @@ async function commandExecutor(client, message) {
     if ((command.flags & constants.cmdFlags.guildOnly) && (message.channel.type !== "text")) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_guild"));
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_guild"));
         return message.inlineReply(embed);
     }
 	
@@ -43,7 +44,7 @@ async function commandExecutor(client, message) {
 	if ((command.flags & constants.cmdFlags.dmOnly) && (message.channel.type !== "dm")) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "only_dm"));
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_dm"));
         return message.inlineReply(embed);
     }
 	
@@ -54,11 +55,10 @@ async function commandExecutor(client, message) {
 		if (get_disabled_commands.includes(command.name)) {
 			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command_executor", "disabled"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "disabled"));
 			return message.inlineReply(embed);
 		}
 	}
-	
 
     // Cooldown
 	if (!client.cooldowns.has(command.name)) { client.cooldowns.set(command.name, new Discord.Collection()); }
@@ -71,7 +71,7 @@ async function commandExecutor(client, message) {
             let time_remaining = (time_count - time_actual) / 1000;
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
-            embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "cooldown", [time_remaining.toFixed(2)]));
+            embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
             return message.inlineReply(embed);
         }
     }
@@ -81,13 +81,67 @@ async function commandExecutor(client, message) {
     command.execute(client, message, args, prefix).then((get_message) => {
         time_data.set(message.author.id, time_actual);
         setTimeout(() => time_data.delete(message.author.id), time_cooldown);
-    }).catch((error) => {
+    }).catch(async (error) => {
         console.error("Command failure '" + command.name + "'" + "\n", error);
 
-        let embed = new Discord.MessageEmbed();
-        embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + error.name + (error.httpStatus ? (" - HTTP " + error.httpStatus) : "") + "\n" + (error.message ? error.message : ""));
-        return message.inlineReply(embed);
+        if (!fs.existsSync(process.cwd() + "/error-logs")) {
+            await fs.mkdirSync(process.cwd() + "/error-logs");
+        }
+
+        let actualDate = new Date();
+        let actualYear = actualDate.getFullYear();
+        let actualMonth = actualDate.getMonth();
+        let actualDay = actualDate.getDate();
+        let actualHour = actualDate.getHours();
+        let actualMinutes = actualDate.getMinutes();
+        let actualSeconds = actualDate.getSeconds();
+        let actualFullTimeDate = actualYear + "-" + actualMonth + "-" + actualDay + "_" + actualHour + "-" + actualMinutes + "-" + actualSeconds;
+
+        let textFileContent = [
+            "[" + actualFullTimeDate + "]",
+            message.author.tag + " used command, but it failed!",
+            ">>> " + command.name + " " + args.join(" "),
+            "",
+            "Stack trace: " + "\n" + error.stack
+        ];
+
+        try {
+            let textFileWrite = fs.createWriteStream(process.cwd() + "/error-logs/command_error_" + actualFullTimeDate + ".txt");
+            await textFileWrite.write(textFileContent.join("\n"));
+            await textFileWrite.end("", async () => {
+                return message.inlineReply({
+                    content: ":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error"),
+                    files: [
+                        {
+                            attachment: process.cwd() + "/error-logs/command_error_" + actualFullTimeDate + ".txt",
+                            name: "error_" + actualFullTimeDate + ".txt"
+                        }
+                    ]
+                });
+            });
+
+            /*let textFileRead = fs.createReadStream(process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt");
+            let gzipFile = fs.createWriteStream(process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt.gz");
+            let compressedFile = zlib.createGzip();
+            await textFileRead.pipe(compressedFile).pipe(gzipFile).on("finish", async (err) => {
+                if (err) { console.error("Failed to save the error log!" + "\n", err); }
+                else {
+                    await fs.rmSync(process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt");
+                    return message.inlineReply({
+                        content: ":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```",
+                        files: [
+                            {
+                                attachment: process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt.gz",
+                                name: "error_" + actualFullTimeDate + ".txt.gz"
+                            }
+                        ]
+                    });
+                }
+            });*/
+        }
+        catch (error) {
+            return message.inlineReply(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```");
+        }
     });
 }
 module.exports = commandExecutor;
