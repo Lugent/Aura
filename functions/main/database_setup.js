@@ -60,6 +60,14 @@ function setupDatabases(client) {
 		data_user.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, language TEXT);").run();
 		data_user.prepare("CREATE UNIQUE INDEX setting_id ON settings (id);").run();
 	}
+	
+	// Tags
+	let table_user_tags = data_user.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'tags';").get();
+	if (!table_user_tags["count(*)"]) {
+		data_user.prepare("CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id TEXT, name TEXT KEY, content TEXT, files TEXT, uses NUMERIC, creation_date NUMERIC);").run();
+		data_user.prepare("CREATE UNIQUE INDEX tag_id ON tags (id);").run();
+	}
+	
 	data_user.pragma("synchronous = 1");
 	data_user.pragma("journal_mode = wal");
 	client.user_data = data_user;
