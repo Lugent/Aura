@@ -3,6 +3,7 @@ let language = {
     "no_permissions": "No tienes los permisos de **Administrar Emojis** para hacer dicha acción.",
     "subcommands": "Subcomandos disponibles",
     "no_free_space": "No se puede añadir emojis debido a que el servidor tiene limite de **%s** emojis.",
+	"no_free_space.animated": "No se puede añadir emojis animados debido a que el servidor tiene limite de **%s** emojis.",
     "add.no_name": "Especifique el nombre del emoji.",
     "add.no_url": "Especifique el URL del emoji.",
     "uploaded.log": "Subido por %s",

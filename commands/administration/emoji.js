@@ -46,9 +46,24 @@ module.exports = {
 		
 		switch (args[0]) {
 			case "add": {
+				let normal_count = 0;
+				let animated_count = 0;
+				let emoji_array = message.guild.emojis.cache.array();
+				for (let emoji_index = 0; emoji_index < emoji_array.length; emoji_index++) {
+					let emoji_element = emoji_array[emoji_index];
+					if (emoji_element.animated) { animated_count += 1; break; }
+					normal_count += 1;
+				}
+				
 				switch (message.guild.premiumTier) {
 					case 0: {
-						if (message.guild.emojis.cache.size >= 50) {
+						if (animated_count >= 50) {
+							let embed = new Discord.MessageEmbed();
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space.animated", [50]));
+							embed.setColor([255, 0, 0]);
+							return message.inlineReply(embed);
+						}
+						else if (normal_count >= 50) {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space", [50]));
 							embed.setColor([255, 0, 0]);
@@ -58,7 +73,13 @@ module.exports = {
 					}
 					
 					case 1: {
-						if (message.guild.emojis.cache.size >= 100) {
+						if (animated_count >= 100) {
+							let embed = new Discord.MessageEmbed();
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space.animated", [100]));
+							embed.setColor([255, 0, 0]);
+							return message.inlineReply(embed);
+						}
+						else if (normal_count >= 100) {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space", [100]));
 							embed.setColor([255, 0, 0]);
@@ -68,7 +89,13 @@ module.exports = {
 					}
 					
 					case 2: {
-						if (message.guild.emojis.cache.size >= 150) {
+						if (animated_count >= 150) {
+							let embed = new Discord.MessageEmbed();
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space.animated", [150]));
+							embed.setColor([255, 0, 0]);
+							return message.inlineReply(embed);
+						}
+						else if (normal_count >= 150) {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space", [150]));
 							embed.setColor([255, 0, 0]);
@@ -78,7 +105,13 @@ module.exports = {
 					}
 					
 					case 3: {
-						if (message.guild.emojis.cache.size >= 250) {
+						if (animated_count >= 250) {
+							let embed = new Discord.MessageEmbed();
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space.animated", [250]));
+							embed.setColor([255, 0, 0]);
+							return message.inlineReply(embed);
+						}
+						else if (normal_count >= 250) {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_free_space", [250]));
 							embed.setColor([255, 0, 0]);
@@ -110,11 +143,12 @@ module.exports = {
 					embed.setColor([255, 0, 0]);
 					return message.inlineReply(embed);
 				}).catch((error) => {
-					console.error(error);
+					throw error;
+					/*console.error(error);
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "upload_error"));
 					embed.setColor([255, 0, 0]);
-					return message.inlineReply(embed);
+					return message.inlineReply(embed);*/
 				});
 				break;
 			}

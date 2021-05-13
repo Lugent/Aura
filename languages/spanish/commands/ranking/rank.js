@@ -6,6 +6,7 @@ let language = {
 	"xp_max": "MAX",
 	"xp": "XP",
 	"level": "Nv",
+	"rank": "Rank",
 	"embed.title": "Nivel actual de %s"
 };
 module.exports = language;

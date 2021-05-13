@@ -161,6 +161,8 @@ module.exports = {
 						let list_commands = client.commands.array();
 						for (let command_index = 0; command_index < list_commands.length; command_index++) {
 							let command_element = list_commands[command_index];
+							if (command_element.flags & constants.cmdFlags.ownerOnly) { continue; }
+							
 							if (get_disabled_commands.includes(command_element.name)) { total_commands += ":red_circle: " + command_element.name + "\n"; }
 							else { total_commands += ":green_circle: " + command_element.name + "\n"; }
 						}
