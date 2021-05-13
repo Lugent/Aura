@@ -86,6 +86,10 @@ async function exp_handler(client, message) {
 			image_context.quality = "nearest";
 			image_context.imageSmoothingEnabled = false;
 			
+			// Background
+			image_context.fillStyle = "#7289DA";
+			image_context.fillRect(0, 0, image_data_width, image_data_height);
+			
 			// Images
 			let rank_front_image = await client.functions.generateRankIcon(client, Canvas, level_index);
 			let rank_front_image_old = await client.functions.generateRankIcon(client, Canvas, level_index_old);

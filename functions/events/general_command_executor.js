@@ -1,27 +1,36 @@
-const fs = require("fs");
+// Dependencies
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
+
+// Create error logs folder
+const fs = require("fs");
+if (!fs.existsSync(process.cwd() + "/error-logs")) {
+	fs.mkdirSync(process.cwd() + "/error-logs");
+}
 
 /**
  * @param {Discord.Client} client
  * @param {Discord.Message} message
  */
 async function commandExecutor(client, message) {
+	
+	// Current guild's prefix, default if DM
 	let prefix = client.config.default.prefix;
 	if (message.guild) {
-		let get_server_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(message.guild.id);  //client.server_prefix.select.get(message.guild.id);
+		let get_server_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(message.guild.id);
 		if (get_server_prefix) { prefix = get_server_prefix.prefix; }
 	}
 	
+	// If the bot is triggered via mention or prefix
 	let escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 	let prefixRegex = new RegExp("^(<@!?" + client.user.id + ">|" + escapeRegex(prefix) + ")\\s*");
 	if ((!prefixRegex.test(message.content)) || message.author.bot) { return; }
 
-    // Get command
+    // Get the command by name or alias
 	let [, matchedPrefix] = message.content.match(prefixRegex);
 	let args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
     let name = args.shift().toLowerCase();
-	let command = client.commands.get(name) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(name));
+	let command = client.commands.get(name) || client.commands.find(cmd => { return cmd.aliases && cmd.aliases.includes(name); });
     if (!command) {	return;	}
 	
 	// Flag check; if works with the bot's owner
@@ -48,7 +57,7 @@ async function commandExecutor(client, message) {
         return message.inlineReply(embed);
     }
 	
-	// Guild check; if is disabled on that guild
+	// Guild check; if that command is disabled on that guild
 	if (message.guild) {
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
 		let get_disabled_commands = get_features.disabled_commands.trim().split(" ");
@@ -67,7 +76,7 @@ async function commandExecutor(client, message) {
     let time_data = client.cooldowns.get(command.name);
     if (time_data.has(message.author.id)) {
         let time_count = time_data.get(message.author.id) + time_cooldown;
-        if (time_actual < time_count) {
+        if (time_actual < time_count) { // Cooldown is active
             let time_remaining = (time_count - time_actual) / 1000;
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
@@ -76,18 +85,15 @@ async function commandExecutor(client, message) {
         }
     }
 
-    // Execute
+    // Execute command, throw error if fails
     client.last_msg = message.channel;
     command.execute(client, message, args, prefix).then((get_message) => {
         time_data.set(message.author.id, time_actual);
         setTimeout(() => time_data.delete(message.author.id), time_cooldown);
     }).catch(async (error) => {
         console.error("Command failure '" + command.name + "'" + "\n", error);
-
-        if (!fs.existsSync(process.cwd() + "/error-logs")) {
-            await fs.mkdirSync(process.cwd() + "/error-logs");
-        }
-
+		
+		// Get current date and time
         let actualDate = new Date();
         let actualYear = actualDate.getFullYear();
         let actualMonth = actualDate.getMonth();
@@ -97,6 +103,7 @@ async function commandExecutor(client, message) {
         let actualSeconds = actualDate.getSeconds();
         let actualFullTimeDate = actualYear + "-" + actualMonth + "-" + actualDay + "_" + actualHour + "-" + actualMinutes + "-" + actualSeconds;
 
+		// Set text content
         let textFileContent = [
             "[" + actualFullTimeDate + "]",
             message.author.tag + " used command, but it failed!",
@@ -105,39 +112,18 @@ async function commandExecutor(client, message) {
             "Stack trace: " + "\n" + error.stack
         ];
 
+		// Try to write it, save it to local disk and send the file as command failure error.
+		// Otherwise just throw the error as a simple stack trace.
         try {
             let textFileWrite = fs.createWriteStream(process.cwd() + "/error-logs/command_error_" + actualFullTimeDate + ".txt");
             await textFileWrite.write(textFileContent.join("\n"));
-            await textFileWrite.end("", async () => {
-                return message.inlineReply({
-                    content: ":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error"),
-                    files: [
-                        {
-                            attachment: process.cwd() + "/error-logs/command_error_" + actualFullTimeDate + ".txt",
-                            name: "error_" + actualFullTimeDate + ".txt"
-                        }
-                    ]
-                });
-            });
-
-            /*let textFileRead = fs.createReadStream(process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt");
-            let gzipFile = fs.createWriteStream(process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt.gz");
-            let compressedFile = zlib.createGzip();
-            await textFileRead.pipe(compressedFile).pipe(gzipFile).on("finish", async (err) => {
-                if (err) { console.error("Failed to save the error log!" + "\n", err); }
-                else {
-                    await fs.rmSync(process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt");
-                    return message.inlineReply({
-                        content: ":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```",
-                        files: [
-                            {
-                                attachment: process.cwd() + "/error-logs/error_" + actualFullTimeDate + ".txt.gz",
-                                name: "error_" + actualFullTimeDate + ".txt.gz"
-                            }
-                        ]
-                    });
-                }
-            });*/
+            await textFileWrite.end();
+			return message.inlineReply({
+				content: ":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error"),
+				files: [
+					new Discord.MessageAttachment(Buffer.from(error.stack), "command_error_" + actualFullTimeDate + ".txt")
+				]
+			});
         }
         catch (error) {
             return message.inlineReply(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```");
