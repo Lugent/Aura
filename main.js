@@ -136,16 +136,53 @@ client.on("inviteCreate", async (invite) => {
 
 client.on("inviteDelete", async (invite) => {
 	await guild_invite_tracker(client);
-	if (invite.inviter) {
+
+
+	/*if (invite.inviter) {
 		console.log("Invite '" + invite.code + "' deleted, created by '" + invite.inviter.tag + "' from '" + invite.guild.name + "'.");
 	}
 	else {
 		console.log("Invite '" + invite.code + "' deleted, from '" + invite.guild.name + "'.");
-	}
+	}*/
 });
 
 client.on("guildMemberAdd", async (member) => {
-	await guild_member_join(client, member);
+	var get_guild = client.guild_invites.get(member.guild.id);
+	await member.guild.fetchInvites().then(async (invites) => {
+		var guild_invite = invites.find(invite => get_guild.get(invite.code) < invite.uses);
+		if (guild_invite) {
+			if (guild_invite.inviter) {
+				var member_inviter = await client.users.fetch(guild_invite.inviter.id, true, true);
+				guild_invite_tracker(client);
+
+				console.log("'" + member.user.tag + "' joined '" + member.guild.name + "'");
+				console.log("Using invite '" + guild_invite.code + "' by '" + member_inviter.tag + "'.");
+				console.log("Invite was used " + guild_invite.uses + " times.");
+			}
+			else {
+				console.log("'" + member.user.tag + "' joined '" + member.guild.name + "'");
+				console.log("The invite wasn't found or was deleted.");
+			}
+		}
+		else {
+			if (!member.user.bot) {
+				console.log("'" + member.user.tag + "' joined '" + member.guild.name + "'.");
+			}
+		}
+	});
+
+	if (member.user.bot) {
+		if (member.guild.me.hasPermission("VIEW_AUDIT_LOG")) {
+			let audit_logs = await member.guild.fetchAuditLogs({type: "BOT_ADD", limit: 1});
+			let action_log = audit_logs.entries.first();
+			if (action_log) {
+				let { executor, target } = action_log;
+				if (target.id === member.user.id) {
+					console.log("Bot '" + member.user.tag + "' added to '" + member.guild.name + "' by '" + executor.tag + "'.");
+				}
+			}
+		}
+	}
 });
 
 client.on("guildMemberRemove", async (member) => {
@@ -163,7 +200,9 @@ client.on("guildDelete", async (guild) => {
 });
 
 client.on("guildUnavailable", async (guild) => {
-	console.log("Guild offline " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
+	if (guild.name) {
+		console.log("Guild offline " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
+	}
 });
 
 // Verbose
