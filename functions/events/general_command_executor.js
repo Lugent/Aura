@@ -118,16 +118,16 @@ async function commandExecutor(client, message) {
             let textFileWrite = fs.createWriteStream(process.cwd() + "/error-logs/command_error_" + actualFullTimeDate + ".txt");
             await textFileWrite.write(textFileContent.join("\n"));
             await textFileWrite.end();
-			return message.inlineReply({
+        }
+        finally {
+            return message.inlineReply({
 				content: ":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error"),
 				files: [
 					new Discord.MessageAttachment(Buffer.from(error.stack), "command_error_" + actualFullTimeDate + ".txt")
 				]
 			});
         }
-        catch (error) {
-            return message.inlineReply(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```");
-        }
+        return message.inlineReply(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```");
     });
 }
 module.exports = commandExecutor;

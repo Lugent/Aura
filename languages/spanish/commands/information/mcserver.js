@@ -30,5 +30,5 @@ let language = {
 	"error": "Error en el proceso de datos JSON",
 	"players_file": "Debido a limites de Discord, la lista de jugadores ha sivo enviada en un archivo de texto.",
 	"fatal_failure": "Error fatal en la petición HTTPS.",
-}
+};
 module.exports = language;

@@ -1,4 +1,13 @@
+const Discord = require("discord.js");
+
+/**
+ * @param {Discord.Client} client
+ * @param {Discord.Message} message
+ * @returns {Discord.Message|undefined}
+ */
 function messageFilter(client, message) {
+	if (!message.guild) { return; }
+
 	delete require.cache[require.resolve(process.cwd() + "/configurations/blacklisted_links.js")];
 	var blacklisted_links = require(process.cwd() + "/configurations/blacklisted_links.js");
 	for (let blacklisted_index = 0; blacklisted_index < blacklisted_links.length; blacklisted_index += 1) {

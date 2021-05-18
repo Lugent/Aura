@@ -13,8 +13,9 @@ module.exports = {
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
-	 * @param {Array} args
+	 * @param {String[]} args
 	 * @param {String} prefix
+	 * @returns {Discord.Message}
 	 */
 	async execute(client, message, args, prefix) {
 		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === client.config.owner)))) {
@@ -28,8 +29,7 @@ module.exports = {
 		embed2.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "loading"));
 		embed2.setColor([255, 255, 0]);
 		
-		let sent_message;
-		await message.channel.send(embed2).then(message => { sent_message = message; });
+		let send_message = await message.channel.send(embed2);
 		
 		let guild = message.guild;
 		if ((args[0]) && (message.author.id === client.config.owner)) {
@@ -39,7 +39,9 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "failure"));
 			embed.setColor([255, 0, 0]);
-			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+			else { return message.inlineReply(embed); }
 		}
 		
 		// Members
@@ -64,23 +66,20 @@ module.exports = {
 		}
 		
 		let list_members = { online: online_members, idle: idle_members, dnd: dnd_members, offline: offline_members, bot: bot_members, boosters: boosters_members };
-		let members_count = ""; //client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.members.empty");
-		let member_started = false;
+		let members_count = "```js" + "\n";
 		let member_online = list_members.online + list_members.idle + list_members.dnd;
 		if (member_online > 0) {
-			member_started = true;
-			members_count += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "member_count.online", [member_online]);
+			members_count += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "member_count.online", [member_online]) + "\n";
 		}
 		
 		if (list_members.offline > 0) {
-			if (member_started) { members_count += ", "; } else { member_started = true; }
-			members_count += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "member_count.offline", [list_members.offline]);
+			members_count += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "member_count.offline", [list_members.offline]) + "\n";
 		}
 		
 		if (list_members.bot > 0) {
-			if (member_started) { members_count += ", "; } else { member_started = true; }
-			members_count += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "member_count.bots", [list_members.bot]);
+			members_count += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "member_count.bots", [list_members.bot]) + "\n";
 		}
+		members_count += "```";
 
 		// Verification
 		let moderation_level = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "unknown");
@@ -140,7 +139,7 @@ module.exports = {
 			case 2: { boost_level = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "boost_level.two"); break; }
 			case 3: { boost_level = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "boost_level.three"); break; }
 		}
-		boost_level += " " + "(" + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "boost_level.count", [guild.premiumSubscriptionCount]) + ", " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "boost_level.count_boosters", [count_boosters]) + ")";
+		boost_level = "```js" + "\n" + boost_level + "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "boost_level.count", [guild.premiumSubscriptionCount]) + "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "boost_level.count_boosters", [count_boosters]) + "```";
 		
 		// Features
 		let verified = false;
@@ -173,16 +172,16 @@ module.exports = {
 		}
 		
 		let features = "";
-		if (feature_community) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.communityfeatures.enabled") + "\n"; }
-		if (feature_discovery) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.communityfeatures.discovery"); }
-		if (feature_featured) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.communityfeatures.featured"); }
-		if (feature_welcome) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.communityfeatures.welcomescreen") + "\n"; }
-		if (feature_animated) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.extrafeatures.gif") + "\n"; }
-		if (feature_invite) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.extrafeatures.invitesplash") + "\n"; }
-		if (feature_vanity) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.communityfeatures.vanitycode") + "\n" + guild.vanityURLCode + "\n"; }
-		if (feature_banner) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.extrafeatures.banner") + "\n"; }
-		if (feature_commerce) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.extrafeatures.commerce") + "\n"; }
-		if (feature_vip_regions) { features += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.extrafeatures.vip") + "\n"; }
+		if (feature_community) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "community_features.enabled") + "\n"; }
+		if (feature_discovery) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "community_features.discovery"); }
+		if (feature_featured) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "community_features.featured"); }
+		if (feature_welcome) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "community_features.welcome_screen") + "\n"; }
+		if (feature_animated) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "extra_features.gif") + "\n"; }
+		if (feature_invite) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "extra_features.invite_splash") + "\n"; }
+		if (feature_vanity) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "community_features.vanity_code") + "\n" + guild.vanityURLCode + "\n"; }
+		if (feature_banner) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "extra_features.banner") + "\n"; }
+		if (feature_commerce) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "extra_features.commerce") + "\n"; }
+		if (feature_vip_regions) { features += "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "extra_features.vip") + "\n"; }
 
 		// Channels
 		let categories = 0;
@@ -202,19 +201,20 @@ module.exports = {
 			}
 		}
 		
-		let count_channels = " " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.channels.texts", [text_channels]); // text_channels
+		let count_channels = "```js" + "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "channel_count.texts", [text_channels]); // text_channels
 		if (voice_channels > 0) {
-			count_channels += ", " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.channels.voices", [voice_channels]); // voice_channels
+			count_channels += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "channel_count.voices", [voice_channels]); // voice_channels
 		}
 		if (news_channels > 0) {
-			count_channels += ", " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.channels.news", [news_channels]); // news_channels
+			count_channels += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "channel_count.news", [news_channels]); // news_channels
 		}
 		if (store_channels > 0) {
-			count_channels += ", " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.channels.stores", [store_channels]); // store_channels
+			count_channels += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "channel_count.stores", [store_channels]); // store_channels
 		}
 		if (categories > 0) {
-			count_channels += ", " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.channels.categorys", [categories]); // categories
+			count_channels += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "channel_count.categories", [categories]); // categories
 		}
+		count_channels += "```";
 		
 		// Roles
 		let total_roles = 0;
@@ -224,8 +224,11 @@ module.exports = {
 			total_roles += 1;
 		}
 		
-		let count_roles = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.roles.field.none");
-		if (total_roles > 0) { count_roles = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.roles.field.count", [total_roles]); } // total_roles
+		let count_roles = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "role_count.none");
+		if (total_roles > 0) {
+			count_roles = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "role_count.amount", [total_roles]);
+		}
+		count_roles = "```js" + "\n" + "- " + count_roles + "```";
 		
 		// Emojis
 		let normal_emojis = 0;
@@ -237,48 +240,47 @@ module.exports = {
 			normal_emojis += 1;
 		}
 		
-		let count_emojis = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.emojis.field.none");
+		let count_emojis = "```js" + "\n" + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "emoji_count.none") + "```";
 		let total_emojis = normal_emojis + animated_emojis;
 		if (total_emojis > 0) {
-			count_emojis = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.emojis.field.normal", [normal_emojis]) + ", " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.emojis.field.animated", [animated_emojis]); // normalEmojis - animated_emojis
-		} 
+			count_emojis = "```js" + "\n" + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "emoji_count.total", [total_emojis]) + "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "emoji_count.normal", [normal_emojis]) + "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "emoji_count.animated", [animated_emojis]) + "```";
+		}
 		
 		// Default notifications
-		let notifications = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.notifications.all");
-		if (guild.defaultMessageNotifications === "MENTIONS") {
-			notifications = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.notifications.mentions");
+		let notifications = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "notifications.all");
+		switch (guild.defaultMessageNotifications) {
+			case "MENTIONS": {
+				notifications = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "notifications.mentions");
+				break;
+			}
 		}
 		
 		// System channel
-		let system_channel = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.systemchannel.disabled");
+		let system_channel = client.functions.getTranslation(client, message.author, message.guild, "system_channel.disabled");
 		let system_channel_flags = "";
 		if (guild.systemChannel) {
 			let get_flags = guild.systemChannelFlags.serialize();
-			if ((get_flags.WELCOME_MESSAGE_DISABLED) && (get_flags.BOOST_MESSAGE_DISABLED)) {
-				system_channel_flags += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.systemchannel.nomessages");
+			if (!get_flags.WELCOME_MESSAGE_DISABLED) {
+				system_channel_flags += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.new_members");
 			}
-			else if ((!get_flags.WELCOME_MESSAGE_DISABLED) && (get_flags.BOOST_MESSAGE_DISABLED)) {
-				system_channel_flags += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.systemchannel.nowelcome");
-			}
-			else if ((get_flags.WELCOME_MESSAGE_DISABLED) && (!get_flags.BOOST_MESSAGE_DISABLED)) {
-				system_channel_flags += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.systemchannel.noboost");
-			}
-			else {
-				system_channel_flags += client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.systemchannel.all");
+
+			if (!get_flags.BOOST_MESSAGE_DISABLED) {
+				system_channel_flags += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.server_boosts");
 			}
 			
-			system_channel = "#" + guild.systemChannel.name + " - " + "**" + system_channel_flags + "**";
+			if (!system_channel_flags.length) { system_channel_flags = "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.no_messages"); }
+			system_channel = "<#" + guild.systemChannel.id + ">" + "\n" + "```" + system_channel_flags + "```";
 		}
 		
 		let time_string = client.functions.generateDateString(client, message.author, guild, guild.createdAt).capitalize();
 		
 		// Widger
-		let widget = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.widget.disabled");
-		if (guild.widgetEnabled) { widget = "#" + guild.widgetChannel.name; }
+		let widget = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "widget.disabled");
+		if (guild.widgetEnabled) { widget = "<#" + guild.widgetChannel.id + ">"; }
 		
 		// Rules
-		let rules = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.data.ruleschannel.none");
-		if (guild.rulesChannel) { rules = "#" + guild.rulesChannel.name; }
+		let rules = client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "rules_channel.none");
+		if (guild.rulesChannel) { rules = "<#" + guild.rulesChannel.id + ">"; }
 		
 		// Tag
 		let server_tag = "";
@@ -289,37 +291,42 @@ module.exports = {
 		let description_string = (guild.description ? guild.description : "") + server_tag;
 		
 		// Locale
-		let region_string = ":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.region") + ": " + region;
-		let locale_string = ":earth_americas: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.language") + ": " + locale;
+		let region_string = ":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.region") + ": " + region;
+		let locale_string = ":earth_americas: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.language") + ": " + locale;
 		
 		// Moderation
-		let rules_channel_string = ":clipboard: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.ruleschannel") + ": " + rules;
-		let system_channel_string = ":radio: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.systemchannel") + ": " + system_channel;
-		let notifications_string = ":loudspeaker: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.notifications") + ": " + notifications;
-		let moderation_string = ":passport_control: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.moderator") + ": " + moderation_level;
-		let ex_filter_string = ":guard: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.filter") + ": " + filter_level;
-		let mfa_string = ":police_officer: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.mfa") + ": " + mfa_level;
-		let widget_string = ":page_facing_up:  " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.widget") + ": " + widget;
+		let notifications_string = ":loudspeaker: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.notifications") + ": " + notifications;
+		let moderation_string = ":passport_control: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.moderator") + ": " + moderation_level;
+		let ex_filter_string = ":guard: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.filter_level") + ": " + filter_level;
+		let mfa_string = ":police_officer: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.mfa") + ": " + mfa_level;
 		
+		// Settings
+		let rules_channel_string = ":clipboard: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.rules_channel") + ": " + rules;
+		let system_channel_string = ":radio: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.system_channel") + ": " + system_channel;
+		let widget_string = ":page_facing_up:  " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.widget") + ": " + widget;
+
 		// Stats
-		let date_string = ":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.creationdate") + ": " + time_string;
-		let member_string = ":card_index: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.members") + ": " + members_count;
-		let channel_string = ":hash: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.channels") + ": " + count_channels;
-		let roles_string = ":triangular_flag_on_post: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.roles") + ": " + count_roles;
-		let emojis_string = ":smiley: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.emojis") + ": " + count_emojis;
-		let boost_string = ":diamonds: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.boostlevel") + ": " + boost_level;
+		let date_string = ":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.creation_date") + ": " + time_string;
+		let member_string = ":card_index: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.members") + ": " + members_count;
+		let channel_string = ":hash: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.channels") + ": " + count_channels;
+		let roles_string = ":triangular_flag_on_post: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.roles") + ": " + count_roles;
+		let emojis_string = ":smiley: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.emojis") + ": " + count_emojis;
+		let boost_string = ":diamonds: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.boost_level") + ": " + boost_level;
 		
 		// Information
 		let embed = new Discord.MessageEmbed();
 		embed.setThumbnail(guild.iconURL());
-		embed.setTitle(guild.name + "\n" + "(" + guild.id + ")");
+		embed.setTitle(guild.name + "\n" + "> " + guild.nameAcronym);
 		if (description_string.length) { embed.setDescription(guild.description); }
-		embed.setAuthor(guild.owner.user.tag + "\n" + "(" + guild.owner.user.id + ")", guild.owner.user.displayAvatarURL());
-		embed.addField(":map: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.locale") + ":", region_string + "\n" + locale_string);
-		embed.addField(":closed_lock_with_key: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.admin") + ":", (feature_community ? (rules_channel_string + "\n") : "") + system_channel_string + "\n" + notifications_string + "\n" + moderation_string + "\n" + ex_filter_string + "\n" + mfa_string + "\n" + widget_string);
-		embed.addField(":bar_chart: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.stats") + ":", date_string + "\n" + member_string + "\n" + channel_string + "\n" + roles_string + "\n" + emojis_string + "\n" + boost_string);
-		if (features.length) { embed.addField(":star2: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "command.guild.embed.features") + ":", features); }
+		embed.setAuthor(guild.owner.user.tag, guild.owner.user.displayAvatarURL());
+		embed.addField(":map: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.locale"), region_string + "\n" + locale_string);
+		embed.addField(":bar_chart: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.stats"), date_string + "\n" + member_string + "\n" + channel_string + "\n" + roles_string + "\n" + emojis_string + "\n" + boost_string);
+		embed.addField(":closed_lock_with_key: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.admin"), notifications_string + "\n" + moderation_string + "\n" + ex_filter_string + "\n" + mfa_string);
+		if (features.length) { embed.addField(":star2: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.features"), "```" + "\n" + features + "```"); }
+		embed.addField(":wrench: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.settings"), (feature_community ? (rules_channel_string + "\n") : "") + system_channel_string + "\n" + widget_string);
 		embed.setColor([0, 255, 0]);
-		return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+		
+		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+		else { return message.inlineReply(embed); }
 	},
 };

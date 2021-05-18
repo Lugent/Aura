@@ -57,7 +57,7 @@ module.exports = {
 				let user_find = await client.users.fetch(level_element.user_id);
 				if (user_find) { member_name = user_find.tag; }
 			}
-			members_levels += "**" + rank + "**" + "#" + " | " + "**" + member_name + "**" + " | " + "Lv. " + "**" + level_element.level + "**" + " | " + "**" + client.functions.number_formatter(level_element.score, 2) + "**" + " XP" + " | " + "**" + level_element.messages + "**" + " Messages" + "\n";
+			members_levels += "**" + "#" + rank + "**" + " | " + "**" + member_name + "**" + " | " + "Lv. " + "**" + level_element.level + "**" + " | " + "**" + client.functions.getFormattedNumber(level_element.score, 2) + "**" + " XP" + " | " + "**" + client.functions.getFormattedNumber(level_element.messages, 2) + "**" + " Messages" + "\n";
 		}
 		
 		var embed = new Discord.MessageEmbed();

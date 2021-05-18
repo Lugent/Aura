@@ -17,26 +17,26 @@ let language = {
 	"text_permisions.send_messages": "Enviar mensajes",
 	"text_permisions.send_tts_messages": "Enviar mensajes texto a voz",
 	"text_permisions.insert_links": "Insertar enlaces",
-	"text_permisions.insert_files": "Insertar archivos",
+	"text_permisions.insert_files": "Adjuntar archivos",
 	"text_permisions.add_reactions": "Añadir reacciones",
 	"text_permisions.use_external_emojis": "Usar emojis externos",
-	"text_permisions.mention_everyone": "Mencionar a todos los miembros y roles",
+	"text_permisions.mention_everyone": "Mencionar @everyone, @here y todos los @roles",
 	"text_permisions.manage_messages": "Administrar mensajes",
 	"text_permisions.read_message_history": "Leer historial de mensajes",
 	"voice_permisions.connect": "Conectar",
 	"voice_permisions.speak": "Hablar",
 	"voice_permisions.stream": "Transmitir",
-	"voice_permisions.use_vad": "Usar actividad de voz",
+	"voice_permisions.use_voice_activity_detector": "Usar actividad de voz (VAD)",
 	"voice_permisions.priority_speaker": "Prioridad de voz",
 	"voice_permisions.mute_members": "Silenciar miembros",
 	"voice_permisions.deafen_members": "Ensordecer miembros",
 	"voice_permisions.move_members": "Mover y desconectar miembros",
 	"embed.roles": "Roles",
 	"embed.general_permissions": "Permisos generales",
-	"embed.membership_permissions": "Permisos de membresia",
+	"embed.membership_permissions": "Permisos de miembro",
 	"embed.text_permissions": "Permisos de texto",
 	"embed.voice_permissions": "Permisos de voz",
-	"embed.boost_date": "Fecha de mejora",
-	"embed.join_date": "Fecha de entrada"
-}
+	"embed.boost_date": "Boosteo el servidor el",
+	"embed.join_date": "Se unio el"
+};
 module.exports = language;

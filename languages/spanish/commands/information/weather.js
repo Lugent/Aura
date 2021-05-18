@@ -7,5 +7,5 @@ let language = {
 	"embed.humidity": "Humedad",
 	"embed.timezone": "Zona Horaria",
 	"embed.coords": "Coordenadas"
-}
+};
 module.exports = language;
