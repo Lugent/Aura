@@ -5,11 +5,11 @@ const chalk = require("chalk");
 // Process handlers
 process.on("exit", (code) => {
 	client.destroy();
-	console.log("Process exit with code " + code);
+	console.log("Process termineted with exit code " + code);
 });
 
 process.on("unhandledRejection", error => {
-	console.error(chalk.redBright("ERROR: ") + "Unhandled Rejection:" + "\n", error);
+	console.error(chalk.redBright("ERROR:") + " Unhandled promise rejection." + "\n", error);
 	if (client.last_msg) {
 		let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
@@ -22,13 +22,13 @@ process.on("unhandledRejection", error => {
 // Load variables
 const dotenv = require("dotenv");
 let dotenv_result = dotenv.config();
-if (dotenv_result.error) { process.exit(); } else { console.log("Loaded .env variables."); }
+if (dotenv_result.error) { process.exit(); } else { console.log("Loaded enviroment variables."); }
 
 // Extensions
 require(process.cwd() + "/functions/modules/ExtendedMessage.js");
 
 // Client
-const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, disableMentions: "everyone", http: {version: 7}});
+const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, http: {version: 7}});
 client.config = require(process.cwd() + "/configurations/client.js");
 client.functions = {};
 
@@ -81,27 +81,27 @@ client.connected = false; // don't change this
 let setupDatabases = require(process.cwd() + "/functions/main/database_setup.js");
 try { setupDatabases(client); }
 catch (error) {
-	console.log(chalk.redBright("ERROR: ") + "Database failure, exiting program..." + "\n", error);
+	console.log(chalk.redBright("ERROR:") + " Database error, program terminated." + "\n", error);
 	process.exit();
 }
 finally { console.log("Databases active."); }
 
 // Login
-let login_check = setInterval(function() {  if (!client.connected) { console.log(chalk.yellowBright("WARNING: ") + "The login request is taking too long!"); } }, 10000);
+let login_check = setInterval(function() {  if (!client.connected) { console.log(chalk.yellowBright("WARNING: ") + "The request is taking too long!"); } }, 10000);
 client.login(process.env.DISCORD_TOKEN).then(() => {
 	clearInterval(login_check);
-	console.log("Connected to Discord, preparing functions...");
+	console.log("Connected to Discord!");
+	console.log("Initializing functions...");
 }).catch((error) => {
-	console.error(chalk.redBright("ERROR: ") + "Cannot connect, exiting program..." + "\n", error);
+	console.error(chalk.redBright("ERROR:") + " Connection failed, program terminated." + "\n", error);
 	process.exit();
 });
-console.log("Connecting to discord...");
+console.log("Connecting to Discord...");
 
 // Load event files
 let general_command_executor = require(process.cwd() + "/functions/events/general_command_executor.js"); 
 let general_data_handler = require(process.cwd() + "/functions/events/general_database_handler.js");
 let guild_invite_tracker = require(process.cwd() + "/functions/main/invite_tracker.js");
-let guild_member_join = require(process.cwd() + "/functions/events/guild_member_join.js");
 let guild_msg_logger = require(process.cwd() + "/functions/events/general_message_logger.js");
 let guild_bot_welcome = require(process.cwd() + "/functions/events/guilds_bot_welcome.js");
 let guild_experience_handler = require(process.cwd() + "/functions/events/guilds_experience_handler.js");
@@ -137,13 +137,16 @@ client.on("inviteCreate", async (invite) => {
 client.on("inviteDelete", async (invite) => {
 	await guild_invite_tracker(client);
 
-
-	/*if (invite.inviter) {
-		console.log("Invite '" + invite.code + "' deleted, created by '" + invite.inviter.tag + "' from '" + invite.guild.name + "'.");
+	if (invite.guild.me.hasPermission("VIEW_AUDIT_LOG")) {
+		let audit_logs = await invite.guild.fetchAuditLogs({type: "INVITE_DELETE", limit: 1});
+		let action_log = audit_logs.entries.first();
+		if (action_log) {
+			let { executor, target } = action_log;
+			if (target.code === invite.code) {
+				console.log("Invite code " + invite.code + " was deleted from " + invite.guild.name + " by " +  executor.tag);
+			}
+		}
 	}
-	else {
-		console.log("Invite '" + invite.code + "' deleted, from '" + invite.guild.name + "'.");
-	}*/
 });
 
 client.on("guildMemberAdd", async (member) => {
@@ -151,22 +154,21 @@ client.on("guildMemberAdd", async (member) => {
 	await member.guild.fetchInvites().then(async (invites) => {
 		var guild_invite = invites.find(invite => get_guild.get(invite.code) < invite.uses);
 		if (guild_invite) {
+			console.log("User " + member.user.tag + " joined " + member.guild.name + "");
 			if (guild_invite.inviter) {
 				var member_inviter = await client.users.fetch(guild_invite.inviter.id, true, true);
 				guild_invite_tracker(client);
 
-				console.log("'" + member.user.tag + "' joined '" + member.guild.name + "'");
-				console.log("Using invite '" + guild_invite.code + "' by '" + member_inviter.tag + "'.");
+				console.log("Using invite code " + guild_invite.code + " created by " + member_inviter.tag);
 				console.log("Invite was used " + guild_invite.uses + " times.");
 			}
 			else {
-				console.log("'" + member.user.tag + "' joined '" + member.guild.name + "'");
 				console.log("The invite wasn't found or was deleted.");
 			}
 		}
 		else {
 			if (!member.user.bot) {
-				console.log("'" + member.user.tag + "' joined '" + member.guild.name + "'.");
+				console.log("User " + member.user.tag + " joined to " + member.guild.name);
 			}
 		}
 	});
@@ -178,7 +180,7 @@ client.on("guildMemberAdd", async (member) => {
 			if (action_log) {
 				let { executor, target } = action_log;
 				if (target.id === member.user.id) {
-					console.log("Bot '" + member.user.tag + "' added to '" + member.guild.name + "' by '" + executor.tag + "'.");
+					console.log("Bot " + member.user.tag + " was added to " + member.guild.name + " by " + executor.tag);
 				}
 			}
 		}
@@ -192,35 +194,35 @@ client.on("guildMemberRemove", async (member) => {
 client.on("guildCreate", async (guild) => {
 	await guild_bot_welcome(client, guild);
 	await guild_invite_tracker(client);
+	console.log("Joined to guild " + guild.name);
+	console.log("<" + guild.id + ">");
 });
 
 client.on("guildDelete", async (guild) => {
 	await guild_invite_tracker(client);
-	console.log("Leaved guild " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
+	console.log("Leaved from guild " + guild.name);
+	console.log("<" + guild.id + ">");
 });
 
 client.on("guildUnavailable", async (guild) => {
 	if (guild.name) {
-		console.log("Guild offline " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
+		console.log("A guild is unavaliable -> " + guild.name);
+		console.log("<" + guild.id + ">");
 	}
 });
 
 // Verbose
 let command_loader = require(process.cwd() + "/functions/main/command_loader.js");
-let web_setup = require(process.cwd() + "/functions/main/web_setup.js");
 client.on("ready", async () => {
 	client.functions.resourceMonitor(client);
-	if (client.status_updating) { client.functions.activityUpdater(client); }
 	
 	console.log("Registering commands...");
 	await command_loader(client);
 	
-	console.log("Starting up webserver...");
-	await web_setup(client);
-	
 	console.log("Initializing invite tracker...");
 	await guild_invite_tracker(client);
 	
+	if (client.status_updating) { client.functions.activityUpdater(client); }
 	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 15000);
 	setInterval(function() {
 		if (client.connected) {
@@ -231,17 +233,17 @@ client.on("ready", async () => {
             else if (ping > 140) { pingcolor = chalk.yellowBright(ping); }
             else if (ping > 75) { pingcolor = chalk.greenBright(ping); }
             else if (ping > 30) { pingcolor = chalk.cyanBright(ping); }
-			console.log("Connection latency is " + pingcolor + "ms.");
+			console.log("Websocket latency: " + pingcolor + "ms.");
 		}
 	}, 120000);
 	
 	client.connected = true;
-	console.log("All functions ready.");
-	console.log("Successfully connected as '" + client.user.tag + "'.");
+	console.log("Functions ready.");
+	console.log("Connected as " + client.user.tag);
 });
 client.on("invalidated", () => {
-	console.error(chalk.redBright("ERROR: ") + "Invalid connection, exiting program...");
+	console.error(chalk.redBright("ERROR:") + " Invalid connection, exiting program...");
 	process.exit();
 });
-client.on("error", (error) => { console.error(chalk.redBright("ERROR: "), error); });
-client.on("warn", (warn) => { console.warn(chalk.yellowBright("WARNING: "), warn); });
+client.on("error", (error) => { console.error(chalk.bgRedBright("ERROR: "), error); });
+client.on("warn", (warn) => { console.warn(chalk.bgYellowBright("WARNING: "), warn); });
