@@ -25,7 +25,7 @@ module.exports = {
 		}
 
         if (args[0] === "all") {
-			let command_loader = require(process.cwd() + "/functions/main/command_loader.js");
+			let command_loader = require(process.cwd() + "/functions/command_loader.js");
 			await command_loader(client, true);
 
 			let embed = new Discord.MessageEmbed();

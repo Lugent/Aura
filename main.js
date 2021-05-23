@@ -25,7 +25,7 @@ let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded enviroment variables."); }
 
 // Extensions
-require(process.cwd() + "/functions/modules/ExtendedMessage.js");
+require(process.cwd() + "/modules/ExtendedMessage.js");
 
 // Client
 const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, http: {version: 7}});
@@ -33,36 +33,36 @@ client.config = require(process.cwd() + "/configurations/client.js");
 client.functions = {};
 
 // Client main functions
-let main_functions = require(process.cwd() + "/functions/main/main_functions.js");
+let main_functions = require(process.cwd() + "/functions/main_functions.js");
 client.functions.activityUpdater = main_functions.activityUpdater;
 client.functions.resourceMonitor = main_functions.resourceMonitor;
 client.functions.generateRankIcon = main_functions.generateRankIcon;
 
 // Client database functions
-let database_functions = require(process.cwd() + "/functions/main/database_functions.js");
+let database_functions = require(process.cwd() + "/functions/database_functions.js");
 client.functions.handleServerDatabase = database_functions.handleServerDatabase;
 client.functions.handleUserDatabase = database_functions.handleUserDatabase;
 
 // Client database functions
-let number_functions = require(process.cwd() + "/functions/main/number_functions.js");
+let number_functions = require(process.cwd() + "/functions/number_functions.js");
 client.functions.getRandomNumber = number_functions.getRandomNumber;
 client.functions.getRandomNumberRange = number_functions.getRandomNumberRange;
 client.functions.getFormattedNumber = number_functions.getFormattedNumber;
 client.functions.getOrdinalNumber = number_functions.getOrdinalNumber;
 
 // Client time functions
-let time_functions = require(process.cwd() + "/functions/main/time_functions.js");
+let time_functions = require(process.cwd() + "/functions/time_functions.js");
 client.functions.ISODateToJSDate = time_functions.ISODateToJSDate;
 client.functions.generateDateString = time_functions.generateDateString;
 client.functions.generateTimeString = time_functions.generateTimeString;
 client.functions.generateDurationString = time_functions.generateDurationString;
 
 // Client string functions
-let string_functions = require(process.cwd() + "/functions/main/string_functions.js");
+let string_functions = require(process.cwd() + "/functions/string_functions.js");
 client.functions.getFormatedString = string_functions.getFormatedString;
 
 // Client translator function
-client.functions.getTranslation = require(process.cwd() + "/functions/main/translator_function.js");
+client.functions.getTranslation = require(process.cwd() + "/functions/translator_function.js");
 
 // Client data
 client.commands = new Discord.Collection();
@@ -78,7 +78,7 @@ client.status_updating = true;
 client.connected = false; // don't change this
 
 // Databases
-let setupDatabases = require(process.cwd() + "/functions/main/database_setup.js");
+let setupDatabases = require(process.cwd() + "/functions/database_setup.js");
 try { setupDatabases(client); }
 catch (error) {
 	console.log(chalk.redBright("ERROR:") + " Database error, program terminated." + "\n", error);
@@ -99,13 +99,13 @@ client.login(process.env.DISCORD_TOKEN).then(() => {
 console.log("Connecting to Discord...");
 
 // Load event files
-let general_command_executor = require(process.cwd() + "/functions/events/general_command_executor.js"); 
-let general_data_handler = require(process.cwd() + "/functions/events/general_database_handler.js");
-let guild_invite_tracker = require(process.cwd() + "/functions/main/invite_tracker.js");
-let guild_msg_logger = require(process.cwd() + "/functions/events/general_message_logger.js");
-let guild_bot_welcome = require(process.cwd() + "/functions/events/guilds_bot_welcome.js");
-let guild_experience_handler = require(process.cwd() + "/functions/events/guilds_experience_handler.js");
-let user_afk_handler = require(process.cwd() + "/functions/events/users_afk_handler.js");
+let general_command_executor = require(process.cwd() + "/events/general_command_executor.js"); 
+let general_data_handler = require(process.cwd() + "/events/general_database_handler.js");
+let guild_invite_tracker = require(process.cwd() + "/main/invite_tracker.js");
+let guild_msg_logger = require(process.cwd() + "/events/general_message_logger.js");
+let guild_bot_welcome = require(process.cwd() + "/events/guilds_bot_welcome.js");
+let guild_experience_handler = require(process.cwd() + "/events/guilds_experience_handler.js");
+let user_afk_handler = require(process.cwd() + "/events/users_afk_handler.js");
 
 // Execute events
 client.on("message", async (message) => {
@@ -212,7 +212,7 @@ client.on("guildUnavailable", async (guild) => {
 });
 
 // Verbose
-let command_loader = require(process.cwd() + "/functions/main/command_loader.js");
+let command_loader = require(process.cwd() + "/functions/command_loader.js");
 client.on("ready", async () => {
 	client.functions.resourceMonitor(client);
 	
