@@ -10,7 +10,7 @@ const languages = [
 		id: "en",
 		name: "English (Ingles)",
 		country: ":flag_us:",
-		completed: true,
+		completed: false,
 		enabled: true
 	}
 ];
