@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
 async function first_time_welcome(client, guild) {
-	console.log("Guild joined " + "'" + guild.name + "'" + "." + " (" + guild.id + ")");
 	
 	let channel_target;
 	

@@ -5,5 +5,5 @@ let language = {
 	"nsfw_link_type": "Enlace NSFW / +18",
 	"discord_invite_type": "Servidor de Discord",
 	"filter_warning": "**%s** intento enviar un **%s**."
-}
+};
 module.exports = language;

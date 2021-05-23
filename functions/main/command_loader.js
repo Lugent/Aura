@@ -41,8 +41,7 @@ async function command_loader(client, reload = false) {
 		console.log("");
 		console.log("Reading " + "'" + dir + "'" + " directory:");
 		if (!files_dir.length) {
-			console.log("'" + dir + "'" + " directory is empty.");
-			console.log("No commands found.");
+			console.log(chalk.greenBright("NOTICE:") + " This directory is empty, no commands loaded.");
 			continue;
 		}
 		
@@ -65,8 +64,7 @@ async function command_loader(client, reload = false) {
 				}
 			} catch (error) {
 				count_error++;
-				console.error(chalk.redBright("ERROR: ") + "Couldn't load " + "'" + file.replace(".js", "") + "'" + ":" + "\n", error);
-				//process.exit(-1);
+				console.error(chalk.redBright("ERROR:") + " Couldn't load " + "'" + file.replace(".js", "") + "'" + ":" + "\n", error);
 			}
 			count_total++;
 			file_size_dir += file_size;

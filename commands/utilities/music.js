@@ -6,6 +6,7 @@ module.exports = {
     name: "music",
 	path: path.basename(__dirname),
     cooldown: 5,
+	flags: constants.cmdFlags.noHelp,
     usage: "music.usage",
 	description: "music.description",
 	

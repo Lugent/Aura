@@ -19,24 +19,23 @@ module.exports = {
 	async execute(client, message, args, prefix) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.no_arguments"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "no_arguments"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.inlineReply(embed);
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.loading"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let sent_message;
-		await message.channel.send(embed).then(message => { sent_message = message; });
+		let send_message = await message.inlineReply(embed);
 		
 		let search = args.join("%20");
 		let raw_data = "";
 		let url_get = "https://customsearch.googleapis.com/customsearch/v1?cx=" + process.env.GOOGLE_CSE_ID + "&num=4&q=" + search + "&safe=off&start=1&key=" + process.env.GOOGLE_API_KEY;
-		https.get(url_get, async (res) => {
-			res.on("data", async (chunk) => { raw_data += chunk; });
-			res.on("end", async () => {
+		https.get(url_get, async (response) => {
+			response.on("data", async (chunk) => { raw_data += chunk; });
+			response.on("end", async () => {
 				let data = JSON.parse(raw_data);
 				let get_results = data.items;
 				let get_error = data.error;
@@ -45,37 +44,38 @@ module.exports = {
 					
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + get_error.message);
-					embed.setColor([255, 255, 0]);
-					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+					embed.setColor([255, 0, 0]);
+
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+					else { return message.inlineReply(embed); }
 				}
+
 				if (get_results) {
-					
 					let display_result = "";
 					let embed = new Discord.MessageEmbed();
-					embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "command.google.results.author", [search]), "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png"); // search
-					embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.google.results.title", [data.searchInformation.formattedTotalResults, data.searchInformation.searchTime])); // data.searchInformation.searchTime - data.searchInformation.formattedTotalResults
+					embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "results.author", [search]), "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png");
+					embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "results.title", [data.searchInformation.formattedTotalResults, data.searchInformation.searchTime]));
 					for (var result_index = 0; result_index < get_results.length; result_index += 1) {
 						display_result += "**" + (result_index + 1) + ".-** " + "[" + get_results[result_index].title + "]" + "(" + get_results[result_index].link + ")" + "\n" + get_results[result_index].snippet + "\n";
 					}
 					
 					embed.setDescription(display_result);
 					embed.setColor([254, 254, 254]);
-					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+					else { return message.inlineReply(embed); }
 				}
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.not_found"));
-					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "not_found"));
+
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+					else { return message.inlineReply(embed); }
 				}
 			});
 		}).on("error", (error) => {
-			console.error(error);
-			var embed = new Discord.MessageEmbed();
-			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.google.fatal_failure"));
-			embed.addField(error.name, error.message);
-			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+			throw error;
 		});
 	},
 };

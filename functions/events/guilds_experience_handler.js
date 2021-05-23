@@ -100,12 +100,8 @@ async function exp_handler(client, message) {
 			image_context.font = "64px Stratum1-Bold";
 			image_context.textAlign = "center";
 			image_context.textBaseline = "bottom";
-			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
-			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
-
-			//image_context.fillStyle = "rgb(255, 255, 255)";
-			//image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index_old, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4);
-			//image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.level") + ". " + level_index, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4);
+			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
 			
 			// Arrow
 			image_context.beginPath();
@@ -125,7 +121,7 @@ async function exp_handler(client, message) {
 			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			var embed = new Discord.MessageEmbed();
 			embed.attachFiles(attachment);
-			embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
+			embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 			embed.setImage("attachment://" + attachment.name);
 			embed.setColor(0x66b3ff);
 			return message.channel.send({content: "<@" + get_member.user.id + ">", embed: embed});

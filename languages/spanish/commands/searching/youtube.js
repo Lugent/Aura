@@ -7,5 +7,5 @@ let language = {
 	"video_stats": "Estadisticas del video",
 	"fatal_error": "Algo salio mal en el proceso, intentelo de nuevo mas tarde.",
 	"not_found": "El video no ha sido encontrado"
-}
+};
 module.exports = language;

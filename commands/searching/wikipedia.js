@@ -19,9 +19,9 @@ module.exports = {
 	async execute(client, message, args, prefix) {
 		if (!args.length) {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.no_arguments"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "command.wikipedia.no_arguments"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.inlineReply(embed);
 		}
 		
 		let get_language = "es";
@@ -38,23 +38,20 @@ module.exports = {
 			response.on("end", async () => {
 				let final_data = JSON.parse(get_data);
 				var pages = final_data.query.pages;
-				for (var p in pages) {
-					if (pages[p].missing === "") {
+				for (var page in pages) {
+					if (!pages[page].missing,length) {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.not_found"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "not_found"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.inlineReply(embed);
 					}
 					else {
-						return message.channel.send(pages[p].fullurl);
+						return message.inlineReply(pages[page].fullurl);
 					}
 				}
 			});
 		}).on("error", (error) => {
-			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.fatal_error"));
-			embed.setColor([255, 0, ]);
-			return message.channel.send(embed);
+			throw error;
 		});
 	}
 };

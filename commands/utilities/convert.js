@@ -29,6 +29,7 @@ const path = require("path");
 module.exports = {
 	name: "convert",
 	path: path.basename(__dirname),
+	flags: constants.cmdFlags.noHelp,
 	description: "Convierte valores a otros valores. (INCOMPLETO)",
 	aliases: ["conv"],
 	usage: "<conversor> <valor>",
