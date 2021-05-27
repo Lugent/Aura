@@ -101,7 +101,7 @@ console.log("Connecting to Discord...");
 // Load event files
 let general_command_executor = require(process.cwd() + "/events/general_command_executor.js"); 
 let general_data_handler = require(process.cwd() + "/events/general_database_handler.js");
-let guild_invite_tracker = require(process.cwd() + "/main/invite_tracker.js");
+let guild_invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 let guild_msg_logger = require(process.cwd() + "/events/general_message_logger.js");
 let guild_bot_welcome = require(process.cwd() + "/events/guilds_bot_welcome.js");
 let guild_experience_handler = require(process.cwd() + "/events/guilds_experience_handler.js");
