@@ -3,6 +3,10 @@
 
 It's another multi-propuse bot with the profile of a cool Pokémon because yes.
 
+## Invites
+- Stable version: [Link](https://discord.com/api/oauth2/authorize?client_id=610988333618823188&permissions=8&scope=bot)
+- Canary version: [Link](https://discord.com/api/oauth2/authorize?client_id=836360465180917765&permissions=8&scope=bot)
+
 ## Installation
 - Clone this repository in a folder.
 - Inside that folder, open tne command prompt.
