@@ -113,6 +113,51 @@ module.exports = {
 			embed.addField(":signal_strength: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.device") + ":", user_device, true);
 		}
 
+		let activities_array = user.presence.activities;
+		if (activities_array.length) {
+			let custom_status = "";
+			let activities_name = "";
+			for (let activities_index = 0; activities_index < activities_array.length; activities_index++) {
+				switch (activities_array[activities_index].type) {
+					case "CUSTOM_STATUS": {
+						custom_status += (activities_array[activities_index].emoji ? (activities_array[activities_index].emoji.name + " ") : "")  + activities_array[activities_index].state;
+						break;
+					}
+
+					case "PLAYING": {
+						activities_name += client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "activity.playing") + " " + activities_array[activities_index].name + "\n";
+						break;
+					}
+
+					case "COMPETING": {
+						activities_name += client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "activity.competing") + " " + activities_array[activities_index].name + "\n";
+						break;
+					}
+
+					case "LISTENING": {
+						activities_name += client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "activity.listening") + " " + activities_array[activities_index].name + "\n";
+						break;
+					}
+
+					case "STREAMING": {
+						activities_name += client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "activity.streaming") + " " + activities_array[activities_index].name + "\n";
+						break;
+					}
+
+					case "WATCHING": {
+						activities_name += client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "activity.watching") + " " + activities_array[activities_index].name + "\n";
+						break;
+					}
+				}
+			}
+			
+			if (custom_status.length) {
+				embed.addField(":speech_left: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.custom_status") + ":", custom_status);
+			}
+
+			embed.addField(":abacus: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.activities") + ":", activities_name);
+		}
+
 		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.locale") + ":", user.locale, false); }
 		if (user_badges.length) { embed.addField(":military_medal: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.badges") + ":", user_badges, false); }
 		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
