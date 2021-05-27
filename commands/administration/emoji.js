@@ -144,13 +144,12 @@ module.exports = {
 					return message.inlineReply(embed);
 				}).catch((error) => {
 					throw error;
-					/*console.error(error);
-					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "upload_error"));
-					embed.setColor([255, 0, 0]);
-					return message.inlineReply(embed);*/
 				});
 				break;
+			}
+
+			case "delete": {
+				
 			}
 		}
 	}
