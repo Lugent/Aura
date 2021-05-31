@@ -39,7 +39,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "no_guild"));
 			embed.setColor([255, 255, 0]);
-			return message.inlineReply(embed);
+			return message.reply(embed);
 		}
 		
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
@@ -48,7 +48,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "is_disabled"));
 			embed.setColor([255, 0, 0]);
-			return message.inlineReply(embed);
+			return message.reply(embed);
 		}
 		
 		
@@ -64,14 +64,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "no_member"));
 			embed.setColor([255, 0, 0]);
-			return message.inlineReply(embed);
+			return message.reply(embed);
 		}
 		
 		if (get_member.user.bot) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "bot_member"));
 			embed.setColor([255, 0, 0]);
-			return message.inlineReply(embed);
+			return message.reply(embed);
 		}
 		
 		let get_rank = 0;
@@ -222,6 +222,6 @@ module.exports = {
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "embed.title", [get_member.user.tag]), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 		embed.setImage("attachment://" + attachment.name);
 		embed.setColor(0x66b3ff);
-		return message.inlineReply(embed);
+		return message.reply(embed);
     }
 };

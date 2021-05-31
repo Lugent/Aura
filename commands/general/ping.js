@@ -17,7 +17,7 @@ module.exports = {
         var embed = new Discord.MessageEmbed();
 		embed.setColor([254, 254, 254]);
 		embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/general/ping", "loading"));
-        message.inlineReply(embed).then(async oldmessage => {
+        message.reply(embed).then(async oldmessage => {
             let ping = oldmessage.createdTimestamp - message.createdTimestamp;
 			let selfping = client.ws.ping;
             let pingcolor = [254, 254, 254];

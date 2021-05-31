@@ -41,7 +41,7 @@ module.exports = {
 			embed.setColor([255, 0, 0]);
 
 			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-			else { return message.inlineReply(embed); }
+			else { return message.reply(embed); }
 		}
 		
 		// Members
@@ -327,6 +327,6 @@ module.exports = {
 		embed.setColor([0, 255, 0]);
 		
 		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-		else { return message.inlineReply(embed); }
+		else { return message.reply(embed); }
 	},
 };

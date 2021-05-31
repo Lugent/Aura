@@ -34,7 +34,7 @@ module.exports = {
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
-		await message.inlineReply(embed2).then(message => { send_message = message; });
+		await message.reply(embed2).then(message => { send_message = message; });
 		
 		let get_user;
 		if (args[0]) { get_user = client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
@@ -55,7 +55,7 @@ module.exports = {
 				}
 			}
 			else {
-				return message.inlineReply(embed);
+				return message.reply(embed);
 			}
 		}
 
@@ -164,6 +164,6 @@ module.exports = {
 		embed.setColor(0x66b3ff);
 		
 		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-		else { return message.inlineReply(embed); }
+		else { return message.reply(embed); }
     }
 };

@@ -66,7 +66,7 @@ module.exports = {
 						embed.setDescription(":no_entry: " + data);
 
 						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-						else { return message.inlineReply(embed); }
+						else { return message.reply(embed); }
 					}
 					
 					var parsed_data = JSON.parse(data);
@@ -111,7 +111,7 @@ module.exports = {
 							}
 
 							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-							else { return message.inlineReply(embed); }
+							else { return message.reply(embed); }
 						}
 						else {
 							if (parsed_data.ip.length) {
@@ -123,7 +123,7 @@ module.exports = {
 								embed.setColor([255, 0, 0]);
 
 								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-								else { return message.inlineReply(embed); }
+								else { return message.reply(embed); }
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
@@ -131,7 +131,7 @@ module.exports = {
 								embed.setColor([0, 0, 0]);
 
 								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-								else { return message.inlineReply(embed); }
+								else { return message.reply(embed); }
 							}
 						}
 					}
@@ -141,7 +141,7 @@ module.exports = {
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "error"));
 
 						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-						else { return message.inlineReply(embed); }
+						else { return message.reply(embed); }
 					}
 				} 
 				catch (error) {

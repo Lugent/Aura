@@ -9,7 +9,7 @@ async function messageAFK(client, message) {
 		let afk_message = client.functions.getTranslation(client, message.author, message.guild, "events/afk_handler", "caller.returned", [message.author.tag]) + "\n" + client.functions.getTranslation(client, message.author, message.guild, "events/afk_handler", "caller.time", [afk_time]);
 		
 		client.user_data.prepare("DELETE FROM afk WHERE user_id = ?").run(message.author.id);
-		return message.inlineReply(afk_message).then(async (sent_message) => {
+		return message.reply(afk_message).then(async (sent_message) => {
 			sent_message.delete({timeout: 5000});
 		});
 	}
@@ -21,7 +21,7 @@ async function messageAFK(client, message) {
 		if (get_user) {
 			let afk_time = client.functions.generateDurationString(client, message.author, message.guild, get_user.time);
 			let afk_message = client.functions.getTranslation(client, message.author, message.guild, "events/afk_handler", "pinged", [get_user.name]) + "\n" + client.functions.getTranslation(client, message.author, message.guild, "events/afk_handler", "pinged.time", [afk_time]) + "\n\n" + get_user.reason;
-			return message.inlineReply(afk_message);
+			return message.reply(afk_message);
 		}
 	}
 }

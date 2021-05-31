@@ -63,7 +63,7 @@ module.exports = {
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message;
-		await message.inlineReply(embed).then(message => { sent_message = message; });
+		await message.reply(embed).then(message => { sent_message = message; });
 		
 		let rawData = "";
 		https.get("https://srhpyqt94yxb.statuspage.io/api/v2/summary.json", async (res) => {

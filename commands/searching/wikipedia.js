@@ -21,7 +21,7 @@ module.exports = {
 			var embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "command.wikipedia.no_arguments"));
 			embed.setColor([255, 255, 0]);
-			return message.inlineReply(embed);
+			return message.reply(embed);
 		}
 		
 		let get_language = "es";
@@ -43,10 +43,10 @@ module.exports = {
 						var embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "not_found"));
 						embed.setColor([255, 0, 0]);
-						return message.inlineReply(embed);
+						return message.reply(embed);
 					}
 					else {
-						return message.inlineReply(pages[page].fullurl);
+						return message.reply(pages[page].fullurl);
 					}
 				}
 			});

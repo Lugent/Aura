@@ -50,7 +50,7 @@ module.exports = {
 			embed.setColor([255, 0, 0]);
 
 			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-			else { return message.inlineReply(embed); }
+			else { return message.reply(embed); }
 		}
 		
 		// Especial
@@ -139,7 +139,21 @@ module.exports = {
 		embed.addField(":notepad_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "embed.join_date") + ":", client.functions.generateDateString(client, message.author, message.guild, member.joinedAt).capitalize(), false);
 		embed.setColor(member.displayHexColor);
 
-        if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-		else { return message.inlineReply(embed); }
+        if (send_message)
+		{
+			if (message.channel.messages.cache.get(send_message.id))
+			{
+				/*let button = new client.buttons.MessageButton();
+				button.setStyle("blurple");
+				button.setLabel("Get user info");
+				button.setID("member_userinfo" + "-" + member.user.id);*/
+				//return message.reply({embed, buttons: [button]});
+				return send_message.edit(embed);
+			}
+		}
+		else
+		{
+			return message.reply(embed);
+		}
     }
 };

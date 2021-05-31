@@ -21,14 +21,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "no_search"));
 			embed.setColor([255, 255, 0]);
-			return message.inlineReply(embed);
+			return message.reply(embed);
 		}
 		
 		var embed = new Discord.MessageEmbed();
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let send_message = await message.inlineReply(embed);
+		let send_message = await message.reply(embed);
 		
 		let search = args.slice(0).join(" ");
 		let raw_data = "";
@@ -47,7 +47,7 @@ module.exports = {
 					embed.setColor([255, 0, 0]);
 
 					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.inlineReply(embed); }
+					else { return message.reply(embed); }
 				}
 
 				if (get_image) {
@@ -56,7 +56,7 @@ module.exports = {
 					embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "success.footer", [search]));
 					embed.setColor([254, 254, 254]);
 					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.inlineReply(embed); }
+					else { return message.reply(embed); }
 				}
 				else {
 					var embed = new Discord.MessageEmbed();
@@ -64,7 +64,7 @@ module.exports = {
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "not_found"));
 
 					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.inlineReply(embed); }
+					else { return message.reply(embed); }
 				}
 			});
 		}).on("error", (error) => {

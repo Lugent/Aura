@@ -31,6 +31,6 @@ module.exports = {
 		embed.addField(":tools: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.source_code") + ":", "[Github](https://github.com/Lucario-TheAuraPokemon/TheAuraPokemon-Bot/)", false);
 		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, client.user.createdAt).capitalize(), false);
 		embed.setColor(0x0580aa);
-        return message.inlineReply(embed);
+        return message.reply(embed);
     }
 };
