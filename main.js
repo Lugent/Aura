@@ -24,9 +24,6 @@ const dotenv = require("dotenv");
 let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded enviroment variables."); }
 
-// Extensions
-require(process.cwd() + "/modules/ExtendedMessage.js");
-
 // Client
 const client = new Discord.Client({intents: Discord.Intents.ALL, presence: {status: "invisible"}, fetchAllMembers: true, http: {version: 7}});
 //const buttons = require('discord-buttons')(client);
