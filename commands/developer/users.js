@@ -9,7 +9,14 @@ module.exports = {
 	aliases: ["members"],
 	usage: "[page]",
 	flags: constants.cmdFlags.ownerOnly,
-	execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	execute(client, message, args, prefix) {
 		let embed = new Discord.MessageEmbed();
 		embed.setTitle("Lista de usuarios que reconozco:");
 
@@ -21,14 +28,14 @@ module.exports = {
 			for (let index = 0; index < all_guild_members.length; index++) {
 				let element = all_guild_members[index];
 				if (!collected_users.has(element.user.id)) {
-					collected_users.set(element.user.id, {id: element.user.id, tag: element.user.tag, username: element.user.username, bot: element.user.bot})
+					collected_users.set(element.user.id, {id: element.user.id, tag: element.user.tag, username: element.user.username, bot: element.user.bot});
 					total_count = total_count + 1;
 				}
 			}
 		}
 
 		let total_array = collected_users.array();
-		let users_array = new Array();
+		let users_array = new Array([]);
 		if (total_array.length > 0) {
 			for (let user_index = 0; user_index < total_array.length; user_index++) {
 				if (total_array[user_index].bot) { continue; }
@@ -41,7 +48,7 @@ module.exports = {
 			return 0;
 		});
 
-		let bots_array = new Array();
+		let bots_array = new Array([]);
 		if (total_array.length > 0) {
 			for (let bot_index = 0; bot_index < total_array.length; bot_index++) {
 				if (!total_array[bot_index].bot) { continue; }

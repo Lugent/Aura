@@ -6,15 +6,22 @@ const fs = require('fs');
 module.exports = {
 	name: "wikipedia",
 	path: path.basename(__dirname),
-	usage: "command.wikipedia.usage",
-	description: "command.wikipedia.desc",
+	usage: "wikipedia.usage",
+	description: "wikipedia.description",
 	cooldown: 20,
-	async execute(client, message, args) {
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
 		if (!args.length) {
 			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.no_arguments"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "command.wikipedia.no_arguments"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.reply(embed);
 		}
 		
 		let get_language = "es";
@@ -29,25 +36,22 @@ module.exports = {
 		https.get(search_url, async (response) => {
 			response.on("data", async (chunk) => { get_data += chunk; });
 			response.on("end", async () => {
-				let final_data = JSON.parse(get_data); //.query.pages.keys
+				let final_data = JSON.parse(get_data);
 				var pages = final_data.query.pages;
-				for (var p in pages) {
-					if (pages[p].missing === "") {
+				for (var page in pages) {
+					if (!pages[page].missing,length) {
 						var embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.not_found"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "not_found"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.reply(embed);
 					}
 					else {
-						return message.channel.send(pages[p].fullurl)
+						return message.reply(pages[page].fullurl);
 					}
 				}
-			})
+			});
 		}).on("error", (error) => {
-			var embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.wikipedia.fatal_error"));
-			embed.setColor([255, 0, ]);
-			return message.channel.send(embed);
+			throw error;
 		});
 	}
-}
+};

@@ -6,15 +6,22 @@ module.exports = {
 	path: path.basename(__dirname),
     cooldown: 0,
     flags: constants.cmdFlags.ownerOnly,
-    usage: "<expresi髇>",
-	description: "Ejecutar c骴igo JavaScript arbitrario.",
-	async execute(client, message, args) {
+    usage: "<expresi贸n>",
+	description: "Ejecutar c贸digo JavaScript arbitrario.",
+
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
         let evaluate = args.slice(0).join(" ");
         if (!evaluate.length) {
 			let embed = new Discord.MessageEmbed();
-            embed.setDescription(":no_entry: " + "Expresi髇 invalido, no se puede ejecutar c骴igo inexistente.");
+            embed.setDescription(":no_entry: " + "Expresi贸n invalido, no se puede ejecutar c贸digo inexistente.");
 			embed.setColor([255, 0, 0]);
-            return message.channel.send(embed);
+            return message.inlineReply(embed);
 		}
         try { eval(evaluate); } catch (error) { throw error; }
     }

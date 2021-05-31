@@ -8,10 +8,17 @@ module.exports = {
     cooldown: 1,
 	description: "gsettings.description",
 	flags: constants.cmdFlags.cantDisable,
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
     async execute(client, message, args, prefix) {
 		if (message.channel.type !== "text") {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "no_guild"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_guild"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send(embed);
 		}
@@ -19,32 +26,38 @@ module.exports = {
 		if (!args.length) {
 			delete require.cache[require.resolve(process.cwd() + "/configurations/language.js")];
 			let languages_avaliable = require(process.cwd() + "/configurations/language.js");
-			let language_name = undefined;
+			let language_name;
 			let server_data = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(message.guild.id);
 			let server_prefix = server_data.prefix;
 			let server_language = server_data.language;
 			if (server_language) { language_name = languages_avaliable.find(language => language.id === server_language); }
 			
-			let guild_setting_prefix = client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "settings.prefix") + ": " + "**" + server_prefix + "**";
-			let guild_setting_language = client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "settings.language") + ": " + language_name.country + " " + language_name.name;
+			let guild_setting_prefix = client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "actual_settings.prefix") + ": " + "**" + server_prefix + "**";
+			let guild_setting_language = client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "actual_settings.language") + ": " + language_name.country + " " + language_name.name;
 			let guild_settings_all = guild_setting_prefix + "\n" + guild_setting_language;
 			
 			let subcommands_name = "";
-			let subcommands_list = ["prefix", "language", "command", "function"];
+			let subcommands_list = [
+				"prefix <prefix>",
+				"language <language>",
+				"command <command>",
+				"function <function>"
+			];
+
 			for (let subcommands_list_index = 0; subcommands_list_index < subcommands_list.length; subcommands_list_index++) {
 				subcommands_name += "**" + prefix + "gsettings" + " " + subcommands_list[subcommands_list_index] + "**" + "\n";
 			}
 			
 			var embed = new Discord.MessageEmbed();
 			embed.setColor(0x66b3ff);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "embed.field.actualsettings") + ":", guild_settings_all);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "embed.field.subcommands") + ":", subcommands_name);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "main.actual_settings") + ":", guild_settings_all);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "main.subcommands") + ":", subcommands_name);
 			return message.channel.send(embed);
 		}
 		else {
 			if (!message.member.permissions.has("MANAGE_GUILD")) {
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "no_permissions"));
+				embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_permissions"));
 				embed.setColor([255, 0, 0]);
 				return message.channel.send(embed);
 			}
@@ -52,15 +65,15 @@ module.exports = {
 			switch (args[0]) {
 				case "prefix": {
 					if (!args[1]) {
-						let guild_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(message.guild.id); //client.server_prefix.select.get(message.guild.id);
+						let guild_settings = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(message.guild.id); //client.server_prefix.select.get(message.guild.id);
 						let embed = new Discord.MessageEmbed();
 						embed.setColor(0x66b3ff);
-						if (guild_prefix) {
-							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "prefix.embed.title", [guild_prefix.prefix])); // prefix.prefix
-							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.embed.description", [guild_prefix.prefix]));
+						if (guild_settings) {
+							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "prefix.title", [guild_settings.prefix])); // prefix.prefix
+							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "prefix.description", [guild_settings.prefix]));
 						}
 						else {
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.no_data"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_data"));
 							embed.setColor([255, 0, 0]);
 						}
 						return message.channel.send(embed);
@@ -71,9 +84,8 @@ module.exports = {
 					
 					let embed = new Discord.MessageEmbed();
 					embed.setColor([0, 255, 0]);
-					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "prefix.changed", [new_prefix])); // prefix
+					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "prefix.changed", [new_prefix])); // prefix
 					return message.channel.send(embed);
-					break;
 				}
 				
 				case "language": {
@@ -85,19 +97,19 @@ module.exports = {
 					}
 					
 					if (!args[1]) {
-						let server_language = client.server_data.prepare("SELECT language FROM settings WHERE guild_id = ?;").get(message.guild.id); //client.server_language.select.get(message.guild.id);
-						let language_name = undefined;
-						if (server_language) { language_name = languages_avaliable.find(language => language.id === server_language.language); }
+						let guild_settings = client.server_data.prepare("SELECT language FROM settings WHERE guild_id = ?;").get(message.guild.id);
+						let language_name;
+						if (guild_settings) { language_name = languages_avaliable.find(language => language.id === guild_settings.language); }
 						
 						let embed = new Discord.MessageEmbed();
 						embed.setColor(0x66b3ff);
-						if (server_language) {
-							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.embed.title", [language_name.country + " " + language_name.name]));
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.embed.list"), languages_list);
-							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.embed.footer", [prefix]));
+						if (guild_settings) {
+							embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.title", [language_name.country + " " + language_name.name]));
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.list"), languages_list);
+							embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.footer", [prefix]));
 						}
 						else {
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.invalid_option") + ": " + "\n" + languages_list);
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_data"));
 							embed.setColor([255, 0, 0]);
 						}
 						return message.channel.send(embed);
@@ -108,10 +120,9 @@ module.exports = {
 					if (get_language) {
 						if (get_language.enabled) {
 							client.server_data.prepare("UPDATE settings SET language = ? WHERE guild_id = ?;").run(new_language, message.guild.id);
-							//client.server_language.insert.run(message.guild.id, new_language);
 							
-							let langDesc = ":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.changed", [get_language.country + " " + get_language.name]);
-							if (!get_language.completed) { langDesc += "\n" + ":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.warning"); }
+							let langDesc = ":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.changed", [get_language.country + " " + get_language.name]);
+							if (!get_language.completed) { langDesc += "\n" + ":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.warning"); }
 							
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(langDesc);
@@ -120,14 +131,14 @@ module.exports = {
 						}
 						else {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "language.not_enabled"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.not_enabled"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
 						}
 					}
 					else {
 						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "dont_exists.language"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "dont_exists.language"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -137,7 +148,7 @@ module.exports = {
 				case "command": {
 					if (!message.member.permissions.has("ADMINISTRATOR")) {
 						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "command.no_permissions"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.no_permissions"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -150,6 +161,8 @@ module.exports = {
 						let list_commands = client.commands.array();
 						for (let command_index = 0; command_index < list_commands.length; command_index++) {
 							let command_element = list_commands[command_index];
+							if (command_element.flags & constants.cmdFlags.ownerOnly) { continue; }
+							
 							if (get_disabled_commands.includes(command_element.name)) { total_commands += ":red_circle: " + command_element.name + "\n"; }
 							else { total_commands += ":green_circle: " + command_element.name + "\n"; }
 						}
@@ -165,21 +178,21 @@ module.exports = {
 						let get_command = client.commands.get(command_name) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(command_name));
 						if (!get_command) {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "command.not_found"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.not_found"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
 						}
 						
 						if (get_command.flags & constants.cmdFlags.ownerOnly) {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "command.developer_command"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.developer_command"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
 						}
 						
 						if (get_command.flags & constants.cmdFlags.cantDisable) {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "command.cannot_disable"));
+							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.cannot_disable"));
 							embed.setColor([255, 0, 0]);
 							return message.channel.send(embed);
 						}
@@ -191,13 +204,13 @@ module.exports = {
 						
 						if (!is_disabled) {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "command.disabled", [get_command.name]));
+							embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.disabled", [get_command.name]));
 							embed.setColor([0, 255, 0]);
 							return message.channel.send(embed);
 						}
 						else {
 							let embed = new Discord.MessageEmbed();
-							embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "command.enabled", [get_command.name]));
+							embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.enabled", [get_command.name]));
 							embed.setColor([0, 255, 0]);
 							return message.channel.send(embed);
 						}
@@ -208,7 +221,7 @@ module.exports = {
 				case "function": {
 					if (!message.member.permissions.has("ADMINISTRATOR")) {
 						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "function.no_permissions"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "function.no_permissions"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send(embed);
 					}
@@ -230,7 +243,7 @@ module.exports = {
 						embed.setFooter(prefix + "gsettings function <function>");
 						return message.channel.send(embed);
 					}
-					else { // auto_moderator
+					else {
 						for (let function_index = 0; function_index < bot_functions.length; function_index += 1) {
 							let function_string = bot_functions[function_index];
 							if (args[1] === function_string) {
@@ -240,21 +253,21 @@ module.exports = {
 								
 								if (!is_disabled) {
 									let embed = new Discord.MessageEmbed();
-									embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "function.disabled", [function_string]));
+									embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "function.disabled", [function_string]));
 									embed.setColor([0, 255, 0]);
 									return message.inlineReply(embed);
 								}
 								else {
 									let embed = new Discord.MessageEmbed();
 									embed.setColor([0, 255, 0]);
-									embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "function.enabled", [function_string]));
+									embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "function.enabled", [function_string]));
 									return message.inlineReply(embed);
 								}
 							}
 						}
 						
 						let embed = new Discord.MessageEmbed();
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "function.not_found"));
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "function.not_found"));
 						embed.setColor([255, 0, 0]);
 						return message.inlineReply(embed);
 					}
@@ -263,10 +276,9 @@ module.exports = {
 				
 				default: {
 					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands_gsettings", "invalid_subcommand"));
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "invalid_subcommand"));
 					embed.setColor([255, 0, 0]);
 					return message.channel.send(embed);
-					break;
 				}
 			}
 		}

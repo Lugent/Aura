@@ -6,167 +6,160 @@ const fs = require('fs');
 module.exports = {
 	name: "mcserver",
 	path: path.basename(__dirname),
-	usage: "command.mcserver.usage",
+	usage: "mcserver.usage",
     cooldown: 5,
-	description: "command.mcserver.desc",
-	async execute(client, message, args) {
+	description: "mcserver.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
 		if (!args.length) {
-			var embed = new Discord.MessageEmbed();
-			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.title"));
-			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.desc"));
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args0"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args0.field"), false);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args1"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args1.field"), false);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args2"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args2.field"), false);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args3"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args3.field"), false);
-			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args4"), client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.args4.field"), false);
-			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.help.footer"));
+			let embed = new Discord.MessageEmbed();
+			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.title"));
+			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.description"));
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.ip"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.ip.description"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.players"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.players.description"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.mods"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.mods.description"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.software"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.software.description"), false);
+			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.world"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.world.description"), false);
+			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.footer"));
 			embed.setColor([0, 255, 255]);
 			return message.channel.send(embed);
 		}
-		
-		var debug = false;
+
 		var players = false;
+		let players_find = args.findIndex(index => index === "/p");
+		if (players_find > -1) { args.splice(players_find, 1); players = true; }
+
 		var modded = false;
+		let modded_find = args.findIndex(index => index === "/m");
+		if (modded_find > -1) { args.splice(modded_find, 1); modded = true; }
+
 		var software = false;
+		let software_find = args.findIndex(index => index === "/s");
+		if (software_find > -1) { args.splice(software_find, 1); software = true; }
+
 		var world = false;
-		let arguments = args;
-		for (let argument_index = 0; argument_index < arguments.length; argument_index++) {
-			var argument = arguments[argument_index];
-			if (argument === "/p") { players = true; arguments.splice(argument_index, 1); }
-			if (argument === "/m") { modded = true; arguments.splice(argument_index, 1); }
-			if (argument === "/s") { software = true; arguments.splice(argument_index, 1); }
-			if (argument === "/w") { world = true; arguments.splice(argument_index, 1); }
-		}
+		let world_find = args.findIndex(index => index === "/w");
+		if (world_find > -1) { args.splice(world_find, 1); world = true; }
+
+		let embed2 = new Discord.MessageEmbed();
+		embed2.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "loading"));
+		embed2.setColor([255, 255, 0]);
 		
-		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.loading.desc"));
-		embed.setColor([255, 255, 0]);
+		let send_message;
+		await message.channel.send(embed2).then(message => { send_message = message; });
 		
-		let send_message = undefined;
-		await message.channel.send(embed).then(message => { send_message = message; });
-		
-		//let wait_time_count = 0;
-		/*let wait_time_function = setInterval(() => {
-			if ((wait_time_count < 10) && (wait_time_count > -1)) { wait_time_count++; }
-			else {
-				wait_time_count = -1;
-				var embed = new Discord.MessageEmbed();
-				embed.setDescription(":hourglass_flowing_sand:" + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.loading.toolong"));
-				embed.setColor([255, 255, 0]);
-				send_message ? send_message.edit(embed) : message.channel.send(embed);
-			}
-		}, 1000);*/
-		
-		https.get("https://api.mcsrvstat.us/2/" + arguments[0], async (response) => {
-			var data = "";
+		var data = "";
+		var player_names = "";
+		https.get("https://api.mcsrvstat.us/2/" + args[0], async (response) => {
 			response.on("data", async (chunk) => { data += chunk; });
 			response.on("end", async () => {
 				try {
-					//clearInterval(wait_time_function);
 					if (!data.startsWith("{")) {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setColor([255, 0, 0]);
 						embed.setDescription(":no_entry: " + data);
-						return send_message ? send_message.edit(embed) : message.channel.send(embed);
+
+						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+						else { return message.reply(embed); }
 					}
 					
 					var parsed_data = JSON.parse(data);
-					if (parsed_data !== undefined) {
+					if (parsed_data) {
 						if (parsed_data.online) {
-							var embed = new Discord.MessageEmbed();
-							embed.setTitle(arguments[0]);
+							let embed = new Discord.MessageEmbed();
+							embed.setTitle(args[0]);
 							embed.setColor([0, 255, 0]);
-							if (parsed_data.motd !== undefined)
+							if (parsed_data.motd)
 							{
-								if (parsed_data.motd.clean.join("\n") !== "") {
-									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.motd") + ": ", parsed_data.motd.clean, false);
+								if (parsed_data.motd.clean.join("\n").length) {
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.motd") + ": ", parsed_data.motd.clean, false);
 								}
 							}
 							
-							if (parsed_data.info !== undefined) {
-								if (parsed_data.info.clean.join("\n") !== "") {
-									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.info") + ": ", parsed_data.info.clean, false);
+							if (parsed_data.info) {
+								if (parsed_data.info.clean.join("\n").length) {
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.info") + ": ", parsed_data.info.clean, false);
 								}
 							}
 							
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players") + ": ", parsed_data.players.online + " / " + parsed_data.players.max, true);
-							if (players && (parsed_data.players.list !== undefined))
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.players") + ": ", parsed_data.players.online + " / " + parsed_data.players.max, true);
+							if (players && parsed_data.players.list)
 							{
 								var allplayers = "```" + parsed_data.players.list.slice(0).join("\n") + "```";
 								if (allplayers.length > 1024) // Discord limit xd
 								{
-									allplayers = client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list.limit");
-									
-									var players_writer = fs.createWriteStream(process.cwd() + "/temp/players.txt");
-									await players_writer.write(parsed_data.players.list.slice(0).join("\n"));
-									await players_writer.end();
+									allplayers = client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.player_list.limit");
+									player_names = parsed_data.players.list.slice(0).join("\n");
 								}
-								embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list") + ":", allplayers, true);
+								embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.player_list") + ":", allplayers, true);
 							}
 							
-							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.version") + ": ", parsed_data.version, false);
-							if (world && (parsed_data.map !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.world") + ":", parsed_data.map, false); }
-							if (software && (parsed_data.software !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.software") + ":", parsed_data.software, true); }
-							if (modded && (parsed_data.plugins !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.plugins") + ":", parsed_data.plugins.raw, true); }
-							if (modded && (parsed_data.mods !== undefined)) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.mods") + ":", parsed_data.mods.raw, true); }
-							embed.setThumbnail("https://api.mcsrvstat.us/icon/" + arguments[0]);
-							if ((parsed_data.ip + ":" + parsed_data.port) !== arguments[0]) {
-								embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
+							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.version") + ": ", parsed_data.version, false);
+							if (world && parsed_data.map) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.world") + ":", parsed_data.map, false); }
+							if (software && parsed_data.software) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.software") + ":", parsed_data.software, true); }
+							if (modded && parsed_data.plugins) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.plugins") + ":", parsed_data.plugins.raw, true); }
+							if (modded && parsed_data.mods) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.mods") + ":", parsed_data.mods.raw, true); }
+							embed.setThumbnail("https://api.mcsrvstat.us/icon/" + args[0]);
+							if ((parsed_data.ip + ":" + parsed_data.port) !== args[0]) {
+								embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
 							}
+
+							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+							else { return message.reply(embed); }
 						}
 						else {
-							if (parsed_data.ip !== "") {
-								var embed = new Discord.MessageEmbed();
-								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.notonline"));
-								if ((parsed_data.ip + ":" + parsed_data.port) !== arguments[0]) {
-									embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
+							if (parsed_data.ip.length) {
+								let embed = new Discord.MessageEmbed();
+								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "result.not_online"));
+								if ((parsed_data.ip + ":" + parsed_data.port) !== args[0]) {
+									embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
 								}
 								embed.setColor([255, 0, 0]);
+
+								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+								else { return message.reply(embed); }
 							}
 							else {
-								var embed = new Discord.MessageEmbed();
-								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.dontexists"));
+								let embed = new Discord.MessageEmbed();
+								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "result.invalid_server"));
 								embed.setColor([0, 0, 0]);
+
+								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+								else { return message.reply(embed); }
 							}
 						}
 					}
 					else {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setColor([255, 0, 0]);
-						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.failure.desc"));
-						return send_message ? send_message.edit(embed) : message.channel.send(embed);
+						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "error"));
+
+						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+						else { return message.reply(embed); }
 					}
 				} 
 				catch (error) {
-					console.error(error);
-					var embed = new Discord.MessageEmbed();
-					embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.error.desc"));
-					return send_message ? send_message.edit(embed) : message.channel.send(embed);
+					throw error;
 				}
 				finally {
-					send_message ? send_message.edit(embed) : message.channel.send(embed);
-					if (fs.existsSync(process.cwd() + "/temp/players.txt"))
-					{
-						var attachfile = process.cwd() + "/temp/players.txt";
-						await message.channel.send({
-							content: client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.data.players.list.send"),
-							files: [{
-								attachment: process.cwd() + "/temp/players.txt",
-								name: "players.txt"
-							}]
-						}).then(async () => { await fs.unlinkSync(process.cwd() + "/temp/players.txt"); });
+					if (player_names.length) {
+						return message.channel.send({
+							content: client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "players_file"),
+							files: [
+								new Discord.MessageAttachment(Buffer.from(player_names), "players.txt")
+							]
+						});
 					}
 				}
 			});
 		}).on("error", (error) => {
-			//clearInterval(wait_time_function);
-			console.error(error);
-			
-			var embed = new Discord.MessageEmbed();
-			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "command.mcserver.failure.fatal"));
-			embed.addField(error.name, error.message);
-			return send_message ? send_message.edit(embed) : message.channel.send(embed);
+			throw error;
 		});
 	},
 };

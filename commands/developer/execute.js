@@ -9,8 +9,15 @@ module.exports = {
     flags: constants.cmdFlags.ownerOnly,
     usage: "<commando>",
 	description: "Ejecutar comandos en el terminal.",
-	async execute(client, message, args) {
-		let result = undefined;
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
+		let result;
         let command = args.slice(0).join(" ");
         if (command == "") {
 			let embed = new Discord.MessageEmbed();

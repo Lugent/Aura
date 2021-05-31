@@ -1,22 +1,26 @@
 const Discord = require("discord.js");
-const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 const https = require("https");
 module.exports = {
     name: "discordstatus",
 	path: path.basename(__dirname),
-    //aliases: ["profile"],
     cooldown: 5,
-    //usage: "[usuario]",
-	description: "command.discordstatus.desc",
-    async execute(client, message, args)
+	description: "discordstatus.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+    async execute(client, message, args, prefix)
     {
 		/* SERVICE */
 		let serviceStatusTable = [
-			{id: "none", name: "service_status.stable", color: [0, 255, 0]},
-			{id: "minor", name: "service_status.minor_outage",  color: [255, 255, 0]},
-			{id: "major", name: "service_status.major_outage",  color: [255, 127, 0]},
-			{id: "critical", name: "service_status.critical_outage", color: [255, 0, 0]},
+			{id: "none", name: "service_status.none", color: [0, 255, 0]},
+			{id: "minor", name: "service_status.minor",  color: [255, 255, 0]},
+			{id: "major", name: "service_status.major",  color: [255, 127, 0]},
+			{id: "critical", name: "service_status.critical", color: [255, 0, 0]},
 		];
 		/* SERVICE */
 		
@@ -31,35 +35,35 @@ module.exports = {
 		
 		/* INDCIDENT */
 		let incidentImpactTable = [
-			{id: "none", name: "Ninguno"},
-			{id: "minor", name: "Menor"},
-			{id: "major", name: "Mayor"},
-			{id: "critical", name: "Critico"},
+			{id: "none", name: "incident_impact.none"}, // "Ninguno"
+			{id: "minor", name: "incident_impact.minor"}, // "Menor"
+			{id: "major", name: "incident_impact.major"}, // "Mayor"
+			{id: "critical", name: "incident_impact.critical"}, // "Critico"
 		];
 		
 		let incidentStatusTable = [
-			{id: "investigating", name: "Investigando"},
-			{id: "identified", name: "Identificado"},
-			{id: "monitoring", name: "Monitoriando"},
-			{id: "resolved", name: "Resuelto"}
+			{id: "investigating", name: "incident_status.investigating"}, // "Investigando"
+			{id: "identified", name: "incident_status.identified"}, // "Identificado"
+			{id: "monitoring", name: "incident_status.monitoring"}, // "Monitoriando"
+			{id: "resolved", name: "incident_status.resolved"} // "Resuelto"
 		];
 		/* INDCIDENT */
 		
 		/* COMPONENT */
 		let componentStatusTable = [
-			{id: "operational", name: "Funcionando"},
-			{id: "degraded_performance", name: "Rendimiento degradado"},
-			{id: "partial_outage", name: "Parcialmente caido"},
-			{id: "major_outage", name: "Mayormente caido"}
+			{id: "operational", name: "component_status.operational"}, // "Funcionando"
+			{id: "degraded_performance", name: "component_status.degraded_performance"}, // "Rendimiento degradado"
+			{id: "partial_outage", name: "component_status.partial_outage"}, // "Parcialmente caido"
+			{id: "major_outage", name: "component_status.major_outage"} // "Mayormente caido"
 		];
 		/* COMPONENT */
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands_discordstatus", "loading"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let sent_message = undefined;
-		await message.inlineReply(embed).then(message => { sent_message = message; });
+		let sent_message;
+		await message.reply(embed).then(message => { sent_message = message; });
 		
 		let rawData = "";
 		https.get("https://srhpyqt94yxb.statuspage.io/api/v2/summary.json", async (res) => {
@@ -82,7 +86,7 @@ module.exports = {
 				for (let index = 0; index < finalComponents.length; index++) {
 					let component = finalComponents[index];
 					let findData = componentStatusTable.find(status => component.status === status.id);
-					componentsName += "**" + component.name + "**: " + findData.name + "\n"
+					componentsName += "**" + component.name + "**: " + findData.name + "\n";
 				}
 				
 				let incidents = data.incidents;
@@ -92,12 +96,12 @@ module.exports = {
 						let incident = incidents[index];
 						let find_data = incidentStatusTable.find(status => incident.status === status.id);
 						let find_data2 = incidentImpactTable.find(status => incident.impact === status.id);
-						componentsName += "\n" + "**" + "Incidente Actual" + ":**" + "\n" + incident.name + "\n" + find_data.name + " - " + find_data2.name;
+						componentsName += "\n" + "**" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "actual_incident") + ":**" + "\n" + incident.name + "\n" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", find_data.name) + " - " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", find_data2.name);
 					}
 				}
 				
 				embed.setDescription(componentsName);
-				embed.setAuthor("Estado de Discord", "https://cdn.discordapp.com/embed/avatars/0.png");
+				embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "discord_status"), "https://cdn.discordapp.com/embed/avatars/0.png"); // "Estado de Discord"
 				embed.setColor(serviceStatus.color);
 				return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 			});
@@ -105,8 +109,8 @@ module.exports = {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands_discordstatus", "fatal_failure"));
+			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "fatal_failure"));
 			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
 		});
     }
-};
+}; 

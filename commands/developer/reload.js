@@ -9,6 +9,13 @@ module.exports = {
     usage: "[comando]",
     cooldown: 0,
     flags: constants.cmdFlags.ownerOnly,
+    
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
 	async execute(client, message, args, prefix) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
@@ -18,7 +25,7 @@ module.exports = {
 		}
 
         if (args[0] === "all") {
-			let command_loader = require(process.cwd() + "/functions/general/command_loader.js");
+			let command_loader = require(process.cwd() + "/functions/command_loader.js");
 			await command_loader(client, true);
 
 			let embed = new Discord.MessageEmbed();

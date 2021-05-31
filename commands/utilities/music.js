@@ -6,8 +6,16 @@ module.exports = {
     name: "music",
 	path: path.basename(__dirname),
     cooldown: 5,
-    usage: "command.music.usage",
-	description: "command.music.desc",
+	flags: constants.cmdFlags.noHelp,
+    usage: "music.usage",
+	description: "music.description",
+	
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
     async execute(client, message, args, prefix)
     {
 		if (message.channel.type !== "text") { return message.channel.send("Please use this command on a server."); }
@@ -22,7 +30,7 @@ module.exports = {
 			case "stop": {
 				if (!voice_channel) { return message.channel.send("You're not in a voice channel!"); }
 				
-				let voice_connection = undefined;
+				let voice_connection;
 				let client_connections = client.voice.connections.array();
 				for (let connection_index = 0; connection_index < client_connections.length; connection_index += 1) {
 					if (client_connections[connection_index].channel.id === voice_channel.id) {
@@ -36,7 +44,6 @@ module.exports = {
 				voice_connection.dispatcher.pause();
 				voice_connection.dispatcher.destroy();
 				return message.channel.send("Stopped playback.");
-				break;
 			}
 			case "disconnect": {
 				if (!voice_channel) { return message.channel.send("You're not in a voice channel!"); }
@@ -50,13 +57,12 @@ module.exports = {
 				}
 				
 				return message.channel.send("I'm not connected to that voice channel!");
-				break;
 			}
 			case "play": {
 				if (!voice_channel) { return message.channel.send("Join a voice channel!"); }
 				
-				let youtube_link = undefined;
-				let url_link = undefined;
+				let youtube_link;
+				let url_link;
 				if (args[1]) {
 					youtube_link = args[1].startsWith("https://www.youtube.com/") ? args[1] : undefined;
 					url_link = (args[1].startsWith("http://") || args[1].startsWith("https://")) ? args[1] : undefined;
@@ -68,7 +74,7 @@ module.exports = {
 				voice_channel.join().then(async (connection) => {
 					connection.on("error", (error) => { evoker_channel.send(error.message); });
 					
-					let target_audio = undefined;
+					let target_audio;
 					if (youtube_link) { target_audio = ytdl(youtube_link, {filter: "audioonly", quality: "highestaudio"}); }
 					else if (url_link) { target_audio = url_link; }
 					else if (audio_file) { target_audio = audio_file.url; }

@@ -12,7 +12,7 @@ let status_data = [
 	{
 		activity:
 		{
-			name: "=help",
+			name: config.default.prefix + "help",
 			type: "PLAYING"
 		},
 		status: "online"
@@ -105,5 +105,5 @@ let status_data = [
 		},
 		status: "dnd"
 	},
-]
+];
 module.exports = status_data;

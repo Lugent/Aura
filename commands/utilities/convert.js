@@ -29,12 +29,19 @@ const path = require("path");
 module.exports = {
 	name: "convert",
 	path: path.basename(__dirname),
+	flags: constants.cmdFlags.noHelp,
 	description: "Convierte valores a otros valores. (INCOMPLETO)",
 	aliases: ["conv"],
 	usage: "<conversor> <valor>",
 	cooldown: 5,
-	//flags: constants.cmdFlags.noHelp,
-	execute(client, message, args) {
+
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.Message} message
+	 * @param {Array} args
+	 * @param {String} prefix
+	 */
+	async execute(client, message, args, prefix) {
         if (!args[0]) {
 			var embed = new Discord.MessageEmbed();
 			embed.setTitle("convert <conversor> <valor>");
@@ -48,7 +55,7 @@ module.exports = {
 		switch (args[0]) {
 			case "rgb": {
 				if (!args[1]) {
-					var embed = new Discord.MessageEmbed();
+					let embed = new Discord.MessageEmbed();
 					embed.setTitle("Especifica valor a convertir a RGB");
 					embed.setDescription("Valores permitidos:" + "\n" + "**hex**");
 					embed.setColor([255, 0, 0]);
@@ -57,19 +64,18 @@ module.exports = {
 				
 				var result = hexToRgb(args[1]);
 				if (!result) {
-					var embed = new Discord.MessageEmbed();
+					let embed = new Discord.MessageEmbed();
 					embed.setTitle("Valor especificado no valido");
 					embed.setDescription("Valores permitidos:" + "\n" + "**hex**");
 					embed.setColor([255, 0, 0]);
 					return message.channel.send(embed);
 				}
 				
-				var embed = new Discord.MessageEmbed();
+				let embed = new Discord.MessageEmbed();
 				embed.setTitle("Resultado:");
 				embed.setDescription("R: " + result.r + " - " + "G: " + result.g + " - " + "B: " + result.b);
 				embed.setColor([result.r, result.g, result.b]);
 				return message.channel.send(embed);
-				break;
 			}
 			
 			case "hex": {
@@ -88,12 +94,11 @@ module.exports = {
 			}
 			
 			default: {
-				var embed = new Discord.MessageEmbed();
+				let embed = new Discord.MessageEmbed();
 				embed.setTitle("Conversor no valido");
 				embed.setDescription("Conversores actuales:" + "\n" + "**rgb**, **hex**, **string**, **bin**");
 				embed.setColor([255, 0, 0]);
 				return message.channel.send(embed);
-				break;
 			}
 		}
 	},
