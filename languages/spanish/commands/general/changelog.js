@@ -1,4 +1,6 @@
 let language = {
+	"stable_channel": "Versión estable",
+	"canary_channel": "Versión canary",
 	"release_version": "Versión en lanzamiento",
 	"release_candidate_version": "Versión en candidato de lanzamiento",
 	"pre-release_version": "Versión en pre-lanzamiento",
