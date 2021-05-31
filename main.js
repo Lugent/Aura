@@ -28,7 +28,9 @@ if (dotenv_result.error) { process.exit(); } else { console.log("Loaded envirome
 require(process.cwd() + "/modules/ExtendedMessage.js");
 
 // Client
-const client = new Discord.Client({presence: {status: "invisible"}, fetchAllMembers: true, http: {version: 7}});
+const client = new Discord.Client({intents: Discord.Intents.ALL, presence: {status: "invisible"}, fetchAllMembers: true, http: {version: 7}});
+//const buttons = require('discord-buttons')(client);
+//client.buttons = buttons;
 client.config = require(process.cwd() + "/configurations/client.js");
 client.functions = {};
 
@@ -137,7 +139,7 @@ client.on("inviteCreate", async (invite) => {
 client.on("inviteDelete", async (invite) => {
 	await guild_invite_tracker(client);
 
-	if (invite.guild.me.hasPermission("VIEW_AUDIT_LOG")) {
+	if (invite.guild.me.permissions.has("VIEW_AUDIT_LOG")) {
 		let audit_logs = await invite.guild.fetchAuditLogs({type: "INVITE_DELETE", limit: 1});
 		let action_log = audit_logs.entries.first();
 		if (action_log) {
@@ -174,7 +176,7 @@ client.on("guildMemberAdd", async (member) => {
 	});
 
 	if (member.user.bot) {
-		if (member.guild.me.hasPermission("VIEW_AUDIT_LOG")) {
+		if (member.guild.me.permissions.has("VIEW_AUDIT_LOG")) {
 			let audit_logs = await member.guild.fetchAuditLogs({type: "BOT_ADD", limit: 1});
 			let action_log = audit_logs.entries.first();
 			if (action_log) {
@@ -210,6 +212,22 @@ client.on("guildUnavailable", async (guild) => {
 		console.log("<" + guild.id + ">");
 	}
 });
+
+// Buttons supports
+/*client.on("clickButton", async (button) => {
+	let button_parameters = button.id.split("-");
+	let button_id = button_parameters[0];
+	let button_args = button_parameters[1].split("_");
+
+	switch (button_id) {
+		case "member_userinfo": {
+			await button.defer();
+			await client.commands.get("user").execute(client, button.message, button_args);
+			await button.message.delete();
+			break;
+		}
+	}
+});*/
 
 // Verbose
 let command_loader = require(process.cwd() + "/functions/command_loader.js");
