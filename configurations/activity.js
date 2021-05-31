@@ -2,107 +2,94 @@ const config = require(process.cwd() + "/configurations/client.js");
 const changelog = require(process.cwd() + "/configurations/changelog.js");
 let status_data = [
 	{
-		activity:
-		{
+		activities: [{
 			name: "now Open Source",
 			type: "PLAYING"
-		},
+		}],
 		status: "online"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: config.default.prefix + "help",
 			type: "PLAYING"
-		},
+		}],
 		status: "online"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "Ra!",
 			type: "PLAYING"
-		},
+		}],
 		status: "online"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "Rawr!",
 			type: "PLAYING"
-		},
+		}],
 		status: "online"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: config.default.prefix + " or @mention",
 			type: "LISTENING"
-		},
+		}],
 		status: "online"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "changelog",
 			type: "WATCHING"
-		},
+		}],
 		status: "dnd"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "the Aura Power",
 			type: "WATCHING"
-		},
+		}],
 		status: "dnd"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "v" + changelog[0].version,
 			type: "PLAYING"
-		},
+		}],
 		status: "online"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "with Lucario#6931",
 			type: "PLAYING"
-		},
+		}],
 		status: "idle"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "for others Lucario",
 			type: "WATCHING"
-		},
+		}],
 		status: "idle"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "with others Lucario",
 			type: "PLAYING"
-		},
+		}],
 		status: "idle"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "a Gym",
 			type: "COMPETING"
-		},
+		}],
 		status: "dnd"
 	},
 	{
-		activity:
-		{
+		activities: [{
 			name: "a Tournament",
 			type: "COMPETING"
-		},
+		}],
 		status: "dnd"
 	},
 ];

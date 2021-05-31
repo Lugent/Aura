@@ -141,9 +141,17 @@ client.on("inviteDelete", async (invite) => {
 		let action_log = audit_logs.entries.first();
 		if (action_log) {
 			let { executor, target } = action_log;
-			if (target.code === invite.code) {
-				console.log("Invite code " + invite.code + " was deleted from " + invite.guild.name + " by " +  executor.tag);
+			if ((target) && (executor)) {
+				if (target.code === invite.code) {
+					console.log("Invite code " + invite.code + " was deleted from " + invite.guild.name + " by " +  executor.tag);
+				}
 			}
+			else {
+				console.log("Invite code " + invite.code + " was deleted from " + invite.guild.name);
+			}
+		}
+		else {
+			console.log("Invite code " + invite.code + " was deleted from " + invite.guild.name);
 		}
 	}
 });

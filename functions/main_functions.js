@@ -30,7 +30,8 @@ function resourceMonitor(client) {
  */
 function activityUpdater(client) {
 	let status_data = require(process.cwd() + "/configurations/activity.js");
-    client.user.setPresence(status_data[client.functions.getRandomNumber(status_data.length)]);
+	let status_info = status_data[client.functions.getRandomNumber(status_data.length)];
+    client.user.setPresence(status_info);
 }
 
 /**
