@@ -1,7 +1,7 @@
 let language = {
-	"no_guild": "Usa este comando en un servidor.",
-	"invalid_guild": "Servidor no valido.",
-	"is_disabled": "El servidor tiene desactivado el sistema de niveles.",
-	"embed.author": "Leaderboard de %s"
-}
+	"no_guild": "use this command in a guild.",
+	"invalid_guild": "Invalid guild.",
+	"is_disabled": "This guild has level system disabled.",
+	"embed.author": "%s's Leaderboard"
+};
 module.exports = language;

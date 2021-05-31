@@ -1,11 +1,11 @@
 let language = {
-	"no_search": "Especifique una busqueda.",
-	"loading_video": "Buscando video...",
-	"loading_channel": "Buscando informacion del canal del video...",
-	"loading_stats": "Buscando estadisticas del video...",
-	"none": "No disponible",
-	"video_stats": "Estadisticas del video",
-	"fatal_error": "Algo salio mal en el proceso, intentelo de nuevo mas tarde.",
-	"not_found": "El video no ha sido encontrado"
+	"no_search": "Specify a search.",
+	"loading_video": "Searching video...",
+	"loading_channel": "Searching information of the channel's video...",
+	"loading_stats": "Searching stats of the video...",
+	"none": "No available",
+	"video_stats": "Video stats",
+	"fatal_error": "Something went wrong, try it again later.",
+	"not_found": "The video wasn't found"
 };
 module.exports = language;

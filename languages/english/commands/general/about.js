@@ -1,9 +1,9 @@
 let language = {
-    "embed.author": "Creado por %s",
+    "embed.author": "Created by %s",
     "embed.software": "Software",
-    "embed.resources_usage": "Uso de recursos",
-    "embed.time_connected": "Tiempo en linea",
-    "embed.source_code": "Código Fuente",
-    "embed.creation_date": "Fecha de creación"
+    "embed.resources_usage": "Resources usage",
+    "embed.time_connected": "Time online",
+    "embed.source_code": "Source Code",
+    "embed.creation_date": "Creation date"
 };
 module.exports = language;

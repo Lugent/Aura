@@ -1,7 +1,7 @@
 let language = {
-	"empty_message": "Porfavor ponga contenido en el mensaje.",
-	"no_permissions": "No tengo permisos para borrar el mensaje del usuario que ejecuto el comando, el mensaje no se envio.",
-	"delete_failure": "No se pudo borrar el mensaje del usuario que ejecuto el comando, porfavor verifique los permisos del servidor.",
-	"send_failure": "No se pudo enviar el mensaje, intentelo denuevo mas tarde."
+	"empty_message": "Please put content to the message.",
+	"no_permissions": "I don't have permission to delete the message of the user executor, the message wasn't sended.",
+	"delete_failure": "Can't delete user's executor message, please check server's permissions settings. The sended message was deleted.",
+	"send_failure": "Can't send the message, try it again later."
 };
 module.exports = language;

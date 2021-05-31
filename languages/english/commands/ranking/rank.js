@@ -1,12 +1,12 @@
 let language = {
-	"no_guild": "Usa este comando en un servidor.",
-	"is_disabled": "El servidor tiene el sistema de niveles desactivado.",
-	"no_member": "El miembro no esta en el servidor o no existe.",
-	"bot_member": "El miembro es un bot, y no puede estar en el sistema de niveles..",
+	"no_guild": "use this command in a guild.",
+	"is_disabled": "This guild has level system disabled.",
+	"no_member": "This member isn't in the guild or didn't exists.",
+	"bot_member": "The member is a bot, and can't be in the level system.",
 	"xp_max": "MAX",
 	"xp": "XP",
-	"level": "Nv",
+	"level": "Lv",
 	"rank": "Rank",
-	"embed.title": "Nivel actual de %s"
+	"embed.title": "%s's actual level"
 };
 module.exports = language;

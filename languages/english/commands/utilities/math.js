@@ -1,6 +1,6 @@
 let language = {
-	"empty": "Especifique una expresión.",
-	"failure": "Error matematico, intentelo de nuevo.",
-	"fatal_error": "Se encontro un error fatal al calcular."
+	"empty": "Expecify a expresion.",
+	"failure": "Math error, try again.",
+	"fatal_error": "An fatal error ocurred while calculating."
 };
 module.exports = language;

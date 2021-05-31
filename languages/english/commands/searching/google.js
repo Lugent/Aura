@@ -1,9 +1,9 @@
 let language = {
-	"no_arguments": "Especifique una busqueda.",
-	"loading": "Buscando...",
-	"not_found": "No se encontraron resultados.",
-	"fatal_error": "Se encontro un error fatal, intentelo mas tarde.",
-	"results.author": "Resultados de %s",
-	"results.title": "Encontrados %s resultados en %s segundos aproximadamente"
+	"no_arguments": "Specify a search.",
+	"loading": "Searching...",
+	"not_found": "Could not find results.",
+	"fatal_error": "Fatal error, try again.",
+	"results.author": "Results of %s",
+	"results.title": "Found %s results in %s seconds"
 };
 module.exports = language;

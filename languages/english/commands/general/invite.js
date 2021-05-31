@@ -1,6 +1,6 @@
 let language = {
-    "embed.title": "Invitaciones actuales",
-    "embed.version_stable": "Versión estable",
-    "embed.version_canary": "Versión canary"
+    "embed.title": "Actual invitations",
+    "embed.version_stable": "Stable version",
+    "embed.version_canary": "Canary version"
 };
 module.exports = language;

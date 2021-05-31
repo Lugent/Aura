@@ -1,9 +1,9 @@
 let language = {
-	"no_search": "Especifique busqueda.",
-	"loading": "Buscando imagen...",
-	"experimental_warning": "Comando experimental.",
-	"success.footer": "Resultado de %s",
-	"not_found": "Imagen no encontrado.",
-	"fatal_failure": "Error en el proceso HTTPS"
+	"no_search": "Specify a search.",
+	"loading": "Searching image...",
+	"experimental_warning": "Experimental command.",
+	"success.footer": "Results of %s",
+	"not_found": "Image not found.",
+	"fatal_failure": "Error in the HTTPS request"
 };
 module.exports = language;

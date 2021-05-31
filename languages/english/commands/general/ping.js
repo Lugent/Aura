@@ -1,4 +1,4 @@
 let language = {
-	"loading": "Un momento..."
+	"loading": "Wait a moment..."
 };
 module.exports = language;
