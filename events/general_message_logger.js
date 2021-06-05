@@ -1,7 +1,6 @@
 function messageLogger(client, message) {
 	if (!client.toggleLogger) { return; }
 	if (message.author.id === client.user.id) { return; }
-	if (message.author.id === client.config.owner) { return; }
 	if (!message.cleanContent) { return; }
 	if (message.channel.type === "dm") {
 		console.log("");
