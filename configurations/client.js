@@ -6,6 +6,7 @@ const config = {
 	},
 	web_dir: "web",
 	commands_dir: "commands",
+	slash_commands_dir: "commands_slash",
 	exp_score_base: 100,
 	exp_level_max: 100,
 	exp_gain_rate: 4,
