@@ -8,7 +8,7 @@ module.exports = {
 	path: path.basename(__dirname),
 	usage: "wikipedia.usage",
 	description: "wikipedia.description",
-	cooldown: 20,
+	cooldown: 10,
 	
 	/**
 	 * @param {Discord.Client} client

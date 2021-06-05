@@ -69,21 +69,21 @@ module.exports = {
 			
 			if (message.channel.type !== "dm") {
 				message.author.send(embed).then(() => {
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_list"));
+					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_list"));
 				}).catch((error) => {
 					console.log(error);
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_list"));
+					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_list"));
 				});
 			}
 			else {
-				return message.channel.send(embed);
+				return message.reply(embed, {allowedMentions: {repliedUser: false}});
 			}
         }
 		else {
 			var name = args[0].toLowerCase();
 			var command = commands.get(name) || commands.find((c) => { return (c.aliases && c.aliases.includes(name)); });
 			if ((!command) || ((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && (!hidden)) {
-				return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "dont_exists"));
+				return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "dont_exists"));
 			}
 
 			let embed = new Discord.MessageEmbed();
@@ -93,13 +93,13 @@ module.exports = {
 			if (command.cooldown) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown"), client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
 			if (message.channel.type !== "dm") {
 				message.author.send(embed).then(() => {
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_single"));
+					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_single"));
 				}).catch(() => {
-					return message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_single"));
+					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_single"));
 				});
 			}
 			else {
-				return message.channel.send(embed);
+				return message.reply(embed);
 			}
 		}
 	},

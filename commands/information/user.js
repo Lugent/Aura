@@ -42,21 +42,15 @@ module.exports = {
 		let mentioned_user = message.mentions.users.first();
         let user = mentioned_user || get_user;
 		if (!user) {
-			if (args[0]) { user = await client.users.fetch(args[0]); } else { user = message.author; }
+			if (args[0]) { user = await client.users.fetch(args[0]).catch(async (error) => { user = undefined; }); } else { user = message.author; }
 		}
 		if (!user) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "failure"));
 			embed.setColor([255, 0, 0]);
 
-			if (send_message) {
-				if (message.channel.messages.cache.get(send_message.id)) {
-					return send_message.edit(embed);
-				}
-			}
-			else {
-				return message.reply(embed);
-			}
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+			else { return message.reply(embed);	}
 		}
 
 		// Special
@@ -155,7 +149,9 @@ module.exports = {
 				embed.addField(":speech_left: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.custom_status") + ":", custom_status);
 			}
 
-			embed.addField(":abacus: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.activities") + ":", activities_name);
+			if (activities_name.length) {
+				embed.addField(":abacus: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.activities") + ":", activities_name);
+			}
 		}
 
 		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.locale") + ":", user.locale, false); }

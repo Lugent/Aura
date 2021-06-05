@@ -23,7 +23,7 @@ module.exports = {
 		if (!changelog[versionNumber]) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/general/changelog", "not_found"));
-			return message.channel.send(embed);
+			return message.reply(embed);
 		}
 		
 		let changelogMessage = "";
@@ -36,6 +36,6 @@ module.exports = {
 		embed.setDescription((changelogMessage === "") && "command.changelog.embed.empty" || changelogMessage);
         embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/general/changelog", "embed.footer", [(versionNumber + 1), changelog.length])); 
 		embed.setColor(0x66b3ff);
-        return message.channel.send(embed);
+        return message.reply(embed);
     }
 };

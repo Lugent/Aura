@@ -3,12 +3,12 @@ const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 const https = require("https");
 module.exports = {
-	name: "google",
+	name: "search",
 	path: path.basename(__dirname),
-	description: "command.google.desc",
-	aliases: ["g"],
-	usage: "command.google.usage",
-	cooldown: 20,
+	description: "search.google.desc",
+	aliases: ["s"],
+	usage: "search.usage",
+	cooldown: 10,
 	
 	/**
 	 * @param {Discord.Client} client
@@ -19,13 +19,13 @@ module.exports = {
 	async execute(client, message, args, prefix) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "no_arguments"));
+			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "no_arguments"));
 			embed.setColor([255, 255, 0]);
 			return message.reply(embed);
 		}
 		
 		var embed = new Discord.MessageEmbed();
-		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "loading"));
+		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "loading"));
 		embed.setColor([255, 255, 0]);
 		
 		let send_message = await message.reply(embed);
@@ -37,6 +37,7 @@ module.exports = {
 			response.on("data", async (chunk) => { raw_data += chunk; });
 			response.on("end", async () => {
 				let data = JSON.parse(raw_data);
+				console.log(data.queries);
 				let get_results = data.items;
 				let get_error = data.error;
 				if (get_error) {
@@ -53,8 +54,8 @@ module.exports = {
 				if (get_results) {
 					let display_result = "";
 					let embed = new Discord.MessageEmbed();
-					embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "results.author", [search]), "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png");
-					embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "results.title", [data.searchInformation.formattedTotalResults, data.searchInformation.searchTime]));
+					embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "results.author", [search]), "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png");
+					embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "results.title", [data.searchInformation.formattedTotalResults, data.searchInformation.searchTime]));
 					for (var result_index = 0; result_index < get_results.length; result_index += 1) {
 						display_result += "**" + (result_index + 1) + ".-** " + "[" + get_results[result_index].title + "]" + "(" + get_results[result_index].link + ")" + "\n" + get_results[result_index].snippet + "\n";
 					}
@@ -68,7 +69,7 @@ module.exports = {
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/google", "not_found"));
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "not_found"));
 
 					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
 					else { return message.reply(embed); }

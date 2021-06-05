@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
+const credits = require(process.cwd() + "/configurations/credits.js");
 const path = require("path");
 const os = require("os");
 const packages_json = require(process.cwd() + "/package.json");
@@ -21,6 +22,11 @@ module.exports = {
     {
 		let uptime_count = client.functions.generateDurationString(client, message.author, message.guild, client.readyAt.getTime());
 		
+		let creditsName = [];
+		for (let credits_index = 0; credits_index < credits.length; credits_index++) {
+			creditsName.push(credits[credits_index]);
+		}
+
         let embed = new Discord.MessageEmbed();
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.author", [client.users.cache.get(client.config.owner).tag]), client.users.cache.get(client.config.owner).displayAvatarURL({ format: "png", dynamic: true, size: 256 }));
 		embed.setTitle(client.user.tag);
@@ -29,7 +35,8 @@ module.exports = {
 		embed.addField(":file_cabinet: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.resources_usage") + ":", ":battery: " + client.statsCPU.total.toFixed(2) + "%" + " / " + ":card_box: " + (process.memoryUsage().rss / 1000000).toFixed(2) + "MB", true);
 		embed.addField(":satellite: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.time_connected") + ":", uptime_count, false);
 		embed.addField(":tools: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.source_code") + ":", "[Github](https://github.com/Lucario-TheAuraPokemon/TheAuraPokemon-Bot/)", false);
-		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, client.user.createdAt).capitalize(), false);
+		//embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, client.user.createdAt).capitalize(), false);
+		embed.addField(":medal: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.credits") + ":", creditsName.join("\n"));
 		embed.setColor(0x0580aa);
         return message.reply(embed);
     }

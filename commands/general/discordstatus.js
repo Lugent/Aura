@@ -35,26 +35,26 @@ module.exports = {
 		
 		/* INDCIDENT */
 		let incidentImpactTable = [
-			{id: "none", name: "incident_impact.none"}, // "Ninguno"
-			{id: "minor", name: "incident_impact.minor"}, // "Menor"
-			{id: "major", name: "incident_impact.major"}, // "Mayor"
-			{id: "critical", name: "incident_impact.critical"}, // "Critico"
+			{id: "none", name: "incident_impact.none"},
+			{id: "minor", name: "incident_impact.minor"},
+			{id: "major", name: "incident_impact.major"},
+			{id: "critical", name: "incident_impact.critical"},
 		];
 		
 		let incidentStatusTable = [
-			{id: "investigating", name: "incident_status.investigating"}, // "Investigando"
-			{id: "identified", name: "incident_status.identified"}, // "Identificado"
-			{id: "monitoring", name: "incident_status.monitoring"}, // "Monitoriando"
-			{id: "resolved", name: "incident_status.resolved"} // "Resuelto"
+			{id: "investigating", name: "incident_status.investigating"},
+			{id: "identified", name: "incident_status.identified"},
+			{id: "monitoring", name: "incident_status.monitoring"},
+			{id: "resolved", name: "incident_status.resolved"}
 		];
 		/* INDCIDENT */
 		
 		/* COMPONENT */
 		let componentStatusTable = [
-			{id: "operational", name: "component_status.operational"}, // "Funcionando"
-			{id: "degraded_performance", name: "component_status.degraded_performance"}, // "Rendimiento degradado"
-			{id: "partial_outage", name: "component_status.partial_outage"}, // "Parcialmente caido"
-			{id: "major_outage", name: "component_status.major_outage"} // "Mayormente caido"
+			{id: "operational", name: "component_status.operational"},
+			{id: "degraded_performance", name: "component_status.degraded_performance"},
+			{id: "partial_outage", name: "component_status.partial_outage"},
+			{id: "major_outage", name: "component_status.major_outage"}
 		];
 		/* COMPONENT */
 		
@@ -74,7 +74,7 @@ module.exports = {
 				let components = data.components;
 				let serviceStatus = serviceStatusTable.find(status => data.status.indicator === status.id);
 				let embed = new Discord.MessageEmbed();
-				embed.setTitle(serviceStatus.name);
+				embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", serviceStatus.name));
 				for (let index = 0; index < components.length; index++) {
 					let component = components[index];
 					if (idTable.find(element => element.id === component.id)) {
@@ -86,7 +86,7 @@ module.exports = {
 				for (let index = 0; index < finalComponents.length; index++) {
 					let component = finalComponents[index];
 					let findData = componentStatusTable.find(status => component.status === status.id);
-					componentsName += "**" + component.name + "**: " + findData.name + "\n";
+					componentsName += "**" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", component.name) + "**: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", findData.name) + "\n";
 				}
 				
 				let incidents = data.incidents;

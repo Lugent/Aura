@@ -8,7 +8,7 @@ module.exports = {
 	description: "youtube.description",
 	aliases: ["yt"],
 	usage: "youtube.usage",
-	cooldown: 20,
+	cooldown: 10,
 	
 	/**
 	 * @param {Discord.Client} client
@@ -52,8 +52,8 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "loading_channel"));
 					embed.setColor([255, 255, 0]);
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.reply(embed); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { await send_message.edit(embed); } }
+					else { await message.reply(embed); }
 					
 					let raw_channel_data = "";
 					let channel_url_get = "https://www.googleapis.com/youtube/v3/channels?part=snippet&maxResults=1&id=" + get_video.snippet.channelId + "&key=" + process.env.GOOGLE_API_KEY;
@@ -76,8 +76,8 @@ module.exports = {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "loading_stats"));
 							embed.setColor([255, 255, 0]);
-							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-							else { return message.reply(embed); }
+							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { await send_message.edit(embed); } }
+							else { await message.reply(embed); }
 							
 							let raw_statistics_data = "";
 							let statistics_url_get = "https://www.googleapis.com/youtube/v3/videos?part=statistics&maxResults=1&id=" + get_video.id.videoId + "&key=" + process.env.GOOGLE_API_KEY;
@@ -103,10 +103,10 @@ module.exports = {
 									let likes_count = client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "none");
 									let dislikes_count = client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "none");
 									let comments_count = client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "none");
-									if (get_statistics.statistics.viewCount) { views_count = client.functions.number_formatter(get_statistics.statistics.viewCount, 2); }
-									if (get_statistics.statistics.likeCount) { likes_count = client.functions.number_formatter(get_statistics.statistics.likeCount, 2); }
-									if (get_statistics.statistics.dislikeCount) { dislikes_count = client.functions.number_formatter(get_statistics.statistics.dislikeCount, 2); }
-									if (get_statistics.statistics.commentCount) { comments_count = client.functions.number_formatter(get_statistics.statistics.commentCount, 2); }
+									if (get_statistics.statistics.viewCount) { views_count = client.functions.getFormattedNumber(get_statistics.statistics.viewCount, 2); }
+									if (get_statistics.statistics.likeCount) { likes_count = client.functions.getFormattedNumber(get_statistics.statistics.likeCount, 2); }
+									if (get_statistics.statistics.dislikeCount) { dislikes_count = client.functions.getFormattedNumber(get_statistics.statistics.dislikeCount, 2); }
+									if (get_statistics.statistics.commentCount) { comments_count = client.functions.getFormattedNumber(get_statistics.statistics.commentCount, 2); }
 									
 									let get_date = client.functions.ISODateToJSDate(get_video.snippet.publishedAt);
 									
@@ -127,12 +127,20 @@ module.exports = {
 									if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
 									else { return message.reply(embed); }
 								}).on("error", (error) => {
-									throw error;
+									let embed = new Discord.MessageEmbed();
+									embed.setDescription(":no_entry: " + error.message);
+									embed.setColor([255, 0, 0]);
+									if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+									else { return message.reply(embed); }
 								});
 							});
 							
 						}).on("error", (error) => {
-							throw error;
+							let embed = new Discord.MessageEmbed();
+							embed.setDescription(":no_entry: " + error.message);
+							embed.setColor([255, 0, 0]);
+							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+							else { return message.reply(embed); }
 						});
 					});
 				}
@@ -144,7 +152,11 @@ module.exports = {
 				}
 			});
 		}).on("error", (error) => {
-			throw error;
+			let embed = new Discord.MessageEmbed();
+			embed.setDescription(":no_entry: " + error.message);
+			embed.setColor([255, 0, 0]);
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
+			else { return message.reply(embed); }
 		});
 	},
 };

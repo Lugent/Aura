@@ -18,7 +18,7 @@ module.exports = {
 		embed.setColor([254, 254, 254]);
 		embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/general/ping", "loading"));
         message.reply(embed).then(async oldmessage => {
-            let ping = oldmessage.createdTimestamp - message.createdTimestamp;
+            let ping = (oldmessage.createdTimestamp - message.createdTimestamp) - client.ws.ping;
 			let selfping = client.ws.ping;
             let pingcolor = [254, 254, 254];
             if (ping > 330) { pingcolor = [127, 0, 0]; }

@@ -15,15 +15,15 @@ module.exports = {
 	 * @param {String} prefix
 	 */
     async execute(client, message, args, prefix) {
+		let subcommands_array = [
+			"<tag_name>",
+			"add <tag_name> <tag_content>",
+			"remove <tag_name>",
+			"list [user]",
+			"owner <tag_tag>"
+		];
+
         if (!args[0]) {
-			let subcommands_array = [
-				"<tag_name>",
-				"add <tag_name> <tag_content>",
-				"remove <tag_name>",
-				"list [user]",
-				"owner <tag_tag>"
-			];
-			
 			let subcommands_string = "";
 			for (let subcommands_index = 0; subcommands_index < subcommands_array.length; subcommands_index++) {
 				subcommands_string += "**" + prefix + "tag" + " " + subcommands_array[subcommands_index] + "**" + "\n";
@@ -61,6 +61,13 @@ module.exports = {
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.already_exists"));
 					embed.setColor([255, 0, 0]);
 					return message.reply(embed);
+				}
+
+				if (subcommands_array.includes(tag_name)) {
+					let embed = new Discord.MessageEmbed();
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.hardcoded_command"));
+					embed.setColor([255, 0, 0]);
+					return message.reply(embed, {allowedMentions: {repliedUser: false}});
 				}
 				
 				try {

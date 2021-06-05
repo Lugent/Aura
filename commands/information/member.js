@@ -43,7 +43,7 @@ module.exports = {
 		
 		let mentioned_member = message.mentions.members.first();
         let member = mentioned_member || get_member;
-		if (!member) { if (args[0]) { member = await message.guild.members.fetch(args[0]); } else { member = message.member; } }
+		if (!member) { if (args[0]) { member = await message.guild.members.fetch(args[0]).catch(async (error) => { member = undefined; });; } else { member = message.member; } }
 		if (!member) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "failure"));
@@ -74,7 +74,7 @@ module.exports = {
 		for (let index = 0; index < userRoles.length; index++) {
 			let getRole = userRoles[index];
 			if (getRole.name === "@everyone") { continue; }
-			memberRoles += "@" + getRole.name + "" + "\n";
+			memberRoles += "<@&" + getRole.id + ">" + "\n";
 		}
 		
 		// Permissions
@@ -143,11 +143,6 @@ module.exports = {
 		{
 			if (message.channel.messages.cache.get(send_message.id))
 			{
-				/*let button = new client.buttons.MessageButton();
-				button.setStyle("blurple");
-				button.setLabel("Get user info");
-				button.setID("member_userinfo" + "-" + member.user.id);*/
-				//return message.reply({embed, buttons: [button]});
 				return send_message.edit(embed);
 			}
 		}

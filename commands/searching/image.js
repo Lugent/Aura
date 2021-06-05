@@ -8,7 +8,7 @@ module.exports = {
 	description: "image.description",
 	aliases: ["img"],
 	usage: "image.usage",
-	cooldown: 20,
+	cooldown: 10,
 	
 	/**
 	 * @param {Discord.Client} client

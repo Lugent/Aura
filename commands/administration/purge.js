@@ -64,7 +64,7 @@ module.exports = {
 			embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/purge", "success", [total_messages.length]));
 			if (member) { embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/purge", "success.member", [total_messages.length, member.user.tag])); }
 			embed.setColor([0, 255, 0]);
-			message.channel.send(embed).then(async (sent_message) =>{ sent_message.delete({timeout: 5000}); });
+			message.channel.send(embed).then(async (sent_message) => { setTimeout(async () => { await sent_message.delete(); }, 5000); });
 		});
     }
 };

@@ -94,14 +94,14 @@ module.exports = {
 		let score_actual = (level_index * level_index) * exp_score_base;
 		let score_goal = (next_level * next_level) * exp_score_base;
 		
-		let image_data_width = 1600;
-		let image_data_height = 1000;
+		let image_data_width = 1200; // 400
+		let image_data_height = 600;
 		
-		let image_data_avatar_padding = 128;
-		let image_data_avatar_size = 512;
-		let image_data_rank_back_padding = 128;
-		let image_data_rank_back_size = 640;
-		let image_data_rank_front_size = 640;
+		let image_data_avatar_padding = 64;
+		let image_data_avatar_size = 256;
+		let image_data_rank_back_padding = 64;
+		let image_data_rank_back_size = 320;
+		let image_data_rank_front_size = 320;
 		let image_data_left = image_data_avatar_padding;
 		let image_data_right = (image_data_width - image_data_rank_back_size) - image_data_rank_back_padding;
 		let image_data_position = image_data_left;
@@ -113,7 +113,7 @@ module.exports = {
 		if (level_index >= client.config.exp_level_max) { image_data_bar_fill_length = image_data_bar_length; }
 		
 		const Canvas = require("canvas");
-		Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Bold.otf", {family: "Stratum1-Bold"});
+		Canvas.registerFont(process.cwd() + "/assets/fonts/DJB Get Digital.ttf", {family: "Get-Digital"});
 		
 		let image_canvas = Canvas.createCanvas(image_data_width, image_data_height);
 		let image_context = image_canvas.getContext("2d");
@@ -146,74 +146,34 @@ module.exports = {
 		
 		// Progress bar - Container
 		image_context.fillStyle = "rgb(0, 0, 127)";
-		image_context.fillRect(image_data_avatar_padding - 8, ((image_data_height - 24) - 8) - 120, image_data_width - (image_data_avatar_padding * 2) + 16, 128 + 16);
-		//image_context.fillRect(image_data_avatar_padding - 8, ((image_data_avatar_padding + image_data_avatar_size) - 8) + (20 + 120), image_data_width - (image_data_avatar_padding * 2) + 16, 128 + 16);
+		image_context.fillRect(image_data_avatar_padding - 8, ((image_data_height - 12) - 4) - 120, image_data_width - (image_data_avatar_padding * 2) + 16, 96 + 8);
 
 		image_context.fillStyle = "rgb(0, 0, 0)";
-		image_context.fillRect(image_data_avatar_padding + 8, ((image_data_height - 24) + 8) - 120, image_data_width - (image_data_avatar_padding * 2) - 16, 128 - 16);
-		//image_context.fillRect(image_data_avatar_padding + 8, ((image_data_avatar_padding + image_data_avatar_size) + 8) + (20 + 120), image_data_width - (image_data_avatar_padding * 2) - 16, 128 - 16);
+		image_context.fillRect(image_data_avatar_padding + 8, ((image_data_height - 12) + 4) - 120, image_data_width - (image_data_avatar_padding * 2) - 16, 96 - 8);
 
-		let progress_bar = ((get_level.score - score_actual) / (score_goal - score_actual)) * (image_data_width - (image_data_avatar_padding * 2) - 16);
+		let progress_bar = ((get_level.score - score_actual) / (score_goal - score_actual)) * (image_data_width - (image_data_avatar_padding * 2) - 8);
 		image_context.fillStyle = "rgb(0, 127, 0)";
-		image_context.fillRect(image_data_avatar_padding + 8, ((image_data_height - 24) + 8) - 120, progress_bar, 128 - 16);
-		//image_context.fillRect(image_data_avatar_padding + 8, ((image_data_avatar_padding + image_data_avatar_size) + 8) + (20 + 120), progress_bar, 128 - 16);
-		
-		// String - Username
-		// String - Rank
-		image_context.font = "112px Stratum1-Bold";
-		image_context.textAlign = "left";
-		image_context.textBaseline = "bottom";
-		shadowed_text(image_context, image_data_avatar_padding, image_data_avatar_padding - 16, message.author.tag, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
+		image_context.fillRect(image_data_avatar_padding + 8, ((image_data_height - 12) + 4) - 120, progress_bar, 96 - 8);
 
 		// String - Level
-		image_context.font = "112px Stratum1-Bold";
+		image_context.font = "82px Get-Digital";
 		image_context.textAlign = "left";
 		image_context.textBaseline = "bottom";
-		shadowed_text(image_context, image_data_avatar_padding + 16, image_data_height - 24, client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
-		//shadowed_text(image_context, image_data_avatar_padding + 16, (image_data_avatar_padding + image_data_avatar_size) + (20 + 120), client.functions.getTranslation(client, message.author, message.guild, "commands_rank", "level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
+		shadowed_text(image_context, image_data_avatar_padding + 16, image_data_height - 32, client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
 
 		// String - XP
 		let target_xp = client.functions.getFormattedNumber(score_goal, 2);
 		if (level_index >= client.config.exp_level_max) { target_xp = client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "xp_max"); }
-		image_context.font = "112px Stratum1-Bold";
+		image_context.font = "82px Get-Digital";
 		image_context.textAlign = "right";
 		image_context.textBaseline = "bottom";
-		shadowed_text(image_context, image_data_width - image_data_avatar_padding - 16, image_data_height - 24, client.functions.getFormattedNumber(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, message.author, message.guild, "commands_rank", "xp"), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
-		//shadowed_text(image_context, image_data_width - image_data_avatar_padding - 16, (image_data_avatar_padding + image_data_avatar_size) + (20 + 120), client.functions.getFormattedNumber(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, message.author, message.guild, "commands_rank", "xp"), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
+		shadowed_text(image_context, image_data_width - image_data_avatar_padding - 16, image_data_height - 32, client.functions.getFormattedNumber(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, message.author, message.guild, "commands_rank", "xp"), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
 
 		// String - Rank
-		image_context.font = "112px Stratum1-Bold";
-		image_context.textAlign = "right";
+		image_context.font = "82px Get-Digital";
+		image_context.textAlign = "left";
 		image_context.textBaseline = "bottom";
-		shadowed_text(image_context, image_data_width - image_data_avatar_padding - 16, image_data_height - (24 + 128), client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "rank") + "  #" + (get_rank + 1) + " / " + (levels_database.length), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
-		//image_context.fillStyle = "rgb(255, 255, 255)";
-		//image_context.fillText(client.functions.getTranslation(client, message.author, message.guild, "commands_rank", "level") + ". " + level_index + " / " + client.config.exp_level_max, (image_data_avatar_padding + image_data_avatar_size) + 20, image_data_bar_padding);
-		//image_context.fillText("Rank" + " " + (get_rank + 1), (image_data_avatar_padding + image_data_avatar_size) + 20, image_data_bar_padding + 50);
-
-		/*image_context.beginPath();
-		image_context.moveTo(image_data_bar_padding, image_data_bar_vertical + 20);
-		image_context.lineTo(image_data_bar_padding + 20, image_data_bar_vertical);
-		image_context.lineTo((image_data_bar_padding + image_data_bar_length) - 20, image_data_bar_vertical);
-		image_context.lineTo((image_data_bar_padding + image_data_bar_length), image_data_bar_vertical + 20);
-		image_context.lineTo((image_data_bar_padding + image_data_bar_length) - 20, image_data_bar_vertical + 40);
-		image_context.lineTo(image_data_bar_padding + 20, image_data_bar_vertical + 40);
-		image_context.lineTo(image_data_bar_padding, image_data_bar_vertical + 20);
-		image_context.clip();
-		image_context.fillStyle = "rgb(0, 0, 80)";
-		image_context.fillRect(image_data_bar_padding, image_data_bar_vertical, image_data_bar_length, 40);
-		
-		// Progress bar - Fill
-		image_context.beginPath();
-		image_context.moveTo(image_data_bar_padding + 8, image_data_bar_vertical + 20);
-		image_context.lineTo(image_data_bar_padding + 20, image_data_bar_vertical + 8);
-		image_context.lineTo((image_data_bar_padding + image_data_bar_fill_length) - 20, image_data_bar_vertical + 8);
-		image_context.lineTo((image_data_bar_padding + image_data_bar_fill_length) - 8, image_data_bar_vertical + 20);
-		image_context.lineTo((image_data_bar_padding + image_data_bar_fill_length) - 20, image_data_bar_vertical + (40 - 8));
-		image_context.lineTo(image_data_bar_padding + 20, image_data_bar_vertical + (40 - 8));
-		image_context.lineTo(image_data_bar_padding + 8, image_data_bar_vertical + 20);
-		image_context.clip();
-		image_context.fillStyle = "rgb(0, 124, 177)";
-		image_context.fillRect(image_data_bar_padding, image_data_bar_vertical, image_data_bar_length, 40);*/
+		shadowed_text(image_context, image_data_avatar_padding + 16, image_data_height - (24 + 128), client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "rank") + " " + (get_rank + 1) + " / " + (levels_database.length), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
 		
 		// Upload file
 		var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png"); 
