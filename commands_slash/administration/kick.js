@@ -25,9 +25,9 @@ module.exports = {
 		description: "Kicks a member with a specified reason",
         options: [
             {
-                type: "STRING",
+                type: "USER",
                 name: "member",
-                description: "The member to kick via ID or mention",
+                description: "The member to kick",
                 required: true,
             },
             {
@@ -51,23 +51,20 @@ module.exports = {
 	 */
     async execute(client, interaction)
     {
-        let is_silent = ((interaction.options[2]) && (interaction.options[2].value));
+        let is_silent = (interaction.options.get("is_silent") && interaction.options.get("is_silent").value);
 
         if (!interaction.guild.members.cache.get(interaction.user.id).permissions.has("KICK_MEMBERS")) {
-            return interaction.reply("You don't have the **Kick Members** permission for that", {ephemeral: is_silent});
+            return interaction.reply("You don't have the **Kick Members** permission for that!", {ephemeral: is_silent});
         }
 
-		let get_member = await interaction.guild.members.fetch(getMentionFromId(interaction.options[0].value)).catch(async (error) => {
-            return interaction.reply("You should mention a member or use their ID!", {ephemeral: is_silent});
-        });
-        console.log(get_member);
+        let get_member = interaction.options.get("member").member;
+        if (!get_member) {
+            return interaction.reply("You should specify a member!", {ephemeral: is_silent});
+        }
 
-        let reason = interaction.options[1] ? interaction.options[1].value : "No reason";
-        /*if (!get_member.kickable) {
-            return interaction.reply("Can't kick the specified member, check if my permissions and role position are correct.", {ephemeral: is_silent});
-        }*/
-
+        let reason = interaction.options.get("reason") ? interaction.options.get("reason").value : "No reason";
         get_member.kick(reason).then(async (member) => {
+            await member.user.send("Kicked from **" + interaction.guild.name + "** with the reason of **" + reason + "**");
             return interaction.reply("kicked **" + get_member.user.tag + "**, with a reason of **" + reason + "**", {ephemeral: is_silent});
         }).catch(async (error) => {
             return interaction.reply("Failed to kick **" + get_member.user.tag + "**, check if my permissions and role position are correct.", {ephemeral: is_silent});
