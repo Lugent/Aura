@@ -51,12 +51,11 @@ module.exports = {
 			return message.reply({embed: embed});
 		}
 		
-		
 		let get_member = message.member;
 		let members = await message.guild.members.fetch();
 		if (args[0]) {
 			let mentioned_member = message.mentions.members.first();
-			let search_member = get_member || message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length));
+			let search_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length));
 			get_member = mentioned_member || search_member || members.find(member => member.id === args[0]);
 		}
 		
