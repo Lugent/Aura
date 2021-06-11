@@ -20,7 +20,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_guild"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		if (!args.length) {
@@ -52,14 +52,14 @@ module.exports = {
 			embed.setColor(0x66b3ff);
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "main.actual_settings") + ":", guild_settings_all);
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "main.subcommands") + ":", subcommands_name);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		else {
 			if (!message.member.permissions.has("MANAGE_GUILD")) {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_permissions"));
 				embed.setColor([255, 0, 0]);
-				return message.channel.send(embed);
+				return message.channel.send({embed: embed});
 			}
 			
 			switch (args[0]) {
@@ -76,7 +76,7 @@ module.exports = {
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_data"));
 							embed.setColor([255, 0, 0]);
 						}
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					let new_prefix = args[1];
@@ -85,7 +85,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setColor([0, 255, 0]);
 					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "prefix.changed", [new_prefix])); // prefix
-					return message.channel.send(embed);
+					return message.channel.send({embed: embed});
 				}
 				
 				case "language": {
@@ -112,7 +112,7 @@ module.exports = {
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "no_data"));
 							embed.setColor([255, 0, 0]);
 						}
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					let new_language = args[1];
@@ -127,20 +127,20 @@ module.exports = {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(langDesc);
 							embed.setColor([0, 255, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 						else {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "language.not_enabled"));
 							embed.setColor([255, 0, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 					}
 					else {
 						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "dont_exists.language"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					break;
 				}
@@ -150,7 +150,7 @@ module.exports = {
 						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.no_permissions"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
@@ -171,7 +171,7 @@ module.exports = {
 						embed.setColor(0x66b3ff);
 						embed.setDescription(total_commands);
 						embed.setFooter(prefix + "gsettings command <command>");
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					else {
 						let command_name = args[1];
@@ -180,21 +180,21 @@ module.exports = {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.not_found"));
 							embed.setColor([255, 0, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 						
 						if (get_command.flags & constants.cmdFlags.ownerOnly) {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.developer_command"));
 							embed.setColor([255, 0, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 						
 						if (get_command.flags & constants.cmdFlags.cantDisable) {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.cannot_disable"));
 							embed.setColor([255, 0, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 						
 						let is_disabled = get_disabled_commands.includes(get_command.name);
@@ -206,13 +206,13 @@ module.exports = {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.disabled", [get_command.name]));
 							embed.setColor([0, 255, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 						else {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "command.enabled", [get_command.name]));
 							embed.setColor([0, 255, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 					}
 					break;
@@ -223,7 +223,7 @@ module.exports = {
 						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "function.no_permissions"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
@@ -241,7 +241,7 @@ module.exports = {
 						embed.setColor(0x66b3ff);
 						embed.setDescription(total_functions);
 						embed.setFooter(prefix + "gsettings function <function>");
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					else {
 						for (let function_index = 0; function_index < bot_functions.length; function_index += 1) {
@@ -278,7 +278,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/gsettings", "invalid_subcommand"));
 					embed.setColor([255, 0, 0]);
-					return message.channel.send(embed);
+					return message.channel.send({embed: embed});
 				}
 			}
 		}

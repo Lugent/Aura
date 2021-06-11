@@ -78,6 +78,6 @@ module.exports = {
 			}
 		}
 		embed.setFooter("Pagina " + (Math.ceil(start_index / 25) + 1) + " de " + Math.ceil(total_count / 25) + " (" + Math.min(start_index, total_users_array.length) + " de " + Math.min(end_index, total_users_array.length) + " de "+ total_count + " usuarios)");
-		return message.channel.send(embed);
+		return message.channel.send({embed: embed});
 	},
 }; 

@@ -21,14 +21,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "no_search"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		let embed = new Discord.MessageEmbed();
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "loading_video"));
 		embed.setColor([255, 255, 0]);
 		
-		let send_message = await message.reply(embed);
+		let send_message = await message.reply({embed: embed});
 		
 		let raw_video_data = "";
 		let video_search = args.slice(0).join("%20");
@@ -45,15 +45,15 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + get_error.message);
 					embed.setColor([255, 255, 0]);
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.reply(embed); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+					else { return message.reply({embed: embed}); }
 				}
 				if (get_video) {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "loading_channel"));
 					embed.setColor([255, 255, 0]);
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { await send_message.edit(embed); } }
-					else { await message.reply(embed); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { await send_message.edit({embed: embed}); } }
+					else { await message.reply({embed: embed}); }
 					
 					let raw_channel_data = "";
 					let channel_url_get = "https://www.googleapis.com/youtube/v3/channels?part=snippet&maxResults=1&id=" + get_video.snippet.channelId + "&key=" + process.env.GOOGLE_API_KEY;
@@ -69,15 +69,15 @@ module.exports = {
 								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + get_error.message);
 								embed.setColor([255, 0, 0]);
-								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-								else { return message.reply(embed); }
+								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+								else { return message.reply({embed: embed}); }
 							}
 							
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "loading_stats"));
 							embed.setColor([255, 255, 0]);
-							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { await send_message.edit(embed); } }
-							else { await message.reply(embed); }
+							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { await send_message.edit({embed: embed}); } }
+							else { await message.reply({embed: embed}); }
 							
 							let raw_statistics_data = "";
 							let statistics_url_get = "https://www.googleapis.com/youtube/v3/videos?part=statistics&maxResults=1&id=" + get_video.id.videoId + "&key=" + process.env.GOOGLE_API_KEY;
@@ -93,8 +93,8 @@ module.exports = {
 										let embed = new Discord.MessageEmbed();
 										embed.setDescription(":no_entry: " + get_error.message);
 										embed.setColor([255, 0, 0]);
-										if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-										else { return message.reply(embed); }
+										if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+										else { return message.reply({embed: embed}); }
 									}
 									
 									let video_link = "https://www.youtube.com/watch?v=" + get_video.id.videoId;
@@ -124,14 +124,14 @@ module.exports = {
 									embed.setImage(get_video.snippet.thumbnails.high.url);
 									embed.addField(":bar_chart: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "video_stats") + ":", video_date + "\n" + video_views + " | " + video_likes + " | " + video_dislikes + " | " + video_comments);
 									embed.setColor([255, 0, 0]);
-									if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-									else { return message.reply(embed); }
+									if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+									else { return message.reply({embed: embed}); }
 								}).on("error", (error) => {
 									let embed = new Discord.MessageEmbed();
 									embed.setDescription(":no_entry: " + error.message);
 									embed.setColor([255, 0, 0]);
-									if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-									else { return message.reply(embed); }
+									if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+									else { return message.reply({embed: embed}); }
 								});
 							});
 							
@@ -139,8 +139,8 @@ module.exports = {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + error.message);
 							embed.setColor([255, 0, 0]);
-							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-							else { return message.reply(embed); }
+							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+							else { return message.reply({embed: embed}); }
 						});
 					});
 				}
@@ -148,15 +148,15 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
 					embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/youtube", "not_found"));
-					return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+					return sent_message ? sent_message.edit({embed: embed}) : message.channel.send({embed: embed});
 				}
 			});
 		}).on("error", (error) => {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + error.message);
 			embed.setColor([255, 0, 0]);
-			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-			else { return message.reply(embed); }
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+			else { return message.reply({embed: embed}); }
 		});
 	},
 };

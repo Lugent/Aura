@@ -17,7 +17,7 @@ module.exports = {
         var embed = new Discord.MessageEmbed();
 		embed.setColor([254, 254, 254]);
 		embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/general/ping", "loading"));
-        message.reply(embed).then(async oldmessage => {
+        message.reply({embed: embed}).then(async oldmessage => {
             let ping = (oldmessage.createdTimestamp - message.createdTimestamp) - client.ws.ping;
 			let selfping = client.ws.ping;
             let pingcolor = [254, 254, 254];
@@ -30,7 +30,7 @@ module.exports = {
             var embed = new Discord.MessageEmbed();
 			embed.setColor(pingcolor);
 			embed.setDescription(":satellite_orbital: " + "Roundtrip Latency: **" + ping + "**ms" + "\n" + ":satellite: " + "Bot Latency: **" + selfping + "**ms");
-            oldmessage.edit(embed);
+            oldmessage.edit({embed: embed});
         });
 	},
 };

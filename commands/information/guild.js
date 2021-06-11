@@ -22,14 +22,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "guild_only"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		let embed2 = new Discord.MessageEmbed();
 		embed2.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "loading"));
 		embed2.setColor([255, 255, 0]);
 		
-		let send_message = await message.channel.send(embed2);
+		let send_message = await message.channel.send({embed: embed2});
 		
 		let guild = message.guild;
 		if ((args[0]) && (message.author.id === client.config.owner)) {
@@ -40,9 +40,12 @@ module.exports = {
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "failure"));
 			embed.setColor([255, 0, 0]);
 
-			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-			else { return message.reply(embed); }
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+			else { return message.reply({embed: embed}); }
 		}
+		
+		// Server owner
+		let guild_owner = await guild.fetchOwner();
 		
 		// Members
 		let get_members = await guild.members.fetch();
@@ -260,12 +263,16 @@ module.exports = {
 		let system_channel_flags = "";
 		if (guild.systemChannel) {
 			let get_flags = guild.systemChannelFlags.serialize();
-			if (!get_flags.WELCOME_MESSAGE_DISABLED) {
+			if (!get_flags.SUPPRESS_JOIN_NOTIFICATIONS) {
 				system_channel_flags += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.new_members");
 			}
 
-			if (!get_flags.BOOST_MESSAGE_DISABLED) {
+			if (!get_flags.SUPPRESS_PREMIUM_SUBSCRIPTIONS) {
 				system_channel_flags += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.server_boosts");
+			}
+			
+			if (!get_flags.SUPPRESS_GUILD_REMINDER_NOTIFICATIONS) {
+				system_channel_flags += "\n" + "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.guild_tips");
 			}
 			
 			if (!system_channel_flags.length) { system_channel_flags = "- " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "system_channel.no_messages"); }
@@ -318,7 +325,7 @@ module.exports = {
 		embed.setThumbnail(guild.iconURL());
 		embed.setTitle(guild.name + "\n" + "> " + guild.nameAcronym);
 		if (description_string.length) { embed.setDescription(guild.description); }
-		embed.setAuthor(guild.owner.user.tag, guild.owner.user.displayAvatarURL());
+		if (guild_owner) { embed.setAuthor(guild_owner.user.tag, guild_owner.user.displayAvatarURL()); }
 		embed.addField(":map: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.locale"), region_string + "\n" + locale_string);
 		embed.addField(":bar_chart: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.stats"), date_string + "\n" + member_string + "\n" + channel_string + "\n" + roles_string + "\n" + emojis_string + "\n" + boost_string);
 		embed.addField(":closed_lock_with_key: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.admin"), notifications_string + "\n" + moderation_string + "\n" + ex_filter_string + "\n" + mfa_string);
@@ -326,7 +333,7 @@ module.exports = {
 		embed.addField(":wrench: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "embed.settings"), (feature_community ? (rules_channel_string + "\n") : "") + system_channel_string + "\n" + widget_string);
 		embed.setColor([0, 255, 0]);
 		
-		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-		else { return message.reply(embed); }
+		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+		else { return message.reply({embed: embed}); }
 	},
 };

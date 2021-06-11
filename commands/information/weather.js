@@ -34,7 +34,7 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/weather", "not_found"));
 				embed.setColor(0xff0000);
-				return message.channel.send(embed);
+				return message.channel.send({embed: embed});
 			}
 			
 			let currentWeather = result[0].current;
@@ -50,7 +50,7 @@ module.exports = {
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/weather", "embed.timezone") + ": ", currentWeather.day + " " + currentWeather.date + " (GMT "  + locationWeather.timezone + ")");
 			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/information/weather", "embed.coords") + ": " + locationWeather.lat + " / " + locationWeather.long);
 			embed.setColor(0x66b3ff);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		});
     }
 };

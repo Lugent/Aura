@@ -23,6 +23,6 @@ module.exports = {
 		let embed = new Discord.MessageEmbed();
 		embed.setDescription(":white_check_mark: " + "Todos han sido actualizados.");
 		embed.setColor([0, 255, 0]);
-		return message.channel.send(embed);
+		return message.channel.send({embed: embed});
 	},
 };

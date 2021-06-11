@@ -50,7 +50,7 @@ module.exports = {
 			embed.attachFiles([gd_image]);
 			embed.setThumbnail("attachment://gd_icon.png");
 			embed.setColor([254, 223, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		else {
 			switch (subcommand) {
@@ -60,7 +60,7 @@ module.exports = {
 						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.no_command"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					switch (help_command) {
@@ -89,14 +89,14 @@ module.exports = {
 							embed.setColor([254, 223, 0]);
 							embed.attachFiles([gd_image]);
 							embed.setThumbnail("attachment://gd_icon.png");
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 						
 						default: {
 							let embed = new Discord.MessageEmbed();
 							embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "help.invalid_command"));
 							embed.setColor([255, 0, 0]);
-							return message.channel.send(embed);
+							return message.channel.send({embed: embed});
 						}
 					}
 					break;
@@ -396,13 +396,13 @@ module.exports = {
 								embed.setThumbnail("attachment://search.png");
 								embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "search.author"), "attachment://gd_icon.png");
 								embed.setColor([254, 223, 0]);
-								return message.channel.send(embed);
+								return message.channel.send({embed: embed});
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "search.not_found"));
 								embed.setColor([255, 0, 0]);
-								return message.channel.send(embed);
+								return message.channel.send({embed: embed});
 							}
 						});
 					}).on("error", async (error) => {
@@ -411,7 +411,7 @@ module.exports = {
 						/*let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "search.failure"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);*/
+						return message.channel.send({embed: embed});*/
 					});
 					break;
 				}
@@ -421,7 +421,7 @@ module.exports = {
 						var embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "level.no_argument"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					let level_id = args[1];
@@ -470,13 +470,13 @@ module.exports = {
 								embed.setAuthor(level_author, "https://gdbrowser.com/icon/" + level_data.playerID);
 								embed.setTitle(level_header);
 								embed.setDescription(level_information);
-								return message.channel.send(embed);
+								return message.channel.send({embed: embed});
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "level.no_data"));
 								embed.setColor([255, 0, 0]);
-								return message.channel.send(embed);
+								return message.channel.send({embed: embed});
 							}
 						});
 					}).on("error", async (error) => {
@@ -485,7 +485,7 @@ module.exports = {
 						/*let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "level.failure"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);*/
+						return message.channel.send({embed: embed});*/
 					});
 					break;
 				}
@@ -495,7 +495,7 @@ module.exports = {
 						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "profile.no_argument"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);
+						return message.channel.send({embed: embed});
 					}
 					
 					let profile_id = args.slice(1).join(" ");
@@ -558,13 +558,13 @@ module.exports = {
 								embed.setTitle(profile_header);
 								embed.setDescription(profile_info + (profile_socials.length ? ("\n\n" + profile_socials) : "") + "\n\n" + profile_options);
 								embed.setAuthor(profile_name, "https://gdbrowser.com/icon/" + profile_data.playerID);
-								return message.channel.send(embed);
+								return message.channel.send({embed: embed});
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
 								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "profile.no_data"));
 								embed.setColor([255, 0, 0]);
-								return message.channel.send(embed);
+								return message.channel.send({embed: embed});
 							}
 						});
 					}).on("error", async (error) => {
@@ -573,7 +573,7 @@ module.exports = {
 						/*let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "profile.failure"));
 						embed.setColor([255, 0, 0]);
-						return message.channel.send(embed);*/
+						return message.channel.send({embed: embed});*/
 					});
 					break;
 				}
@@ -582,7 +582,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "invalid_subcommand", [prefix]));
 					embed.setColor([255, 0, 0]);
-					return message.channel.send(embed);
+					return message.channel.send({embed: embed});
 				}
 			}
 		}

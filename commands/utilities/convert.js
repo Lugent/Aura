@@ -49,7 +49,7 @@ module.exports = {
 			embed.addField("<conversor>", "El tipo de conversor a usar." + "\n" + "Conversores actuales:" + "\n" + "**rgb**, **hex**, **string**, **bin**", false);
 			embed.addField("<valor>", "El valor que se va a convertir.", false);
 			embed.setColor([0, 255, 255]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		switch (args[0]) {
@@ -59,7 +59,7 @@ module.exports = {
 					embed.setTitle("Especifica valor a convertir a RGB");
 					embed.setDescription("Valores permitidos:" + "\n" + "**hex**");
 					embed.setColor([255, 0, 0]);
-					return message.channel.send(embed);
+					return message.channel.send({embed: embed});
 				}
 				
 				var result = hexToRgb(args[1]);
@@ -68,14 +68,14 @@ module.exports = {
 					embed.setTitle("Valor especificado no valido");
 					embed.setDescription("Valores permitidos:" + "\n" + "**hex**");
 					embed.setColor([255, 0, 0]);
-					return message.channel.send(embed);
+					return message.channel.send({embed: embed});
 				}
 				
 				let embed = new Discord.MessageEmbed();
 				embed.setTitle("Resultado:");
 				embed.setDescription("R: " + result.r + " - " + "G: " + result.g + " - " + "B: " + result.b);
 				embed.setColor([result.r, result.g, result.b]);
-				return message.channel.send(embed);
+				return message.channel.send({embed: embed});
 			}
 			
 			case "hex": {
@@ -98,7 +98,7 @@ module.exports = {
 				embed.setTitle("Conversor no valido");
 				embed.setDescription("Conversores actuales:" + "\n" + "**rgb**, **hex**, **string**, **bin**");
 				embed.setColor([255, 0, 0]);
-				return message.channel.send(embed);
+				return message.channel.send({embed: embed});
 			}
 		}
 	},

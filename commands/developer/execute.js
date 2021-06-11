@@ -23,7 +23,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":no_entry: " + "Comando invalido, no se puede ejecutar.");
 			embed.setColor([255, 0, 0]);
-            return message.channel.send(embed);
+            return message.channel.send({embed: embed});
 		}
         try {
 			let result = await child_process.execSync(command);
@@ -33,7 +33,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(error.message);
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
     }
 }; 

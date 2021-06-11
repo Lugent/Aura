@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 module.exports = {
     name: "leaderboard",
@@ -7,7 +6,7 @@ module.exports = {
     cooldown: 5,
     usage: "leaderboard.usage",
 	description: "leaderboard.description",
-	flags: constants.cmdFlags.noHelp,
+	aliases: ["top"],
 	
 	/**
 	 * @param {Discord.Client} client
@@ -21,7 +20,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "no_guild"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		let guild = message.guild;
@@ -32,7 +31,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "invalid_guild"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(guild.id);
@@ -41,7 +40,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "is_disabled"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		let members_levels = "";
@@ -63,6 +62,6 @@ module.exports = {
 		var embed = new Discord.MessageEmbed();
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "embed.author", [guild.name]), guild.iconURL());
 		embed.setDescription(members_levels);
-		return message.channel.send(embed);
+		return message.channel.send({embed: embed});
     }
 };

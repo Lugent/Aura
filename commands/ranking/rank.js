@@ -39,7 +39,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "no_guild"));
 			embed.setColor([255, 255, 0]);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
@@ -48,7 +48,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "is_disabled"));
 			embed.setColor([255, 0, 0]);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		
@@ -64,14 +64,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "no_member"));
 			embed.setColor([255, 0, 0]);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		if (get_member.user.bot) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "bot_member"));
 			embed.setColor([255, 0, 0]);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		let get_rank = 0;
@@ -128,7 +128,7 @@ module.exports = {
 		// Images
 		let rank_front_image = await client.functions.generateRankIcon(client, Canvas, level_index);
 		let avatar_image = await Canvas.loadImage(get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 512})); // 4096
-		if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right + 34, 0, image_data_rank_front_size, image_data_rank_front_size); }
+		if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_right, 0, image_data_rank_front_size, image_data_rank_front_size); }
 		
 		image_context.lineWidth = 16;
 		image_context.fillStyle = "rgb(64, 64, 64)";
@@ -173,7 +173,7 @@ module.exports = {
 		image_context.font = "82px Get-Digital";
 		image_context.textAlign = "left";
 		image_context.textBaseline = "bottom";
-		shadowed_text(image_context, image_data_avatar_padding + 16, image_data_height - (24 + 128), client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "rank") + " " + (get_rank + 1) + " / " + (levels_database.length), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
+		shadowed_text(image_context, image_data_avatar_padding - 8, image_data_height - (24 + 128), client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "rank") + " " + (get_rank + 1) + " / " + (levels_database.length), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
 		
 		// Upload file
 		var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png"); 
@@ -182,6 +182,6 @@ module.exports = {
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "embed.title", [get_member.user.tag]), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 		embed.setImage("attachment://" + attachment.name);
 		embed.setColor(0x66b3ff);
-		return message.reply(embed);
+		return message.reply({embed: embed});
     }
 };

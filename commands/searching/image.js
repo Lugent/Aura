@@ -21,14 +21,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "no_search"));
 			embed.setColor([255, 255, 0]);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		var embed = new Discord.MessageEmbed();
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let send_message = await message.reply(embed);
+		let send_message = await message.reply({embed: embed});
 		
 		let search = args.slice(0).join(" ");
 		let raw_data = "";
@@ -46,8 +46,8 @@ module.exports = {
 					embed.setDescription(":no_entry: " + get_error.message);
 					embed.setColor([255, 0, 0]);
 
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.reply(embed); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+					else { return message.reply({embed: embed}); }
 				}
 
 				if (get_image) {
@@ -55,16 +55,16 @@ module.exports = {
 					embed.setImage(get_image[0].link);
 					embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "success.footer", [search]));
 					embed.setColor([254, 254, 254]);
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.reply(embed); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+					else { return message.reply({embed: embed}); }
 				}
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/image", "not_found"));
 
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-					else { return message.reply(embed); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+					else { return message.reply({embed: embed}); }
 				}
 			});
 		}).on("error", (error) => {

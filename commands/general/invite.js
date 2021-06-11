@@ -20,6 +20,6 @@ module.exports = {
 		embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/general/invite", "embed.title"));
 		embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/invite", "embed.version_stable"), "[Stable](" + invite_url + ")");
 		embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/invite", "embed.version_canary"), "[Canary](" + invite_canary_url + ")");
-		return message.reply(embed);
+		return message.reply({embed: embed});
 	},
 };

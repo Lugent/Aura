@@ -29,14 +29,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "no_guild"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 
 		let embed2 = new Discord.MessageEmbed();
 		embed2.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "loading"));
 		embed2.setColor([255, 255, 0]);
 		
-		let send_message = await message.channel.send(embed2);
+		let send_message = await message.channel.send({embed: embed2});
 		
 		let get_member;
 		if (args[0]) { get_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
@@ -49,8 +49,8 @@ module.exports = {
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "failure"));
 			embed.setColor([255, 0, 0]);
 
-			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-			else { return message.reply(embed); }
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+			else { return message.reply({embed: embed}); }
 		}
 		
 		// Especial
@@ -143,12 +143,12 @@ module.exports = {
 		{
 			if (message.channel.messages.cache.get(send_message.id))
 			{
-				return send_message.edit(embed);
+				return send_message.edit({embed: embed});
 			}
 		}
 		else
 		{
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
     }
 };

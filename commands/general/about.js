@@ -38,6 +38,6 @@ module.exports = {
 		//embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, client.user.createdAt).capitalize(), false);
 		embed.addField(":medal: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.credits") + ":", creditsName.join("\n"));
 		embed.setColor(0x0580aa);
-        return message.reply(embed);
+        return message.reply({embed: embed});
     }
 };

@@ -68,7 +68,7 @@ module.exports = {
             embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "list.footer", [prefix]));
 			
 			if (message.channel.type !== "dm") {
-				message.author.send(embed).then(() => {
+				message.author.send({embed: embed}).then(() => {
 					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_list"));
 				}).catch((error) => {
 					console.log(error);
@@ -92,14 +92,14 @@ module.exports = {
 			if (command.aliases) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "aliases"), command.aliases.join(", "), false); }
 			if (command.cooldown) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown"), client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
 			if (message.channel.type !== "dm") {
-				message.author.send(embed).then(() => {
+				message.author.send({embed: embed}).then(() => {
 					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "success_single"));
 				}).catch(() => {
 					return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "failure_single"));
 				});
 			}
 			else {
-				return message.reply(embed);
+				return message.reply({embed: embed});
 			}
 		}
 	},

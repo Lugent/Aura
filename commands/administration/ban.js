@@ -20,21 +20,21 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "no_text_channel"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 
 		if (!message.member.permissions.has("BAN_MEMBERS")) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "no_permissions"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "no_target"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 
 		let findTag = ((args !== undefined) && message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)));
@@ -50,12 +50,12 @@ module.exports = {
 				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "success.reason", [banReason])); // banReason
 				embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "success.by", [message.author.tag]), message.author.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
 				embed.setColor([0, 255, 0]);
-				message.channel.send(embed);
+				message.channel.send({embed: embed});
 			}).catch((error) => {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "dont_exists"));
 				embed.setColor([255, 0, 0]);
-				message.channel.send(embed);
+				message.channel.send({embed: embed});
 			});
 		}
 		
@@ -63,7 +63,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "myself"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		if (member.user.id === message.author.id) {
@@ -71,13 +71,13 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "yourself.ownership"));
 				embed.setColor([255, 0, 0]);
-				return message.channel.send(embed);
+				return message.channel.send({embed: embed});
 			}
 			else {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "yourself"));
 				embed.setColor([255, 0, 0]);
-				return message.channel.send(embed);
+				return message.channel.send({embed: embed});
 			}
 		}
 		
@@ -85,14 +85,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "is_ownership"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		if (!member.bannable) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "cannot_ban"));
 			embed.setColor([255, 0, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
 		member.ban({days: 0, reason: banReason}).then((member) => {
@@ -101,12 +101,12 @@ module.exports = {
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "success.reason", [banReason])); // banReason
 			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "success.by", [message.author.tag]), message.author.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
 			embed.setColor([0, 255, 0]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}).catch((error) => {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/ban", "fatal_error"));
 			embed.setColor([255, 0, 0]);
-			message.channel.send(embed);
+			message.channel.send({embed: embed});
 		});
     }
 };

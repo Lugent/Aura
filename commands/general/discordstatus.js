@@ -63,7 +63,7 @@ module.exports = {
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message;
-		await message.reply(embed).then(message => { sent_message = message; });
+		await message.reply({embed: embed}).then(message => { sent_message = message; });
 		
 		let rawData = "";
 		https.get("https://srhpyqt94yxb.statuspage.io/api/v2/summary.json", async (res) => {
@@ -103,14 +103,14 @@ module.exports = {
 				embed.setDescription(componentsName);
 				embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "discord_status"), "https://cdn.discordapp.com/embed/avatars/0.png"); // "Estado de Discord"
 				embed.setColor(serviceStatus.color);
-				return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+				return sent_message ? sent_message.edit({embed: embed}) : message.channel.send({embed: embed});
 			});
 		}).on("error", (error) => {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "fatal_failure"));
-			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+			return sent_message ? sent_message.edit({embed: embed}) : message.channel.send({embed: embed});
 		});
     }
 }; 

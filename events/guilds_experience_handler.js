@@ -78,7 +78,7 @@ async function exp_handler(client, message) {
 			let image_data_rank_front_size = 384;
 			let image_data_right = (image_data_width - image_data_rank_front_size) - image_data_rank_front_padding;
 
-			Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Bold.otf", {family: "Stratum1-Bold"});
+			Canvas.registerFont(process.cwd() + "/assets/fonts/DJB Get Digital.ttf", {family: "Get-Digital"});
 			
 			let image_canvas = Canvas.createCanvas(image_data_width, image_data_height);
 			let image_context = image_canvas.getContext("2d");
@@ -97,7 +97,7 @@ async function exp_handler(client, message) {
 			if (rank_front_image_old) { image_context.drawImage(rank_front_image_old, image_data_rank_front_padding, image_data_rank_front_padding / 2, image_data_rank_front_size, image_data_rank_front_size); }
 			
 			// String - Levels
-			image_context.font = "64px Stratum1-Bold";
+			image_context.font = "82px Get-Digital";
 			image_context.textAlign = "center";
 			image_context.textBaseline = "bottom";
 			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
@@ -105,26 +105,26 @@ async function exp_handler(client, message) {
 			
 			// Arrow
 			image_context.beginPath();
-			image_context.moveTo(image_data_width / 2, (image_data_rank_front_size / 2));
-			image_context.lineTo((image_data_width / 2) - 96, 4);
-			image_context.lineTo((image_data_width / 2), 4);
-			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2));
-			image_context.moveTo(image_data_width / 2, (image_data_rank_front_size / 2));
-			image_context.lineTo((image_data_width / 2) - 96, image_data_rank_front_size);
-			image_context.lineTo((image_data_width / 2), image_data_rank_front_size);
-			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2));
+			image_context.moveTo(image_data_width / 2, (image_data_rank_front_size / 2) + 40);
+			image_context.lineTo((image_data_width / 2) - 96, 4 + 40);
+			image_context.lineTo((image_data_width / 2), 4  + 40);
+			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2) + 40);
+			image_context.moveTo(image_data_width / 2, (image_data_rank_front_size / 2) + 40);
+			image_context.lineTo((image_data_width / 2) - 96, image_data_rank_front_size + 40);
+			image_context.lineTo((image_data_width / 2), image_data_rank_front_size + 40);
+			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2) + 40);
 			image_context.clip();
 			image_context.fillStyle = "rgb(255, 255, 255)";
-			image_context.fillRect(image_data_width / 2 - 96, 4, image_data_rank_front_size, image_data_rank_front_size);
+			image_context.fillRect(image_data_width / 2 - 96, 4 + 40, image_data_rank_front_size, image_data_rank_front_size);
 			
 			// Upload file
 			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			var embed = new Discord.MessageEmbed();
 			embed.attachFiles(attachment);
-			embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
+			embed.setAuthor(message.author.tag + ", " + client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 			embed.setImage("attachment://" + attachment.name);
 			embed.setColor(0x66b3ff);
-			return message.channel.send({content: "<@" + get_member.user.id + ">", embed: embed});
+			return message.channel.send({embed: embed});
 		}
 	}
 }
