@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
+const voice = require("@discordjs/voice");
+const adapter = require(process.cwd() + "/modules/voiceAdapter.js");
 const ytdl = require("ytdl-core");
 module.exports = {
     name: "music",
@@ -18,8 +20,30 @@ module.exports = {
 	 */
     async execute(client, message, args, prefix)
     {
-		return;
 		
+		if (message.channel.type !== "text") { return message.channel.send("Please use this command on a server."); }
+		
+		let voice_channel = message.member.voice.channel;
+		if (!voice_channel) { return message.channel.send("You're not in a voice channel!"); }
+		
+		let player = voice.createAudioPlayer();
+		let connection = await voice.joinVoiceChannel({
+			channelId: voice_channel.id,
+			guildId: message.guild.id,
+			adapterCreator: adapter.createDiscordJSAdapter(voice_channel)
+		});
+		
+		await voice.entersState(connection, voice.VoiceConnectionStatus.Ready, 30e3);
+        const resource = voice.createAudioResource(
+            ytdl("https://www.youtube.com/watch?v=lqYQXIt4SpA", {filter: "audioonly"}),
+            {inputType: voice.StreamType.Arbitrary}
+        );
+        player.play(resource);
+		
+        await voice.entersState(player, voice.AudioPlayerStatus.Playing, 30e3);
+        connection.subscribe(player);
+		
+		/*
 		if (message.channel.type !== "text") { return message.channel.send("Please use this command on a server."); }
 		
 		let evoker_channel = message.channel;
@@ -93,6 +117,6 @@ module.exports = {
 				message.channel.send("Invalid subcommand!");
 				break;
 			}
-		}
+		}*/
     }
 };
