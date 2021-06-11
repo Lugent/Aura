@@ -18,6 +18,8 @@ module.exports = {
 	 */
     async execute(client, message, args, prefix)
     {
+		return;
+		
 		if (message.channel.type !== "text") { return message.channel.send("Please use this command on a server."); }
 		
 		let evoker_channel = message.channel;
