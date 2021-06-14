@@ -143,7 +143,10 @@ module.exports = {
 					embed.setColor([255, 0, 0]);
 					return message.reply({embed: embed});
 				}).catch((error) => {
-					throw error;
+					let embed = new Discord.MessageEmbed();
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "upload_error"));
+					embed.setColor([255, 0, 0]);
+					return message.reply({embed: embed});
 				});
 				break;
 			}

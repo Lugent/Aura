@@ -33,15 +33,17 @@ module.exports = {
 			adapterCreator: adapter.createDiscordJSAdapter(voice_channel)
 		});
 		
-		await voice.entersState(connection, voice.VoiceConnectionStatus.Ready, 30e3);
+		await voice.entersState(connection, voice.VoiceConnectionStatus.Ready, 60e3);
         const resource = voice.createAudioResource(
             ytdl("https://www.youtube.com/watch?v=lqYQXIt4SpA", {filter: "audioonly"}),
             {inputType: voice.StreamType.Arbitrary}
         );
         player.play(resource);
-		
-        await voice.entersState(player, voice.AudioPlayerStatus.Playing, 30e3);
+        await voice.entersState(player, voice.AudioPlayerStatus.Playing, 60e3);
         connection.subscribe(player);
+
+		await voice.entersState(player, voice.AudioPlayerStatus.Idle, Number.MAX_SAFE_INTEGER);
+		connection.destroy();
 		
 		/*
 		if (message.channel.type !== "text") { return message.channel.send("Please use this command on a server."); }

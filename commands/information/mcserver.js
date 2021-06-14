@@ -78,13 +78,13 @@ module.exports = {
 							if (parsed_data.motd)
 							{
 								if (parsed_data.motd.clean.join("\n").length) {
-									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.motd") + ": ", parsed_data.motd.clean, false);
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.motd") + ": ", parsed_data.motd.clean.join("\n"), false);
 								}
 							}
 							
 							if (parsed_data.info) {
 								if (parsed_data.info.clean.join("\n").length) {
-									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.info") + ": ", parsed_data.info.clean, false);
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.info") + ": ", parsed_data.info.clean.join("\n"), false);
 								}
 							}
 							
