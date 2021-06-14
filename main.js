@@ -14,7 +14,7 @@ process.on("unhandledRejection", error => {
 		let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + error.name + (error.httpStatus ? (" - HTTP " + error.httpStatus) : "") + "\n" + (error.message ? error.message : ""));
-		client.last_msg.send(embed);
+		client.last_msg.send({embed: embed});
 		client.last_msg = undefined;
 	}
 });
@@ -25,9 +25,17 @@ let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded enviroment variables."); }
 
 // Client
-const client = new Discord.Client({intents: Discord.Intents.ALL, presence: {status: "invisible"}, fetchAllMembers: true, http: {version: 7}});
-//const buttons = require('discord-buttons')(client);
-//client.buttons = buttons;
+const client = new Discord.Client({
+	intents: Discord.Intents.ALL,
+	allowedMentions: {
+		repliedUser: false
+	}, 
+	presence: {
+		status: "invisible"
+	},
+});
+
+// Setup client
 client.config = require(process.cwd() + "/configurations/client.js");
 client.functions = {};
 
@@ -65,6 +73,7 @@ client.functions.getTranslation = require(process.cwd() + "/functions/translator
 
 // Client data
 client.commands = new Discord.Collection();
+client.slash_commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 client.exp_cooldowns = new Discord.Collection();
 client.guild_invites = new Discord.Collection();
@@ -99,6 +108,7 @@ console.log("Connecting to Discord...");
 
 // Load event files
 let general_command_executor = require(process.cwd() + "/events/general_command_executor.js"); 
+let general_slash_command_executor = require(process.cwd() + "/events/general_slash_command_executor.js"); 
 let general_data_handler = require(process.cwd() + "/events/general_database_handler.js");
 let guild_invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 let guild_msg_logger = require(process.cwd() + "/events/general_message_logger.js");
@@ -107,15 +117,20 @@ let guild_experience_handler = require(process.cwd() + "/events/guilds_experienc
 let user_afk_handler = require(process.cwd() + "/events/users_afk_handler.js");
 
 // Execute events
+client.on("interaction", async (interaction) => {
+	general_slash_command_executor(client, interaction);
+});
+
 client.on("message", async (message) => {
+	
 	await general_data_handler(client, message);
 	
-	let blacklist_guild;
+	/*let blacklist_guild;
 	let blacklist_user;
 	if (message.guild) { blacklist_guild = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(message.guild.id); }
 	else { blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(message.author.id); }
 	
-	if (blacklist_guild || blacklist_user) { return; }
+	if (blacklist_guild || blacklist_user) { return; }*/
 	
 	await guild_msg_logger(client, message);
 	await user_afk_handler(client, message);
@@ -199,22 +214,31 @@ client.on("guildMemberRemove", async (member) => {
 });
 
 client.on("guildCreate", async (guild) => {
+	console.log("Joined to guild " + guild.name);
+	console.log("ID: " + guild.id);
+	
 	await guild_bot_welcome(client, guild);
 	await guild_invite_tracker(client);
-	console.log("Joined to guild " + guild.name);
-	console.log("<" + guild.id + ">");
+	await guild.commands.set(client.slash_commands.array()).then(async (command) => {
+		console.log("");
+		console.log("Registered slash commands.");
+	}).catch(async (error) => {
+		console.log("");
+		console.error("Not added slash commands:" + "\n" + error.message);
+	});
 });
 
 client.on("guildDelete", async (guild) => {
+	console.log("Exited from guild " + guild.name);
+	console.log("ID: " + guild.id);
+	
 	await guild_invite_tracker(client);
-	console.log("Leaved from guild " + guild.name);
-	console.log("<" + guild.id + ">");
 });
 
 client.on("guildUnavailable", async (guild) => {
 	if (guild.name) {
 		console.log("A guild is unavaliable -> " + guild.name);
-		console.log("<" + guild.id + ">");
+		console.log("ID: " + guild.id);
 	}
 });
 
@@ -236,14 +260,26 @@ client.on("guildUnavailable", async (guild) => {
 
 // Verbose
 let command_loader = require(process.cwd() + "/functions/command_loader.js");
+let slash_command_loader = require(process.cwd() + "/functions/slash_command_loader.js");
+let levelUpdater = require(process.cwd() + "/functions/experience_updater.js");
 client.on("ready", async () => {
 	client.functions.resourceMonitor(client);
 	
 	console.log("Registering commands...");
 	await command_loader(client);
+	console.log("");
+
+	console.log("Registering slash commands...");
+	await slash_command_loader(client);
+	console.log("");
 	
 	console.log("Initializing invite tracker...");
 	await guild_invite_tracker(client);
+	console.log("");
+	
+	console.log("Executing level updater...");
+	await levelUpdater(client);
+	console.log("");
 	
 	if (client.status_updating) { client.functions.activityUpdater(client); }
 	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 15000);
@@ -261,7 +297,7 @@ client.on("ready", async () => {
 	}, 120000);
 	
 	client.connected = true;
-	console.log("Functions ready.");
+	console.log("Everything is ready!");
 	console.log("Connected as " + client.user.tag);
 });
 client.on("invalidated", () => {

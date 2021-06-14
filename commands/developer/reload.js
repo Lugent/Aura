@@ -21,18 +21,31 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":warning: " + "Especifica un comando o usa `" + prefix + "reload all` para todos los comandos.");
 			embed.setColor([255, 255, 0]);
-            return message.channel.send(embed);
+            return message.channel.send({embed: embed});
 		}
 
-        if (args[0] === "all") {
-			let command_loader = require(process.cwd() + "/functions/command_loader.js");
-			await command_loader(client, true);
+		
+		switch (args[0]) {
+			case "all": {
+				let command_loader = require(process.cwd() + "/functions/command_loader.js");
+				await command_loader(client, true);
 
-			let embed = new Discord.MessageEmbed();
-            embed.setDescription(":white_check_mark: " + "Comandos actualizados.");
-			embed.setColor([0, 255, 0]);
-            return message.channel.send(embed);
-        }
+				let embed = new Discord.MessageEmbed();
+				embed.setDescription(":white_check_mark: " + "Comandos actualizados.");
+				embed.setColor([0, 255, 0]);
+				return message.channel.send({embed: embed});
+			}
+		
+			case "slash": {
+				let command_loader = require(process.cwd() + "/functions/slash_command_loader.js");
+				await command_loader(client, true);
+
+				let embed = new Discord.MessageEmbed();
+				embed.setDescription(":white_check_mark: " + "Comandos slash actualizados.");
+				embed.setColor([0, 255, 0]);
+				return message.channel.send({embed: embed});
+			}
+		}
 
         let command_name = args[0].toLowerCase();
         let command = client.commands.get(command_name) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(command_name));
@@ -40,7 +53,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":no_entry: " + "El comando no existe o el alias no es reconocible a un comando.");
 			embed.setColor([255, 0, 0]);
-            return message.channel.send(embed);
+            return message.channel.send({embed: embed});
 		}
 
 		let command_path = process.cwd() + "/commands/" + command.path + "/" + command.name + ".js";
@@ -52,16 +65,10 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":white_check_mark: " + "Comando **" + command.name + "** actualizado.");
 			embed.setColor([0, 255, 0]);
-            return message.channel.send(embed);
+            return message.channel.send({embed: embed});
         }
 		catch (error) {
-			console.error("Re-loading '" + command.name + "' command failed:" + "\n", error);
-
-            let embed = new Discord.MessageEmbed();
-            embed.setDescription(":no_entry: " + "Falla durante el proceso");
-            embed.addField(error.name, error.message || "Undefined", false);
-			embed.setColor([255, 0, 0]);
-            return message.channel.send(embed);
+			throw error;
         }
 	},
 }; 

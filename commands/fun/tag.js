@@ -15,15 +15,15 @@ module.exports = {
 	 * @param {String} prefix
 	 */
     async execute(client, message, args, prefix) {
+		let subcommands_array = [
+			"<tag_name>",
+			"add <tag_name> <tag_content>",
+			"remove <tag_name>",
+			"list [user]",
+			"owner <tag_tag>"
+		];
+
         if (!args[0]) {
-			let subcommands_array = [
-				"<tag_name>",
-				"add <tag_name> <tag_content>",
-				"remove <tag_name>",
-				"list [user]",
-				"owner <tag_tag>"
-			];
-			
 			let subcommands_string = "";
 			for (let subcommands_index = 0; subcommands_index < subcommands_array.length; subcommands_index++) {
 				subcommands_string += "**" + prefix + "tag" + " " + subcommands_array[subcommands_index] + "**" + "\n";
@@ -33,7 +33,7 @@ module.exports = {
 			embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "main.subcommands") + ":");
 			embed.setDescription(subcommands_string);
 			embed.setColor(0x66b3ff);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		switch (args[0]) {
@@ -45,14 +45,14 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.no_name"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				if (!tag_content) {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.no_content"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let find_tag = client.user_data.prepare("SELECT * FROM tags WHERE name = ?;").get(tag_name);
@@ -60,7 +60,14 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.already_exists"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
+				}
+
+				if (subcommands_array.includes(tag_name)) {
+					let embed = new Discord.MessageEmbed();
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.hardcoded_command"));
+					embed.setColor([255, 0, 0]);
+					return message.reply(embed, {allowedMentions: {repliedUser: false}});
 				}
 				
 				try {
@@ -73,7 +80,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "add.created"));
 					embed.setColor([0, 255, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				break;
 			}
@@ -84,7 +91,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "remove.no_name"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let find_tag = client.user_data.prepare("SELECT * FROM tags WHERE name = ?;").get(tag_name);
@@ -92,14 +99,14 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "remove.dont_exists"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				if (message.author.id !== find_tag.author_id) {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "remove.not_owner"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				
@@ -113,7 +120,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "remove.deleted"));
 					embed.setColor([0, 255, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				break;
 			}
@@ -124,7 +131,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "forceremove.no_name"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let find_tag = client.user_data.prepare("SELECT * FROM tags WHERE name = ?;").get(tag_name);
@@ -132,14 +139,14 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "forceremove.dont_exists"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				if (message.author.id !== client.config.owner) {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "forceremove.not_owner"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				
@@ -153,7 +160,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "forceremove.deleted"));
 					embed.setColor([0, 255, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				break;
 			}
@@ -173,7 +180,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "list.not_tags"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let offset = (args[1] && (args[1] - 1)) || 0;
@@ -196,7 +203,7 @@ module.exports = {
 				embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "list.title", [message.author.tag]));
 				embed.setDescription(tag_total);
 				embed.setColor(0x66b3ff);
-				return message.reply(embed);
+				return message.reply({embed: embed});
 			}
 			
 			case "owner": {
@@ -205,7 +212,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "owner.no_name"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let find_tag = client.user_data.prepare("SELECT * FROM tags WHERE name = ?;").get(tag_name);
@@ -213,7 +220,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "owner.dont_exists"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let user = await client.users.fetch(find_tag.author_id);
@@ -221,13 +228,13 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "owner.no_user"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "owner.title", [user.tag]));
 				embed.setColor(0x66b3ff);
-				return message.reply(embed);
+				return message.reply({embed: embed});
 			}
 			
 			default: {
@@ -237,7 +244,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "use.dont_exists"));
 					embed.setColor([255, 0, 0]);
-					return message.reply(embed);
+					return message.reply({embed: embed});
 				}
 				
 				return message.reply(find_tag.content);

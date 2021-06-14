@@ -28,7 +28,7 @@ module.exports = {
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.world"), client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.world.description"), false);
 			embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "help.footer"));
 			embed.setColor([0, 255, 255]);
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 
 		var players = false;
@@ -52,7 +52,7 @@ module.exports = {
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
-		await message.channel.send(embed2).then(message => { send_message = message; });
+		await message.channel.send({embed: embed2}).then(message => { send_message = message; });
 		
 		var data = "";
 		var player_names = "";
@@ -65,8 +65,8 @@ module.exports = {
 						embed.setColor([255, 0, 0]);
 						embed.setDescription(":no_entry: " + data);
 
-						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-						else { return message.reply(embed); }
+						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+						else { return message.reply({embed: embed}); }
 					}
 					
 					var parsed_data = JSON.parse(data);
@@ -78,13 +78,13 @@ module.exports = {
 							if (parsed_data.motd)
 							{
 								if (parsed_data.motd.clean.join("\n").length) {
-									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.motd") + ": ", parsed_data.motd.clean, false);
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.motd") + ": ", parsed_data.motd.clean.join("\n"), false);
 								}
 							}
 							
 							if (parsed_data.info) {
 								if (parsed_data.info.clean.join("\n").length) {
-									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.info") + ": ", parsed_data.info.clean, false);
+									embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.info") + ": ", parsed_data.info.clean.join("\n"), false);
 								}
 							}
 							
@@ -110,8 +110,8 @@ module.exports = {
 								embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.ip") + ": " + parsed_data.ip + ":" + parsed_data.port);
 							}
 
-							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-							else { return message.reply(embed); }
+							if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+							else { return message.reply({embed: embed}); }
 						}
 						else {
 							if (parsed_data.ip.length) {
@@ -122,16 +122,16 @@ module.exports = {
 								}
 								embed.setColor([255, 0, 0]);
 
-								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-								else { return message.reply(embed); }
+								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+								else { return message.reply({embed: embed}); }
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
 								embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "result.invalid_server"));
 								embed.setColor([0, 0, 0]);
 
-								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-								else { return message.reply(embed); }
+								if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+								else { return message.reply({embed: embed}); }
 							}
 						}
 					}
@@ -140,8 +140,8 @@ module.exports = {
 						embed.setColor([255, 0, 0]);
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "error"));
 
-						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-						else { return message.reply(embed); }
+						if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+						else { return message.reply({embed: embed}); }
 					}
 				} 
 				catch (error) {

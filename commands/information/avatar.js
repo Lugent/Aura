@@ -26,13 +26,13 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/avatar", "not_found"));
-			return message.channel.send(embed);
+			return message.channel.send({embed: embed});
 		}
 		
         let embed = new Discord.MessageEmbed();
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/information/avatar", "embed.footer", [selected.tag, selected.id]), selected.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
         embed.setColor(0x66b3ff);
         embed.setImage(selected.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
-        return message.channel.send(embed);
+        return message.channel.send({embed: embed});
     }
 };

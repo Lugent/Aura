@@ -8,7 +8,7 @@ module.exports = {
 	path: path.basename(__dirname),
 	usage: "wikipedia.usage",
 	description: "wikipedia.description",
-	cooldown: 20,
+	cooldown: 10,
 	
 	/**
 	 * @param {Discord.Client} client
@@ -21,7 +21,7 @@ module.exports = {
 			var embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "command.wikipedia.no_arguments"));
 			embed.setColor([255, 255, 0]);
-			return message.reply(embed);
+			return message.reply({embed: embed});
 		}
 		
 		let get_language = "es";
@@ -43,7 +43,7 @@ module.exports = {
 						var embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/wikipedia", "not_found"));
 						embed.setColor([255, 0, 0]);
-						return message.reply(embed);
+						return message.reply({embed: embed});
 					}
 					else {
 						return message.reply(pages[page].fullurl);

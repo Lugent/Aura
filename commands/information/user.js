@@ -34,7 +34,7 @@ module.exports = {
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
-		await message.reply(embed2).then(message => { send_message = message; });
+		await message.reply({embed: embed2}).then(message => { send_message = message; });
 		
 		let get_user;
 		if (args[0]) { get_user = client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
@@ -42,21 +42,15 @@ module.exports = {
 		let mentioned_user = message.mentions.users.first();
         let user = mentioned_user || get_user;
 		if (!user) {
-			if (args[0]) { user = await client.users.fetch(args[0]); } else { user = message.author; }
+			if (args[0]) { user = await client.users.fetch(args[0]).catch(async (error) => { user = undefined; }); } else { user = message.author; }
 		}
 		if (!user) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "failure"));
 			embed.setColor([255, 0, 0]);
 
-			if (send_message) {
-				if (message.channel.messages.cache.get(send_message.id)) {
-					return send_message.edit(embed);
-				}
-			}
-			else {
-				return message.reply(embed);
-			}
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+			else { return message.reply({embed: embed});	}
 		}
 
 		// Special
@@ -155,7 +149,9 @@ module.exports = {
 				embed.addField(":speech_left: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.custom_status") + ":", custom_status);
 			}
 
-			embed.addField(":abacus: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.activities") + ":", activities_name);
+			if (activities_name.length) {
+				embed.addField(":abacus: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.activities") + ":", activities_name);
+			}
 		}
 
 		if (user.locale) { embed.addField(":globe_with_meridians: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.locale") + ":", user.locale, false); }
@@ -163,7 +159,7 @@ module.exports = {
 		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
 		embed.setColor(0x66b3ff);
 		
-		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit(embed); } }
-		else { return message.reply(embed); }
+		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
+		else { return message.reply({embed: embed}); }
     }
 };

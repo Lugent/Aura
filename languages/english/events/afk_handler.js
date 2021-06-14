@@ -1,7 +1,7 @@
 let language = {
-	"caller.returned": "**%s** volvio de su AFK",
-	"caller.time": "Despues de %s",
-	"pinged": "**%s** esta AFK",
-	"pinged.time": "Durante %s"
+	"caller.returned": "**%s** returned from their AFK",
+	"caller.time": "After %s",
+	"pinged": "**%s** is AFK",
+	"pinged.time": "During %s"
 };
 module.exports = language;

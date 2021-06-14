@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 async function first_time_welcome(client, guild) {
 	
+	
+	
 	let channel_target;
 	
 	

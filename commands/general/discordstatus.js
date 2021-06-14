@@ -35,26 +35,26 @@ module.exports = {
 		
 		/* INDCIDENT */
 		let incidentImpactTable = [
-			{id: "none", name: "incident_impact.none"}, // "Ninguno"
-			{id: "minor", name: "incident_impact.minor"}, // "Menor"
-			{id: "major", name: "incident_impact.major"}, // "Mayor"
-			{id: "critical", name: "incident_impact.critical"}, // "Critico"
+			{id: "none", name: "incident_impact.none"},
+			{id: "minor", name: "incident_impact.minor"},
+			{id: "major", name: "incident_impact.major"},
+			{id: "critical", name: "incident_impact.critical"},
 		];
 		
 		let incidentStatusTable = [
-			{id: "investigating", name: "incident_status.investigating"}, // "Investigando"
-			{id: "identified", name: "incident_status.identified"}, // "Identificado"
-			{id: "monitoring", name: "incident_status.monitoring"}, // "Monitoriando"
-			{id: "resolved", name: "incident_status.resolved"} // "Resuelto"
+			{id: "investigating", name: "incident_status.investigating"},
+			{id: "identified", name: "incident_status.identified"},
+			{id: "monitoring", name: "incident_status.monitoring"},
+			{id: "resolved", name: "incident_status.resolved"}
 		];
 		/* INDCIDENT */
 		
 		/* COMPONENT */
 		let componentStatusTable = [
-			{id: "operational", name: "component_status.operational"}, // "Funcionando"
-			{id: "degraded_performance", name: "component_status.degraded_performance"}, // "Rendimiento degradado"
-			{id: "partial_outage", name: "component_status.partial_outage"}, // "Parcialmente caido"
-			{id: "major_outage", name: "component_status.major_outage"} // "Mayormente caido"
+			{id: "operational", name: "component_status.operational"},
+			{id: "degraded_performance", name: "component_status.degraded_performance"},
+			{id: "partial_outage", name: "component_status.partial_outage"},
+			{id: "major_outage", name: "component_status.major_outage"}
 		];
 		/* COMPONENT */
 		
@@ -63,7 +63,7 @@ module.exports = {
 		embed.setColor([255, 255, 0]);
 		
 		let sent_message;
-		await message.reply(embed).then(message => { sent_message = message; });
+		await message.reply({embed: embed}).then(message => { sent_message = message; });
 		
 		let rawData = "";
 		https.get("https://srhpyqt94yxb.statuspage.io/api/v2/summary.json", async (res) => {
@@ -74,7 +74,7 @@ module.exports = {
 				let components = data.components;
 				let serviceStatus = serviceStatusTable.find(status => data.status.indicator === status.id);
 				let embed = new Discord.MessageEmbed();
-				embed.setTitle(serviceStatus.name);
+				embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", serviceStatus.name));
 				for (let index = 0; index < components.length; index++) {
 					let component = components[index];
 					if (idTable.find(element => element.id === component.id)) {
@@ -86,7 +86,7 @@ module.exports = {
 				for (let index = 0; index < finalComponents.length; index++) {
 					let component = finalComponents[index];
 					let findData = componentStatusTable.find(status => component.status === status.id);
-					componentsName += "**" + component.name + "**: " + findData.name + "\n";
+					componentsName += "**" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", component.name) + "**: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", findData.name) + "\n";
 				}
 				
 				let incidents = data.incidents;
@@ -103,14 +103,14 @@ module.exports = {
 				embed.setDescription(componentsName);
 				embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "discord_status"), "https://cdn.discordapp.com/embed/avatars/0.png"); // "Estado de Discord"
 				embed.setColor(serviceStatus.color);
-				return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+				return sent_message ? sent_message.edit({embed: embed}) : message.channel.send({embed: embed});
 			});
 		}).on("error", (error) => {
 			console.error(error);
 			var embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry:" + client.functions.getTranslation(client, message.author, message.guild, "commands/general/discordstatus", "fatal_failure"));
-			return sent_message ? sent_message.edit(embed) : message.channel.send(embed);
+			return sent_message ? sent_message.edit({embed: embed}) : message.channel.send({embed: embed});
 		});
     }
 }; 

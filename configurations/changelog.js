@@ -1,5 +1,11 @@
 const changelog = [
 	{
+		version: "1.5",
+		data: {
+			
+		}
+	},
+	{
 		version: "1.4.1.0-beta",
 		data: {
 			added: [

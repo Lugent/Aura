@@ -1,5 +1,5 @@
 let language = {
-	"levelup.level": "Nv",
-	"levelup.title": "Subistes a un nuevo nivel."
+	"levelup.level": "Lv",
+	"levelup.title": "Level up!"
 };
 module.exports = language;
