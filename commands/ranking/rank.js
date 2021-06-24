@@ -39,7 +39,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "no_guild"));
 			embed.setColor([255, 255, 0]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
@@ -48,7 +48,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "is_disabled"));
 			embed.setColor([255, 0, 0]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		
 		let get_member = message.member;
@@ -63,14 +63,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "no_member"));
 			embed.setColor([255, 0, 0]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		
 		if (get_member.user.bot) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "bot_member"));
 			embed.setColor([255, 0, 0]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		
 		let get_rank = 0;
@@ -175,12 +175,11 @@ module.exports = {
 		shadowed_text(image_context, image_data_avatar_padding - 8, image_data_height - (24 + 128), client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "rank") + " " + (get_rank + 1) + " / " + (levels_database.length), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 8);
 		
 		// Upload file
-		var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png"); 
+		var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png");
 		var embed = new Discord.MessageEmbed();
-		embed.attachFiles(attachment);
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/rank", "embed.title", [get_member.user.tag]), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
-		embed.setImage("attachment://" + attachment.name);
+		embed.setImage("attachment://rank.png");
 		embed.setColor(0x66b3ff);
-		return message.reply({embed: embed});
+		return message.reply({files: [attachment], embeds: [embed]});
     }
 };

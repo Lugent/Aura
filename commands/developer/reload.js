@@ -21,7 +21,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":warning: " + "Especifica un comando o usa `" + prefix + "reload all` para todos los comandos.");
 			embed.setColor([255, 255, 0]);
-            return message.channel.send({embed: embed});
+            return message.channel.send({embeds: [embed]});
 		}
 
 		
@@ -33,7 +33,7 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":white_check_mark: " + "Comandos actualizados.");
 				embed.setColor([0, 255, 0]);
-				return message.channel.send({embed: embed});
+				return message.channel.send({embeds: [embed]});
 			}
 		
 			case "slash": {
@@ -43,7 +43,7 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":white_check_mark: " + "Comandos slash actualizados.");
 				embed.setColor([0, 255, 0]);
-				return message.channel.send({embed: embed});
+				return message.channel.send({embeds: [embed]});
 			}
 		}
 
@@ -53,7 +53,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":no_entry: " + "El comando no existe o el alias no es reconocible a un comando.");
 			embed.setColor([255, 0, 0]);
-            return message.channel.send({embed: embed});
+            return message.channel.send({embeds: [embed]});
 		}
 
 		let command_path = process.cwd() + "/commands/" + command.path + "/" + command.name + ".js";
@@ -65,7 +65,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":white_check_mark: " + "Comando **" + command.name + "** actualizado.");
 			embed.setColor([0, 255, 0]);
-            return message.channel.send({embed: embed});
+            return message.channel.send({embeds: [embed]});
         }
 		catch (error) {
 			throw error;

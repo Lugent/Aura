@@ -14,7 +14,7 @@ process.on("unhandledRejection", error => {
 		let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + error.name + (error.httpStatus ? (" - HTTP " + error.httpStatus) : "") + "\n" + (error.message ? error.message : ""));
-		client.last_msg.send({embed: embed});
+		client.last_msg.send({embeds: [embed]});
 		client.last_msg = undefined;
 	}
 });
@@ -33,6 +33,7 @@ const client = new Discord.Client({
 	presence: {
 		status: "invisible"
 	},
+	partials: ["MESSAGE", "CHANNEL", "REACTION", "USER", "GUILD_MEMBER"]
 });
 
 // Setup client
@@ -81,7 +82,6 @@ client.guild_music = new Discord.Collection(); // {id: <snowflake>, music: <stre
 
 // Client states
 client.last_msg = undefined;
-client.toggle_logger = false;
 client.status_updating = true;
 client.connected = false; // don't change this
 
@@ -111,31 +111,29 @@ let general_command_executor = require(process.cwd() + "/events/general_command_
 let general_slash_command_executor = require(process.cwd() + "/events/general_slash_command_executor.js"); 
 let general_data_handler = require(process.cwd() + "/events/general_database_handler.js");
 let guild_invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
-let guild_msg_logger = require(process.cwd() + "/events/general_message_logger.js");
 let guild_bot_welcome = require(process.cwd() + "/events/guilds_bot_welcome.js");
 let guild_experience_handler = require(process.cwd() + "/events/guilds_experience_handler.js");
 let user_afk_handler = require(process.cwd() + "/events/users_afk_handler.js");
 
 // Execute events
 client.on("interaction", async (interaction) => {
+	console.log(interaction);
 	general_slash_command_executor(client, interaction);
 });
 
 client.on("message", async (message) => {
-	
 	await general_data_handler(client, message);
 	
-	/*let blacklist_guild;
+	let blacklist_guild;
 	let blacklist_user;
 	if (message.guild) { blacklist_guild = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(message.guild.id); }
 	else { blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(message.author.id); }
 	
-	if (blacklist_guild || blacklist_user) { return; }*/
+	if (blacklist_guild || blacklist_user) { return; }
 	
-	await guild_msg_logger(client, message);
-	await user_afk_handler(client, message);
-	await guild_experience_handler(client, message);
-	await general_command_executor(client, message);
+	user_afk_handler(client, message);
+	general_command_executor(client, message);
+	guild_experience_handler(client, message);
 });
 
 client.on("inviteCreate", async (invite) => {
@@ -282,7 +280,7 @@ client.on("ready", async () => {
 	console.log("");
 	
 	if (client.status_updating) { client.functions.activityUpdater(client); }
-	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 15000);
+	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 20000);
 	setInterval(function() {
 		if (client.connected) {
 			let ping = client.ws.ping;

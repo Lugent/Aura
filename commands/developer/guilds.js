@@ -26,6 +26,6 @@ module.exports = {
 		}
 
 		embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands_guilds", "embed.footer", [guild_count]));
-		return message.channel.send({embed: embed});
+		return message.channel.send({embeds: [embed]});
 	},
 }; 

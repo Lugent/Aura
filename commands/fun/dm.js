@@ -24,7 +24,7 @@ module.exports = {
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "help.user"), client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "help.user.description"), false);
 			embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "help.message"), client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "help.message.description"), false);
 			embed.setColor([0, 255, 255]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		
         let target = message.mentions.users.first() || client.users.cache.get(args[0]) || client.users.cache.find(user => user.tag.toLowerCase().substring(0, args[0].length) === args[0].toLowerCase().substring(0, args[0].length));

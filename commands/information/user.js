@@ -49,8 +49,8 @@ module.exports = {
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "failure"));
 			embed.setColor([255, 0, 0]);
 
-			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
-			else { return message.reply({embed: embed});	}
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embeds: [embed]}); } }
+			else { return message.reply({embeds: [embed]});	}
 		}
 
 		// Special
@@ -159,7 +159,7 @@ module.exports = {
 		embed.addField(":calendar_spiral: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/user", "embed.creation_date") + ":", client.functions.generateDateString(client, message.author, message.guild, user.createdAt).capitalize(), false);
 		embed.setColor(0x66b3ff);
 		
-		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
-		else { return message.reply({embed: embed}); }
+		if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embeds: [embed]}); } }
+		else { return message.reply({embeds: [embed]}); }
     }
 };

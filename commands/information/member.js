@@ -29,7 +29,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "no_guild"));
 			embed.setColor([255, 255, 0]);
-			return message.channel.send({embed: embed});
+			return message.channel.send({embeds: [embed]});
 		}
 
 		let embed2 = new Discord.MessageEmbed();
@@ -49,8 +49,8 @@ module.exports = {
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "failure"));
 			embed.setColor([255, 0, 0]);
 
-			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
-			else { return message.reply({embed: embed}); }
+			if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embeds: [embed]}); } }
+			else { return message.reply({embeds: [embed]}); }
 		}
 		
 		// Especial
@@ -143,12 +143,12 @@ module.exports = {
 		{
 			if (message.channel.messages.cache.get(send_message.id))
 			{
-				return send_message.edit({embed: embed});
+				return send_message.edit({embeds: [embed]});
 			}
 		}
 		else
 		{
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
     }
 };

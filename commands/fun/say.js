@@ -21,7 +21,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "empty_message"));
 			embed.setColor([255, 0, 0]);
-            return message.reply({embed: embed}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
+            return message.reply({embeds: [embed]}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
 		}
 
 		if (message.guild) {
@@ -29,7 +29,7 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "no_permissions"));
 				embed.setColor([255, 0, 0]);
-				return message.reply({embed: embed}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
+				return message.reply({embeds: [embed]}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
 			}
 		}
 
@@ -40,7 +40,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "delete_failure"));
 					embed.setColor([255, 0, 0]);
-					return message.reply({embed: embed});
+					return message.reply({embeds: [embed]});
 				});
 			}
 			return;
@@ -48,7 +48,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "send_failure"));
 			embed.setColor([255, 0, 0]);
-			return message.reply({embed: embed}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
+			return message.reply({embeds: [embed]}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
         });
     }
 };

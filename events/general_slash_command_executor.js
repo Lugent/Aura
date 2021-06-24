@@ -23,7 +23,7 @@ async function commandExecutor(client, interaction) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
-        return interaction.reply({embed: embed});
+        return interaction.reply({embeds: [embed]});
     }
 	
 	// Flag check; if works only on guilds
@@ -31,7 +31,7 @@ async function commandExecutor(client, interaction) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_guild"));
-        return interaction.reply({embed: embed});
+        return interaction.reply({embeds: [embed]});
     }
 	
 	// Flag check; if works only on direct messages
@@ -39,7 +39,7 @@ async function commandExecutor(client, interaction) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_dm"));
-        return interaction.reply({embed: embed});
+        return interaction.reply({embeds: [embed]});
     }
 	
 	// Guild check; if that slash_command is disabled on that guild
@@ -49,7 +49,7 @@ async function commandExecutor(client, interaction) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "disabled"));
-        return interaction.reply({embed: embed});
+        return interaction.reply({embeds: [embed]});
     }*/
 
     // Execute slash_command, throw error if fails

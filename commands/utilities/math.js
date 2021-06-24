@@ -22,7 +22,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "empty"));
 			embed.setColor([255, 255, 0]);
-            return message.reply({embed: embed});
+            return message.reply({embeds: [embed]});
 		}
 
 		try {
@@ -32,7 +32,7 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "failure"));
 				embed.setColor([255, 0, 0]);
-				return message.reply({embed: embed});
+				return message.reply({embeds: [embed]});
 			}
 			
 			if (result.value) { finalresult = result.value; }
@@ -42,7 +42,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setTitle(finalresult);
 			embed.setColor([255, 255, 255]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		catch (error) {
 			throw error;

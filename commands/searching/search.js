@@ -21,14 +21,14 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "no_arguments"));
 			embed.setColor([255, 255, 0]);
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 		
 		var embed = new Discord.MessageEmbed();
 		embed.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "loading"));
 		embed.setColor([255, 255, 0]);
 		
-		let send_message = await message.reply({embed: embed});
+		let send_message = await message.reply({embeds: [embed]});
 		
 		let search = args.join("%20");
 		let raw_data = "";
@@ -47,8 +47,8 @@ module.exports = {
 					embed.setDescription(":no_entry: " + get_error.message);
 					embed.setColor([255, 0, 0]);
 
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
-					else { return message.reply({embed: embed}); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embeds: [embed]}); } }
+					else { return message.reply({embeds: [embed]}); }
 				}
 
 				if (get_results) {
@@ -63,16 +63,16 @@ module.exports = {
 					embed.setDescription(display_result);
 					embed.setColor([254, 254, 254]);
 
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
-					else { return message.reply({embed: embed}); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embeds: [embed]}); } }
+					else { return message.reply({embeds: [embed]}); }
 				}
 				else {
 					var embed = new Discord.MessageEmbed();
 					embed.setColor([255, 0, 0]);
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/searching/search", "not_found"));
 
-					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embed: embed}); } }
-					else { return message.reply({embed: embed}); }
+					if (send_message) { if (message.channel.messages.cache.get(send_message.id)) { return send_message.edit({embeds: [embed]}); } }
+					else { return message.reply({embeds: [embed]}); }
 				}
 			});
 		}).on("error", (error) => {

@@ -120,11 +120,10 @@ async function exp_handler(client, message) {
 			// Upload file
 			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			var embed = new Discord.MessageEmbed();
-			embed.attachFiles(attachment);
 			embed.setAuthor(message.author.tag + ", " + client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
-			embed.setImage("attachment://" + attachment.name);
+			embed.setImage("attachment://levelup.png");
 			embed.setColor(0x66b3ff);
-			return message.channel.send({embed: embed});
+			return message.channel.send({files: [attachment], embeds: [embed]});
 		}
 	}
 }

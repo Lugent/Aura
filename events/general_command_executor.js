@@ -38,7 +38,7 @@ async function commandExecutor(client, message) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
-        return message.reply({embed: embed});
+        return message.reply({embeds: [embed]});
     }
 	
 	// Flag check; if works only on guilds
@@ -46,7 +46,7 @@ async function commandExecutor(client, message) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_guild"));
-        return message.reply({embed: embed});
+        return message.reply({embeds: [embed]});
     }
 	
 	// Flag check; if works only on direct messages
@@ -54,7 +54,7 @@ async function commandExecutor(client, message) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
         embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_dm"));
-        return message.reply({embed: embed});
+        return message.reply({embeds: [embed]});
     }
 	
 	// Guild check; if that command is disabled on that guild
@@ -65,7 +65,7 @@ async function commandExecutor(client, message) {
 			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "disabled"));
-			return message.reply({embed: embed});
+			return message.reply({embeds: [embed]});
 		}
 	}
 
@@ -81,7 +81,7 @@ async function commandExecutor(client, message) {
             var embed = new Discord.MessageEmbed();
             embed.setColor([0, 255, 255]);
             embed.setDescription(":information_source: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
-            return message.reply({embed: embed});
+            return message.reply({embeds: [embed]});
         }
     }
 
