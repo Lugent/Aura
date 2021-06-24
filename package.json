@@ -7,7 +7,7 @@
         "canvas": "^2.7.0",
         "chalk": "^4.1.1",
         "discord-buttons": "^2.4.1",
-        "discord.js": "git://github.com/discordjs/discord.js.git#master",
+        "discord.js": "^13.0.0-dev.e0efcc6ab0e3f060e30438c0d990c9465c6134df",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
         "ffmpeg-static": "^4.3.0",
