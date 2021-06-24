@@ -38,7 +38,7 @@ function setupDatabases(client) {
 	// Settings
 	let table_server_settings = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'settings';").get();
 	if (!table_server_settings["count(*)"]) {
-		data_server.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, prefix TEXT, language TEXT);").run();
+		data_server.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, prefix TEXT, language TEXT, starboard_channel TEXT);").run();
 		data_server.prepare("CREATE UNIQUE INDEX setting_id ON settings (id);").run();
 	}
 	data_server.pragma("synchronous = 1");
