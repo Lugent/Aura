@@ -21,6 +21,13 @@ function setupDatabases(client) {
 	/* BOT DATA */
 	
 	/* SERVER DATA */
+	// Warns
+	let table_server_warn = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'warns';").get();
+	if (!table_server_warn["count(*)"]) {
+		data_server.prepare("CREATE TABLE warns (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, reason TEXT);").run();
+		data_server.prepare("CREATE UNIQUE INDEX warn_id ON warns (id);").run();
+	}
+	
 	// Level
 	let table_server_level = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'exp';").get();
 	if (!table_server_level["count(*)"]) {

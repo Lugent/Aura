@@ -24,9 +24,14 @@ module.exports = {
 		}
 		
 		let guild = message.guild;
-		if ((args[0]) && (message.author.id === client.config.owner)) {
-			guild = await client.guilds.fetch(client, args[0]);
+		if (args[0]) {
+			console.log(typeof args[0]);
+			if ((args[0].startsWith("/guild:")) (message.author.id === client.config.owner))
+			{
+				guild = await client.guilds.fetch(client, args[0].split("/guild:")[1]);
+			}
 		}
+		
 		if (!guild) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "invalid_guild"));
@@ -47,6 +52,11 @@ module.exports = {
 		let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(guild.id);
 		let members_get = await guild.members.fetch();
 		for (let level_index = 0; level_index < levels_database.length; level_index++) {
+			if (level_index >= 10) {
+				members_levels += "Showing " + level_index + " of " + levels_database.length + " members";
+				break;
+			}
+		
 			let rank = (level_index + 1);
 			let level_element = levels_database[level_index];
 			let member_find = members_get.find(member => { return member.user.id === level_element.user_id; });
@@ -56,10 +66,10 @@ module.exports = {
 				let user_find = await client.users.fetch(level_element.user_id);
 				if (user_find) { member_name = user_find.tag; }
 			}
-			members_levels += "**" + "#" + rank + "**" + " | " + "**" + member_name + "**" + " | " + "Lv. " + "**" + level_element.level + "**" + " | " + "**" + client.functions.getFormattedNumber(level_element.score, 2) + "**" + " XP" + " | " + "**" + client.functions.getFormattedNumber(level_element.messages, 2) + "**" + " Messages" + "\n";
+			members_levels += rank + ".- " + member_name + "\n" + "Lv. " + level_element.level + " / " + client.functions.getFormattedNumber(level_element.score, 2) + " XP" + "\n\n";
 		}
 		
-		var embed = new Discord.MessageEmbed();
+		let embed = new Discord.MessageEmbed();
 		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "embed.author", [guild.name]), guild.iconURL());
 		embed.setDescription(members_levels);
 		return message.channel.send({embeds: [embed]});

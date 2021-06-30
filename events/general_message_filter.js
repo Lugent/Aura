@@ -11,8 +11,11 @@ function messageFilter(client, message) {
 	delete require.cache[require.resolve(process.cwd() + "/configurations/blacklisted_links.js")];
 	var blacklisted_links = require(process.cwd() + "/configurations/blacklisted_links.js");
 	for (let blacklisted_index = 0; blacklisted_index < blacklisted_links.length; blacklisted_index += 1) {
-		let escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		let filterRegex = new RegExp("^(" + escapeRegex(blacklisted_links[blacklisted_index].name) + ")\\s*");
+		//let escapeRegex = str => str.replace(/^(\*|https?):\/\/[^\s$.?#].[^\s]*$/gm, '\\$&');
+		//let filterRegex = new RegExp("^(" + escapeRegex(blacklisted_links[blacklisted_index].name) + ")\\s*");
+		let filterRegex = /^(\*|https?):\/\/[^\s$.?#].[^\s]*$/gm;
+		//console.log(filterRegex)
+		//let filterRegex = new RegExp("^(\*|https?):\/\/[^\s$.?#].[^\s]*$");
 		if (!filterRegex.test(message.content)) { continue; }
 		
 		let get_message = message.channel.messages.cache.get(message.id);
@@ -29,13 +32,15 @@ function messageFilter(client, message) {
 			case "nsfw_link": { get_type = client.functions.getTranslation(client, message.author, message.guild, "events/message_filter", "nsfw_link_type"); break; }
 			case "spam_link": { get_type = client.functions.getTranslation(client, message.author, message.guild, "events/message_filter", "spam_link_type"); break; }
 			case "discord_invite": { get_type = client.functions.getTranslation(client, message.author, message.guild, "events/message_filter", "discord_invite_type"); break; }
+			case "ip_logger": { get_type = client.functions.getTranslation(client, message.author, message.guild, "events/message_filter", "ip_logger_type"); break; }
 		}
-	}
-
-	if (get_message) {
-		return get_message.delete().then(async (deleted_message) => {
-			deleted_message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "events/message_filter", "filter_warning", [deleted_message.author.tag, get_type]));
-		});
+		
+		if (get_message) {
+			return get_message.delete().then(async (deleted_message) => {
+				deleted_message.channel.send(client.functions.getTranslation(client, message.author, message.guild, "events/message_filter", "filter_warning", [deleted_message.author.tag, get_type]));
+			});
+		}
+		break;
 	}
 }
 module.exports = messageFilter;

@@ -31,19 +31,19 @@ module.exports = {
 			return message.channel.send({embeds: [embed]});
 		}
 
-		var players = false;
+		let players = false;
 		let players_find = args.findIndex(index => index === "/p");
 		if (players_find > -1) { args.splice(players_find, 1); players = true; }
 
-		var modded = false;
+		let modded = false;
 		let modded_find = args.findIndex(index => index === "/m");
 		if (modded_find > -1) { args.splice(modded_find, 1); modded = true; }
 
-		var software = false;
+		let software = false;
 		let software_find = args.findIndex(index => index === "/s");
 		if (software_find > -1) { args.splice(software_find, 1); software = true; }
 
-		var world = false;
+		let world = false;
 		let world_find = args.findIndex(index => index === "/w");
 		if (world_find > -1) { args.splice(world_find, 1); world = true; }
 
@@ -52,10 +52,10 @@ module.exports = {
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
-		await message.channel.send({embed: embed2}).then(message => { send_message = message; });
+		await message.channel.send({embeds: [embed2]}).then(message => { send_message = message; });
 		
-		var data = "";
-		var player_names = "";
+		let data = "";
+		let player_names = "";
 		https.get("https://api.mcsrvstat.us/2/" + args[0], async (response) => {
 			response.on("data", async (chunk) => { data += chunk; });
 			response.on("end", async () => {
@@ -69,7 +69,7 @@ module.exports = {
 						else { return message.reply({embeds: [embed]}); }
 					}
 					
-					var parsed_data = JSON.parse(data);
+					let parsed_data = JSON.parse(data);
 					if (parsed_data) {
 						if (parsed_data.online) {
 							let embed = new Discord.MessageEmbed();
@@ -91,7 +91,7 @@ module.exports = {
 							embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.players") + ": ", parsed_data.players.online + " / " + parsed_data.players.max, true);
 							if (players && parsed_data.players.list)
 							{
-								var allplayers = "```" + parsed_data.players.list.slice(0).join("\n") + "```";
+								let allplayers = "```" + parsed_data.players.list.slice(0).join("\n") + "```";
 								if (allplayers.length > 1024) // Discord limit xd
 								{
 									allplayers = client.functions.getTranslation(client, message.author, message.guild, "commands/information/mcserver", "data.player_list.limit");

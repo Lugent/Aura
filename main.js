@@ -110,6 +110,7 @@ console.log("Connecting to Discord...");
 let general_command_executor = require(process.cwd() + "/events/general_command_executor.js"); 
 let general_slash_command_executor = require(process.cwd() + "/events/general_slash_command_executor.js"); 
 let general_data_handler = require(process.cwd() + "/events/general_database_handler.js");
+let general_message_filter = require(process.cwd() + "/events/general_message_filter.js");
 let guild_invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 let guild_bot_welcome = require(process.cwd() + "/events/guilds_bot_welcome.js");
 let guild_experience_handler = require(process.cwd() + "/events/guilds_experience_handler.js");
@@ -123,6 +124,7 @@ client.on("interaction", async (interaction) => {
 
 client.on("message", async (message) => {
 	await general_data_handler(client, message);
+	general_message_filter(client, message);
 	
 	let blacklist_guild;
 	let blacklist_user;

@@ -339,12 +339,12 @@ module.exports = {
 						response.on("end", async () => {
 							if (raw_data !== "-1") {
 								let levels_data = JSON.parse(raw_data);
-								var search_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/magnify.png", "search.png");
-								var gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gd_icon.png", "gd_icon.png");
-								var embed = new Discord.MessageEmbed();
+								let search_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/magnify.png", "search.png");
+								let gd_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/gd_icon.png", "gd_icon.png");
+								let embed = new Discord.MessageEmbed();
 								for (let level_index = 0; level_index < levels_data.length; level_index++) {
-									var level_element = levels_data[level_index];
-									var level_difficulty = "<:gd_na:816468850924060712>";
+									let level_element = levels_data[level_index];
+									let level_difficulty = "<:gd_na:816468850924060712>";
 									switch (level_element.difficulty) {
 										case "Unrated": { level_difficulty = "<:gd_na:816468850924060712>"; break; }
 										case "Auto": { level_difficulty = "<:gd_auto:816468880305815552>"; break; }
@@ -360,7 +360,7 @@ module.exports = {
 										case "Extreme Demon": { level_difficulty = "<:gd_extreme_demon:816469123445293077>"; break; }
 									}
 									
-									var level_coins = "";
+									let level_coins = "";
 									if (level_element.coins > 0) {
 										if (level_element.verifiedCoins) { level_coins += "<:gd_silver_coin:823042425953976321>"; }
 										else { level_coins += "<:gd_brown_coin:823042477245464647>"; }
@@ -391,16 +391,15 @@ module.exports = {
 									let level_information = level_description + "\n" + level_stats + "\n" + level_song;
 									embed.addField(level_header, level_information);
 								}
-								embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "search.title", [levels_data[0].results, levels_data[0].pages]));
-								embed.attachFiles([search_image, gd_image]);
+								embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "search.title", [levels_data[0].results, levels_data[0].pages]));
 								embed.setThumbnail("attachment://search.png");
-								embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "search.author"), "attachment://gd_icon.png");
+								embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "search.author"), "attachment://gd_icon.png");
 								embed.setColor([254, 223, 0]);
-								return message.channel.send({embeds: [embed]});
+								return message.channel.send({files: [search_image, gd_image], embeds: [embed]});
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
-								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "search.not_found"));
+								embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/gd", "search.not_found"));
 								embed.setColor([255, 0, 0]);
 								return message.channel.send({embeds: [embed]});
 							}
@@ -418,7 +417,7 @@ module.exports = {
 				
 				case "level": {
 					if (!args[1]) {
-						var embed = new Discord.MessageEmbed();
+						let embed = new Discord.MessageEmbed();
 						embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "level.no_argument"));
 						embed.setColor([255, 0, 0]);
 						return message.channel.send({embeds: [embed]});
@@ -437,7 +436,7 @@ module.exports = {
 								let level_author_specials = ((Number(level_data.accountID) !== 0) ? ("(" + level_data.accountID + ")") : "");
 								let level_header = level_data.name + level_large;
 								
-								var level_coins = "";
+								let level_coins = "";
 								if (level_data.coins > 0) {
 									if (level_data.verifiedCoins) { level_coins += "<:gd_silver_coin:823042425953976321>"; }
 									else { level_coins += "<:gd_brown_coin:823042477245464647>"; }
@@ -462,15 +461,14 @@ module.exports = {
 								
 								let level_information = level_data.description + "\n\n" + level_stats + "\n" + level_song + "\n\n" + level_gdversion + "\n" + level_version;
 								
-								var difficulty_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/difficulties/" + level_data.difficultyFace + ".png", level_data.difficultyFace + ".png");
+								let difficulty_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/difficulties/" + level_data.difficultyFace + ".png", level_data.difficultyFace + ".png");
 								let embed = new Discord.MessageEmbed();
 								embed.setColor(diff_to_color.find(element => element.id === level_data.difficulty).color);
-								embed.attachFiles([difficulty_image]);
 								embed.setThumbnail("attachment://" + level_data.difficultyFace + ".png");
 								embed.setAuthor(level_author, "https://gdbrowser.com/icon/" + level_data.playerID);
 								embed.setTitle(level_header);
 								embed.setDescription(level_information);
-								return message.channel.send({embeds: [embed]});
+								return message.channel.send({files: [difficulty_image], embeds: [embed]});
 							}
 							else {
 								let embed = new Discord.MessageEmbed();
@@ -553,12 +551,11 @@ module.exports = {
 								let profile_options = profile_friends + "\n" + profile_messages + "\n" + profile_commenthistory;
 								
 								let embed = new Discord.MessageEmbed();
-								embed.attachFiles([profile_rank_image]);
 								embed.setThumbnail("attachment://" + "rank_" + profile_rank_index + ".png");
 								embed.setTitle(profile_header);
 								embed.setDescription(profile_info + (profile_socials.length ? ("\n\n" + profile_socials) : "") + "\n\n" + profile_options);
 								embed.setAuthor(profile_name, "https://gdbrowser.com/icon/" + profile_data.playerID);
-								return message.channel.send({embeds: [embed]});
+								return message.channel.send({files: [profile_rank_image], embeds: [embed]});
 							}
 							else {
 								let embed = new Discord.MessageEmbed();

@@ -134,12 +134,15 @@ module.exports = {
 					embed.setColor([255, 0, 0]);
 					return message.reply({embeds: [embed]});
 				}
+				else {
+					
+				}
 				
 				let emoji_name = args[1];
 				let emoji_url = args[2];
 				message.guild.emojis.create(emoji_url, emoji_name, {reason: client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "uploaded.log", [message.author.tag])}).then((emoji) => {
 					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "uploaded"), [emoji_name]);
+					embed.setDescription(":white_check_mark: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", [emoji_name]), "uploaded");
 					embed.setColor([255, 0, 0]);
 					return message.reply({embeds: [embed]});
 				}).catch((error) => {
