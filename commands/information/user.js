@@ -23,7 +23,7 @@ module.exports = {
 		let is_debug = false;
 		let debug_find = args.findIndex(index => index === "/d");
 		if (debug_find > -1) {
-			if (message.author.id === client.config.owner) {
+			if (message.author.id === process.env.OWNER_ID) {
 				args.splice(debug_find, 1);
 				is_debug = true;
 			}

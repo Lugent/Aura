@@ -94,27 +94,14 @@ catch (error) {
 }
 finally { console.log("Databases active."); }
 
-// Login
-let login_check = setInterval(function() {  if (!client.connected) { console.log(chalk.yellowBright("WARNING: ") + "The request is taking too long!"); } }, 10000);
-client.login(process.env.DISCORD_TOKEN).then(() => {
-	clearInterval(login_check);
-	console.log("Connected to Discord!");
-	console.log("Initializing functions...");
-}).catch((error) => {
-	console.error(chalk.redBright("ERROR:") + " Connection failed, program terminated." + "\n", error);
-	process.exit();
-});
-console.log("Connecting to Discord...");
-
 // Load event files
-let general_command_executor = require(process.cwd() + "/events/general_command_executor.js"); 
-let general_slash_command_executor = require(process.cwd() + "/events/general_slash_command_executor.js"); 
-let general_data_handler = require(process.cwd() + "/events/general_database_handler.js");
-let general_message_filter = require(process.cwd() + "/events/general_message_filter.js");
-let guild_invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
-let guild_bot_welcome = require(process.cwd() + "/events/guilds_bot_welcome.js");
-let guild_experience_handler = require(process.cwd() + "/events/guilds_experience_handler.js");
-let user_afk_handler = require(process.cwd() + "/events/users_afk_handler.js");
+let command_executor = require(process.cwd() + "/events/command_executor.js"); 
+let slash_command_executor = require(process.cwd() + "/events/slash_command_executor.js"); 
+let database_handler = require(process.cwd() + "/events/database_handler.js");
+let guild_join = require(process.cwd() + "/events/guild_join.js");
+let experience_handler = require(process.cwd() + "/events/experience_handler.js");
+let afk_handler = require(process.cwd() + "/events/afk_handler.js");
+let invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 
 // Execute events
 client.on("interaction", async (interaction) => {
@@ -123,8 +110,7 @@ client.on("interaction", async (interaction) => {
 });
 
 client.on("message", async (message) => {
-	await general_data_handler(client, message);
-	general_message_filter(client, message);
+	await database_handler(client, message);
 	
 	let blacklist_guild;
 	let blacklist_user;
@@ -133,13 +119,13 @@ client.on("message", async (message) => {
 	
 	if (blacklist_guild || blacklist_user) { return; }
 	
-	user_afk_handler(client, message);
-	general_command_executor(client, message);
-	guild_experience_handler(client, message);
+	afk_handler(client, message);
+	command_executor(client, message);
+	experience_handler(client, message);
 });
 
 client.on("inviteCreate", async (invite) => {
-	await guild_invite_tracker(client);
+	await invite_tracker(client);
 	if (invite.inviter) {
 		console.log("Invite '" + invite.code + "' created, by '" + invite.inviter.tag + "' from '" + invite.guild.name + "'.");
 	}
@@ -149,7 +135,7 @@ client.on("inviteCreate", async (invite) => {
 });
 
 client.on("inviteDelete", async (invite) => {
-	await guild_invite_tracker(client);
+	await invite_tracker(client);
 
 	if (invite.guild.me.permissions.has("VIEW_AUDIT_LOG")) {
 		let audit_logs = await invite.guild.fetchAuditLogs({type: "INVITE_DELETE", limit: 1});
@@ -179,7 +165,7 @@ client.on("guildMemberAdd", async (member) => {
 			console.log("User " + member.user.tag + " joined " + member.guild.name + "");
 			if (guild_invite.inviter) {
 				var member_inviter = await client.users.fetch(guild_invite.inviter.id, true, true);
-				guild_invite_tracker(client);
+				invite_tracker(client);
 
 				console.log("Using invite code " + guild_invite.code + " created by " + member_inviter.tag);
 				console.log("Invite was used " + guild_invite.uses + " times.");
@@ -217,8 +203,8 @@ client.on("guildCreate", async (guild) => {
 	console.log("Joined to guild " + guild.name);
 	console.log("ID: " + guild.id);
 	
-	await guild_bot_welcome(client, guild);
-	await guild_invite_tracker(client);
+	await guild_join(client, guild);
+	await invite_tracker(client);
 	await guild.commands.set(client.slash_commands.array()).then(async (command) => {
 		console.log("");
 		console.log("Registered slash commands.");
@@ -232,7 +218,7 @@ client.on("guildDelete", async (guild) => {
 	console.log("Exited from guild " + guild.name);
 	console.log("ID: " + guild.id);
 	
-	await guild_invite_tracker(client);
+	await invite_tracker(client);
 });
 
 client.on("guildUnavailable", async (guild) => {
@@ -242,45 +228,50 @@ client.on("guildUnavailable", async (guild) => {
 	}
 });
 
-// Buttons supports
-/*client.on("clickButton", async (button) => {
-	let button_parameters = button.id.split("-");
-	let button_id = button_parameters[0];
-	let button_args = button_parameters[1].split("_");
-
-	switch (button_id) {
-		case "member_userinfo": {
-			await button.defer();
-			await client.commands.get("user").execute(client, button.message, button_args);
-			await button.message.delete();
-			break;
-		}
-	}
-});*/
-
 // Verbose
 let command_loader = require(process.cwd() + "/functions/command_loader.js");
 let slash_command_loader = require(process.cwd() + "/functions/slash_command_loader.js");
-let levelUpdater = require(process.cwd() + "/functions/experience_updater.js");
-client.on("ready", async () => {
-	client.functions.resourceMonitor(client);
+let level_updater = require(process.cwd() + "/functions/experience_updater.js");
+async function run_bot() {
+	console.log("Initializing functions...");
+	await client.functions.resourceMonitor(client);
+	console.log("");
 	
 	console.log("Registering commands...");
 	await command_loader(client);
 	console.log("");
+	
+	// Login
+	let login_check = setInterval(function() {  if (!client.connected) { console.log(chalk.yellowBright("WARNING: ") + "The request is taking too long!"); } }, 10000);
+	client.login(process.env.DISCORD_TOKEN).then(async () => {
+		clearInterval(login_check);
+		console.log("Connected to Discord!");
+		
+		console.log("");
+		console.log("Registering slash commands...");
+		await slash_command_loader(client);
+		console.log("");
+		
+		console.log("Initializing invite tracker...");
+		await invite_tracker(client);
+		console.log("");
+		
+		console.log("Executing level updater...");
+		await level_updater(client);
+		console.log("");
+		
+		console.log("Everything is ready!");
+		console.log("Connected as " + client.user.tag);
+		client.connected = true;
+	}).catch((error) => {
+		console.error(chalk.redBright("ERROR:") + " Connection failed, program terminated." + "\n", error);
+		process.exit();
+	});
+	console.log("Connecting to Discord...");
+}
+run_bot();
 
-	console.log("Registering slash commands...");
-	await slash_command_loader(client);
-	console.log("");
-	
-	console.log("Initializing invite tracker...");
-	await guild_invite_tracker(client);
-	console.log("");
-	
-	console.log("Executing level updater...");
-	await levelUpdater(client);
-	console.log("");
-	
+client.on("ready", async () => {
 	if (client.status_updating) { client.functions.activityUpdater(client); }
 	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 20000);
 	setInterval(function() {
@@ -295,10 +286,6 @@ client.on("ready", async () => {
 			console.log("Websocket latency: " + pingcolor + "ms.");
 		}
 	}, 120000);
-	
-	client.connected = true;
-	console.log("Everything is ready!");
-	console.log("Connected as " + client.user.tag);
 });
 client.on("invalidated", () => {
 	console.error(chalk.redBright("ERROR:") + " Invalid connection, exiting program...");

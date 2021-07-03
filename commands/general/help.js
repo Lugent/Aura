@@ -25,7 +25,7 @@ module.exports = {
 		for (let argument_index = 0; argument_index < args.length; argument_index++) {
 			var argument = args[argument_index];
 			if (argument === "/h") {
-				if (message.author.id === client.config.owner) {
+				if (message.author.id === process.env.OWNER_ID) {
 					hidden = true;
 					args.splice(args.findIndex(index => index === "/h"));
 				}

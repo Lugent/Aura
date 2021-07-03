@@ -1,16 +1,7 @@
-const config = require(process.cwd() + "/configurations/client.js");
-const changelog = require(process.cwd() + "/configurations/changelog.js");
 let status_data = [
 	{
 		activities: [{
-			name: "now Open Source",
-			type: "PLAYING"
-		}],
-		status: "online"
-	},
-	{
-		activities: [{
-			name: config.default.prefix + "help",
+			name: process.env.DEFAULT_PREFIX + "help",
 			type: "PLAYING"
 		}],
 		status: "online"
@@ -31,7 +22,7 @@ let status_data = [
 	},
 	{
 		activities: [{
-			name: config.default.prefix + " or @mention",
+			name: process.env.DEFAULT_PREFIX + " or @mention",
 			type: "LISTENING"
 		}],
 		status: "online"
@@ -45,17 +36,17 @@ let status_data = [
 	},
 	{
 		activities: [{
-			name: "the Aura Power",
+			name: "the Aura Pokémon",
 			type: "WATCHING"
 		}],
 		status: "dnd"
 	},
 	{
 		activities: [{
-			name: "v" + changelog[0].version,
-			type: "PLAYING"
+			name: "the Aura Power",
+			type: "WATCHING"
 		}],
-		status: "online"
+		status: "dnd"
 	},
 	{
 		activities: [{

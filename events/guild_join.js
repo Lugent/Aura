@@ -13,7 +13,7 @@ async function first_time_welcome(client, guild) {
 		"Para saber la lista de cambios use `" + client.config.default.prefix + "changelog`. (Solo disponible en español).",
 	];
 	
-	let bot_owner = client.users.cache.get(client.config.owner);
+	let bot_owner = client.users.cache.get(process.env.OWNER_ID);
 	let embed = new Discord.MessageEmbed();
 	embed.setAuthor(bot_owner.tag, bot_owner.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 	embed.setTitle("Saludos.");

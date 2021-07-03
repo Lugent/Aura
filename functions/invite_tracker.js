@@ -4,7 +4,6 @@ async function invite_tracker(client) {
 	
 	let invite_count = 0;
 	let guilds_count = 0;
-	
 	var guilds_array = client.guilds.cache.array();
 	for (var guild_index = 0; guild_index < guilds_array.length; guild_index += 1) {
 		var guild_data = client.guild_invites.get(guilds_array[guild_index].id);

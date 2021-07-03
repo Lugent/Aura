@@ -28,7 +28,7 @@ module.exports = {
 		}
 
         let embed = new Discord.MessageEmbed();
-		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.author", [client.users.cache.get(client.config.owner).tag]), client.users.cache.get(client.config.owner).displayAvatarURL({ format: "png", dynamic: true, size: 256 }));
+		embed.setAuthor(client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.author", [client.users.cache.get(process.env.OWNER_ID).tag]), client.users.cache.get(process.env.OWNER_ID).displayAvatarURL({ format: "png", dynamic: true, size: 256 }));
 		embed.setTitle(client.user.tag);
         embed.setThumbnail(client.user.displayAvatarURL({ format: "png", dynamic: true, size: 4096 }));
 		embed.addField(":gear: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.software") + ":", ":desktop: " + os.version() + " " + os.arch() + "\n" + ":scroll: " + "Node.js " + process.version + " - " + "discord.js v" + packages_json.dependencies["discord.js"]);

@@ -19,10 +19,10 @@ async function commandExecutor(client, interaction) {
     if (!slash_command) { return interaction.defer(); }
 	
 	// Flag check; if works with the bot's owner
-    if ((slash_command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== client.config.owner)) {
+    if ((slash_command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== process.env.OWNER_ID)) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(process.env.OWNER_ID).tag]));
         return interaction.reply({embeds: [embed]});
     }
 	

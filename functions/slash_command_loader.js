@@ -93,9 +93,10 @@ async function slash_command_loader(client, reload = false) {
 	console.log("Loaded all " + chalk.greenBright(count_commands) + " slash commands" + " (" + chalk.greenBright(final_size) + " KB in total)." + " " + "(" + chalk.redBright(count_error) + " errored)" + " " + "(" + chalk.yellowBright(count_skipped) + " skipped)");
 
 	console.log("Registering slash commands for guilds...");
-	let guilds_array = client.guilds.cache.array();
+	let client_guilds = await client.guilds.fetch();
+	let guilds_array = client_guilds.array();
 	for (let guild_index = 0; guild_index < guilds_array.length; guild_index++) {
-		let guild_element = guilds_array[guild_index];
+		let guild_element = await guilds_array[guild_index].fetch();
 		await guild_element.commands.set(commands).then(async (command) => {
 			console.log("Registered slash commands for " + guild_element.name + ".");
 		}).catch(async (error) => {

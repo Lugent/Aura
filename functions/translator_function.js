@@ -8,7 +8,7 @@ const fs = require("fs");
  * @param {Discord.Guild} guild 
  * @param {String} index 
  * @param {String} string 
- * @param {Array} values
+ * @param {Array<String>} values
  * @returns {String}
  */
 function getTranslation(client, user, guild, index, string, values) {

@@ -142,7 +142,7 @@ module.exports = {
 					return message.reply({embeds: [embed]});
 				}
 				
-				if (message.author.id !== client.config.owner) {
+				if (message.author.id !== process.env.OWNER_ID) {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/tag", "forceremove.not_owner"));
 					embed.setColor([255, 0, 0]);

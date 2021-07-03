@@ -18,7 +18,7 @@ module.exports = {
 	 * @returns {Discord.Message}
 	 */
 	async execute(client, message, args, prefix) {
-		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === client.config.owner)))) {
+		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === process.env.OWNER_ID)))) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "guild_only"));
 			embed.setColor([255, 255, 0]);
@@ -32,7 +32,7 @@ module.exports = {
 		let send_message = await message.channel.send({embed: embed2});
 		
 		let guild = message.guild;
-		if ((args[0]) && (message.author.id === client.config.owner)) {
+		if ((args[0]) && (message.author.id === process.env.OWNER_ID)) {
 			guild = await client.guilds.fetch(args[0]);
 		}
 		if (!guild) {

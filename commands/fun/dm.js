@@ -33,7 +33,7 @@ module.exports = {
 		// message
         if ((!args[0]) || (!target)) { return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "not_found")); }
 		if (target.bot) { return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "is_bot")); }
-		if (target.id === client.config.owner) { return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "my_owner")); }
+		if (target.id === process.env.OWNER_ID) { return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "my_owner")); }
 		if (target.id === message.author.id) { return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/fun/dm", "yourself")); }
 		
 		// target

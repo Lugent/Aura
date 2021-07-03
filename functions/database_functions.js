@@ -11,7 +11,7 @@ function handleServerDatabase(client, guild) {
 	let get_server_settings = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(guild.id);
 	if (!get_server_settings) {
 		try {
-			client.server_data.prepare("INSERT INTO settings (guild_id, prefix, language, starboard_channel) VALUES (?, ?, ?, ?);").run(guild.id, client.config.default.prefix, client.config.default.language, "");
+			client.server_data.prepare("INSERT INTO settings (guild_id, prefix, language, starboard_channel) VALUES (?, ?, ?, ?);").run(guild.id, process.env.DEFAULT_PREFIX, process.env.DEFAULT_LANGUAGE, "");
 		}
 		catch (error) {
 			console.error("ERROR: " + "Cannot create settings for guild: " + guild.name + "\n", error);

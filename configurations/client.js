@@ -1,10 +1,4 @@
 const config = {
-	owner: "258976701730521088",
-    default: {
-		prefix: "]",
-		language: "es"
-	},
-	web_dir: "web",
 	commands_dir: "commands",
 	slash_commands_dir: "commands_slash",
 	exp_score_base: 50,

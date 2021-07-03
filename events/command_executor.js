@@ -15,7 +15,7 @@ if (!fs.existsSync(process.cwd() + "/error-logs")) {
 async function commandExecutor(client, message) {
 	
 	// Current guild's prefix, default if DM
-	let prefix = client.config.default.prefix;
+	let prefix = process.env.DEFAULT_PREFIX;
 	if (message.guild) {
 		let get_server_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(message.guild.id);
 		if (get_server_prefix) { prefix = get_server_prefix.prefix; }
@@ -34,10 +34,10 @@ async function commandExecutor(client, message) {
     if (!command) {	return;	}
 	
 	// Flag check; if works with the bot's owner
-    if ((command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== client.config.owner)) {
+    if ((command.flags & constants.cmdFlags.ownerOnly) && (message.author.id !== process.env.OWNER_ID)) {
         let embed = new Discord.MessageEmbed();
         embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(client.config.owner).tag])); // client.users.cache.get(client.config.owner).tag
+        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_owner", [client.users.cache.get(process.env.OWNER_ID).tag]));
         return message.reply({embeds: [embed]});
     }
 	
