@@ -41,22 +41,6 @@ async function commandExecutor(client, message) {
         return message.reply({embeds: [embed]});
     }
 	
-	// Flag check; if works only on guilds
-    if ((command.flags & constants.cmdFlags.guildOnly) && (message.channel.type !== "text")) {
-        let embed = new Discord.MessageEmbed();
-        embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_guild"));
-        return message.reply({embeds: [embed]});
-    }
-	
-	// Flag check; if works only on direct messages
-	if ((command.flags & constants.cmdFlags.dmOnly) && (message.channel.type !== "dm")) {
-        let embed = new Discord.MessageEmbed();
-        embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "events/command_executor", "only_dm"));
-        return message.reply({embeds: [embed]});
-    }
-	
 	// Guild check; if that command is disabled on that guild
 	if (message.guild) {
 		let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(message.guild.id);
