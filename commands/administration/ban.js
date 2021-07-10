@@ -1,6 +1,4 @@
 const Discord = require("discord.js");
-const { arg } = require("mathjs");
-const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 module.exports = {
     name: "ban",
