@@ -43,7 +43,7 @@ module.exports = {
 		
 		let mentioned_member = message.mentions.members.first();
         let member = mentioned_member || get_member;
-		if (!member) { if (args[0]) { member = await message.guild.members.fetch(args[0]).catch(async (error) => { member = undefined; });; } else { member = message.member; } }
+		if (!member) { if (args[0]) { member = await message.guild.members.fetch(args[0]).catch(async (error) => { member = undefined; }); } else { member = message.member; } }
 		if (!member) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/member", "failure"));
