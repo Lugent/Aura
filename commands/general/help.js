@@ -56,7 +56,7 @@ module.exports = {
 				for (let command_index = 0; command_index < command_list.length; command_index++) {
 					let command = command_list[command_index];
 					let command_usage = command.usage ? command.usage : "";
-					if (((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
+					if (((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
 					command_names += command.name + " " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", command_usage) + "\n";
 				}
 
@@ -71,7 +71,7 @@ module.exports = {
 		else {
 			var name = args[0].toLowerCase();
 			var command = commands.get(name) || commands.find((c) => { return (c.aliases && c.aliases.includes(name)); });
-			if ((!command) || ((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.autorizedOnly) || (command.flags & constants.cmdFlags.noHelp)) && (!hidden)) {
+			if ((!command) || ((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.noHelp)) && (!hidden)) {
 				return message.reply(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "dont_exists"));
 			}
 
