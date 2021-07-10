@@ -5,7 +5,7 @@ const chalk = require("chalk");
 // Process handlers
 process.on("exit", (code) => {
 	client.destroy();
-	console.log("Process termineted with exit code " + code);
+	console.log("Exit code: " + code);
 });
 
 process.on("unhandledRejection", error => {
@@ -25,8 +25,9 @@ let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded enviroment variables."); }
 
 // Client
+const intents = Object.values(Discord.Intents.FLAGS).reduce((acc, p) => acc | p, 0); //32767;
 const client = new Discord.Client({
-	intents: Discord.Intents.ALL,
+	intents: intents,
 	allowedMentions: {
 		repliedUser: false
 	}, 
@@ -104,12 +105,13 @@ let afk_handler = require(process.cwd() + "/events/afk_handler.js");
 let invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 
 // Execute events
-client.on("interaction", async (interaction) => {
+client.on("interactionCreate", async (interaction) => {
 	console.log(interaction);
-	general_slash_command_executor(client, interaction);
+	slash_command_executor(client, interaction);
 });
 
-client.on("message", async (message) => {
+client.on("messageCreate", async (message) => {
+	//console.log(message);
 	await database_handler(client, message);
 	
 	let blacklist_guild;
@@ -291,5 +293,5 @@ client.on("invalidated", () => {
 	console.error(chalk.redBright("ERROR:") + " Invalid connection, exiting program...");
 	process.exit();
 });
-client.on("error", (error) => { console.error(chalk.bgRedBright("ERROR: "), error); });
-client.on("warn", (warn) => { console.warn(chalk.bgYellowBright("WARNING: "), warn); });
+//client.on("error", (error) => { console.error(chalk.redBright("ERROR: "), error); });
+//client.on("warn", (warn) => { console.warn(chalk.yellowBright("WARNING: "), warn); });
