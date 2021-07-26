@@ -1,9 +1,6 @@
 async function updateGuildLevels(client) {
 	let guilds_array = client.guilds.cache.array();
 	for (let guild_index = 0; guild_index < guilds_array.length; guild_index++) {
-		console.log("");
-		console.log("Looking into " + guilds_array[guild_index].name + ":");
-		
 		let members_array = guilds_array[guild_index].members.cache.array();
 		for (let members_index = 0; members_index < members_array.length; members_index++) {
 			if (members_array[members_index].user.bot) { continue; }
@@ -33,12 +30,7 @@ async function updateGuildLevels(client) {
 			if (get_level.score > score_max) { get_level.score = score_max; }
 			if (!get_level_data) { client.server_data.prepare("INSERT INTO exp (guild_id, user_id, level, score, messages) VALUES (?, ?, ?, ?, ?);").run(get_level.guild_id, get_level.user_id, get_level.level, get_level.score, get_level.messages); }
 			else { client.server_data.prepare("UPDATE exp SET level = ?, score = ?, messages = ? WHERE guild_id = ? AND user_id = ?;").run(get_level.level, get_level.score, get_level.messages, get_level.guild_id, get_level.user_id); }
-			
-			if (level_up) {
-				console.log("Updated " + members_array[members_index].user.tag + " from " + previous_level + " to " + (next_level - 1));
-			}
 		}
-		console.log("Finished updating levels in " + guilds_array[guild_index].name);
 	}
 }
 module.exports = updateGuildLevels;
