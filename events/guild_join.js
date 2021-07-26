@@ -10,7 +10,7 @@ async function first_time_welcome(client, guild) {
 		"Gracias por añadirme a su servidor y es un placer estar aqui.",
 		"Soy un bot con caracteristicas posiblemente interesantes y detalladas.",
 		"Para comenzar a saber como funciono escriba `=help`.",
-		"Para saber la lista de cambios use `" + client.config.default.prefix + "changelog`. (Solo disponible en español).",
+		"Para saber la lista de cambios use `" + process.env.DEFAULT_PREFIX + "changelog`. (Solo disponible en español).",
 	];
 	
 	let bot_owner = client.users.cache.get(process.env.OWNER_ID);
