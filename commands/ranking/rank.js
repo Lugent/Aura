@@ -134,7 +134,7 @@ module.exports = {
 		image_context.fillRect(image_data_position - 4, image_data_avatar_padding - 4, image_data_avatar_size + 8, image_data_avatar_size + 8);
 		
 		image_context.strokeStyle = "#43B581";
-		switch (get_member.user.presence.status) {
+		switch (get_member.presence.status) {
 			case "idle": { image_context.strokeStyle = "#FAA61A"; break; }
 			case "dnd": { image_context.strokeStyle = "#F04747"; break; }
 			case "offline": { image_context.strokeStyle = "#99AAB5"; break; }

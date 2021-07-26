@@ -34,7 +34,7 @@ module.exports = {
 		embed2.setColor([255, 255, 0]);
 		
 		let send_message;
-		await message.reply({embed: embed2}).then(message => { send_message = message; });
+		await message.reply({embeds: [embed2]}).then(message => { send_message = message; });
 		
 		let get_user;
 		if (args[0]) { get_user = client.users.cache.find(user => user.tag.toLowerCase().substring(0, args.slice(0).join(" ").length) === args.slice(0).join(" ").toLowerCase().substring(0, args.slice(0).join(" ").length)); }
