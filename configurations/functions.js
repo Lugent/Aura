@@ -1,5 +1,4 @@
 const functions = [
-	"exp",
-	"auto_moderator"
+	"exp"
 ];
 module.exports = functions;
