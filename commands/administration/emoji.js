@@ -14,7 +14,7 @@ module.exports = {
 	 * @param {String} prefix
 	 */
 	async execute(client, message, args, prefix) {
-		if (message.channel.type !== "text") {
+		if (!message.guild) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/emoji", "no_guild"));
 			embed.setColor([255, 0, 0]);

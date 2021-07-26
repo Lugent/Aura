@@ -15,7 +15,7 @@ module.exports = {
 	 * @param {String} prefix
 	 */
     async execute(client, message, args, prefix) {
-		if (message.channel.type !== "text") {
+		if (!message.guild) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/kick", "no_text_channel"));
 			embed.setColor([255, 0, 0]);
