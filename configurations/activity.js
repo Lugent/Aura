@@ -2,21 +2,7 @@ let status_data = [
 	{
 		activities: [{
 			name: process.env.DEFAULT_PREFIX + "help",
-			type: "PLAYING"
-		}],
-		status: "online"
-	},
-	{
-		activities: [{
-			name: "Ra!",
-			type: "PLAYING"
-		}],
-		status: "online"
-	},
-	{
-		activities: [{
-			name: "Rawr!",
-			type: "PLAYING"
+			type: "LISTENING"
 		}],
 		status: "online"
 	},
@@ -29,14 +15,7 @@ let status_data = [
 	},
 	{
 		activities: [{
-			name: "changelog",
-			type: "WATCHING"
-		}],
-		status: "dnd"
-	},
-	{
-		activities: [{
-			name: "the Aura Pokémon",
+			name: "the Aura PokÃ©mon",
 			type: "WATCHING"
 		}],
 		status: "dnd"
@@ -61,27 +40,6 @@ let status_data = [
 			type: "WATCHING"
 		}],
 		status: "idle"
-	},
-	{
-		activities: [{
-			name: "with others Lucario",
-			type: "PLAYING"
-		}],
-		status: "idle"
-	},
-	{
-		activities: [{
-			name: "a Gym",
-			type: "COMPETING"
-		}],
-		status: "dnd"
-	},
-	{
-		activities: [{
-			name: "a Tournament",
-			type: "COMPETING"
-		}],
-		status: "dnd"
 	},
 ];
 module.exports = status_data;
