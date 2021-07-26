@@ -5,10 +5,11 @@ const path = require("path");
 module.exports = {
 	name: "afk",
 	path: path.basename(__dirname),
+	type: constants.cmdTypes.normalCommand,
+
 	usage: "afk.usage",
     cooldown: 5,
 	description: "afk.description",
-	
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message

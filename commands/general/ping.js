@@ -4,9 +4,10 @@ const path = require("path");
 module.exports = {
 	name: "ping",
 	path: path.basename(__dirname),
+	type: constants.cmdTypes.normalCommand,
+
     cooldown: 5,
 	description: "ping.description",
-    
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message

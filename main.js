@@ -73,7 +73,6 @@ console.log("Databases active.");
 
 // Load event files
 let command_executor = require(process.cwd() + "/events/command_executor.js"); 
-let slash_command_executor = require(process.cwd() + "/events/slash_command_executor.js"); 
 let database_handler = require(process.cwd() + "/events/database_handler.js");
 let guild_join = require(process.cwd() + "/events/guild_join.js");
 let experience_handler = require(process.cwd() + "/events/experience_handler.js");

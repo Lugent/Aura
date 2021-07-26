@@ -1,12 +1,14 @@
 const Discord = require("discord.js");
 const path = require("path");
 const https = require("https");
+const constants = require(process.cwd() + "/configurations/constants.js");
 module.exports = {
     name: "discordstatus",
 	path: path.basename(__dirname),
+	type: constants.cmdTypes.normalCommand,
+
     cooldown: 5,
 	description: "discordstatus.description",
-	
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
