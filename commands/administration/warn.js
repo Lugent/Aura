@@ -57,7 +57,7 @@ module.exports = {
 		// If the id is the same as the executor, abort the command and send a error
 		if (member.user.id === message.author.id) {
 			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "cannot.yourself"));
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "yourself"));
 			embed.setColor([255, 0, 0]);
 			return message.channel.send({embeds: [embed]});
 		}
