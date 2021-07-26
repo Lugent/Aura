@@ -28,7 +28,6 @@ async function command_loader(client, reload = false) {
 	let count_skipped = 0;
 	let count_error = 0;
 	let count_commands = 0;
-	let count_total = 0;
 	let root_dir = await fs.readdirSync(process.cwd() + "/" + client.config.commands_dir).filter(dir => !dir.includes("."));
 	for (let dir of root_dir) {
 		let file_size_dir = 0;
@@ -51,24 +50,24 @@ async function command_loader(client, reload = false) {
 				file_size = fs.statSync(path_file).size;
 				let command = require(path_file);
 				if (isEmpty(command)) { continue; }
-				else if (command.flags & constants.cmdFlags.dontLoad) {
+				else if (!command.type || (command.flags & constants.cmdFlags.dontLoad)) {
 					count_skipped++;
 					console.log("Skipped " + "'" + command.name + "'" + ".");
 				}
 				else {
-					let command_size = (file_size / 1024).toFixed(2);
 					await client.commands.set(command.name, command);
+					
+					let command_size = (file_size / 1024).toFixed(2);
+					console.log("Loaded " + "'" + command.name + "'" + "." + " (" + chalk.greenBright(command_size) + " KB)");
 					count_load++;
 					count_commands++;
-					console.log("Loaded " + "'" + command.name + "'" + "." + " (" + chalk.greenBright(command_size) + " KB)");
+					file_size_dir += file_size;
+					total_size += file_size;
 				}
 			} catch (error) {
 				count_error++;
 				console.error(chalk.redBright("ERROR:") + " Couldn't load " + "'" + file.replace(".js", "") + "'" + ":" + "\n", error);
 			}
-			count_total++;
-			file_size_dir += file_size;
-			total_size += file_size;
 		}
 		let directory_size = (file_size_dir / 1024).toFixed(2);
 		console.log("Loaded " + chalk.greenBright(count_load) + " commands." + " (" + chalk.greenBright(directory_size) + " KB).");
