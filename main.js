@@ -3,21 +3,7 @@ const Discord = require("discord.js");
 const chalk = require("chalk");
 
 // Process handlers
-process.on("exit", (code) => {
-	client.destroy();
-	console.log("Exit code: " + code);
-});
-
-process.on("unhandledRejection", error => {
-	console.error(chalk.redBright("ERROR:") + " Unhandled promise rejection." + "\n", error);
-	if (client.last_msg) {
-		let embed = new Discord.MessageEmbed();
-        embed.setColor([255, 0, 0]);
-        embed.setDescription(":no_entry: " + error.name + (error.httpStatus ? (" - HTTP " + error.httpStatus) : "") + "\n" + (error.message ? error.message : ""));
-		client.last_msg.send({embeds: [embed]});
-		client.last_msg = undefined;
-	}
-});
+process.on("unhandledRejection", (error) => { console.error(chalk.redBright("ERROR:") + " Unhandled promise rejection." + "\n", error); });
 
 // Load variables
 const dotenv = require("dotenv");
@@ -25,15 +11,11 @@ let dotenv_result = dotenv.config();
 if (dotenv_result.error) { process.exit(); } else { console.log("Loaded enviroment variables."); }
 
 // Client
-const intents = Object.values(Discord.Intents.FLAGS).reduce((acc, p) => acc | p, 0); //32767;
+const intents = Object.values(Discord.Intents.FLAGS).reduce((acc, p) => acc | p, 0);
 const client = new Discord.Client({
 	intents: intents,
-	allowedMentions: {
-		repliedUser: false
-	}, 
-	presence: {
-		status: "invisible"
-	},
+	allowedMentions: {repliedUser: false}, 
+	presence: {status: "invisible"},
 	partials: ["MESSAGE", "CHANNEL", "REACTION", "USER", "GUILD_MEMBER"]
 });
 
@@ -75,11 +57,9 @@ client.functions.getTranslation = require(process.cwd() + "/functions/translator
 
 // Client data
 client.commands = new Discord.Collection();
-client.slash_commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 client.exp_cooldowns = new Discord.Collection();
 client.guild_invites = new Discord.Collection();
-client.guild_music = new Discord.Collection(); // {id: <snowflake>, music: <stream>, position: <integer>, is_playing: <boolean>, is_paused: <boolean>}
 
 // Client states
 client.last_msg = undefined;
@@ -88,12 +68,8 @@ client.connected = false; // don't change this
 
 // Databases
 let setupDatabases = require(process.cwd() + "/functions/database_setup.js");
-try { setupDatabases(client); }
-catch (error) {
-	console.log(chalk.redBright("ERROR:") + " Database error, program terminated." + "\n", error);
-	process.exit();
-}
-finally { console.log("Databases active."); }
+setupDatabases(client);
+console.log("Databases active.");
 
 // Load event files
 let command_executor = require(process.cwd() + "/events/command_executor.js"); 
@@ -107,11 +83,10 @@ let invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 // Execute events
 client.on("interactionCreate", async (interaction) => {
 	console.log(interaction);
-	slash_command_executor(client, interaction);
+	command_executor(client, interaction);
 });
 
 client.on("messageCreate", async (message) => {
-	//console.log(message);
 	await database_handler(client, message);
 	
 	let blacklist_guild;
@@ -161,7 +136,7 @@ client.on("inviteDelete", async (invite) => {
 
 client.on("guildMemberAdd", async (member) => {
 	var get_guild = client.guild_invites.get(member.guild.id);
-	await member.guild.fetchInvites().then(async (invites) => {
+	await member.guild.invites.fetch().then(async (invites) => {
 		var guild_invite = invites.find(invite => get_guild.get(invite.code) < invite.uses);
 		if (guild_invite) {
 			console.log("User " + member.user.tag + " joined " + member.guild.name + "");
@@ -217,7 +192,7 @@ client.on("guildCreate", async (guild) => {
 });
 
 client.on("guildDelete", async (guild) => {
-	console.log("Exited from guild " + guild.name);
+	console.log("Leaved from guild " + guild.name);
 	console.log("ID: " + guild.id);
 	
 	await invite_tracker(client);
@@ -225,23 +200,21 @@ client.on("guildDelete", async (guild) => {
 
 client.on("guildUnavailable", async (guild) => {
 	if (guild.name) {
-		console.log("A guild is unavaliable -> " + guild.name);
+		console.log("Guild unavaliable: " + guild.name);
 		console.log("ID: " + guild.id);
 	}
 });
 
 // Verbose
-let command_loader = require(process.cwd() + "/functions/command_loader.js");
-let slash_command_loader = require(process.cwd() + "/functions/slash_command_loader.js");
-let level_updater = require(process.cwd() + "/functions/experience_updater.js");
+const command_loader = require(process.cwd() + "/functions/command_loader.js");
+const level_updater = require(process.cwd() + "/functions/experience_updater.js");
+const constants = require(process.cwd() + "/configurations/constants.js");
 async function run_bot() {
 	console.log("Initializing functions...");
 	await client.functions.resourceMonitor(client);
-	console.log("");
 	
 	console.log("Registering commands...");
 	await command_loader(client);
-	console.log("");
 	
 	// Login
 	let login_check = setInterval(function() {  if (!client.connected) { console.log(chalk.yellowBright("WARNING: ") + "The request is taking too long!"); } }, 10000);
@@ -249,24 +222,36 @@ async function run_bot() {
 		clearInterval(login_check);
 		console.log("Connected to Discord!");
 		
-		console.log("");
-		console.log("Registering slash commands...");
-		await slash_command_loader(client);
-		console.log("");
-		
 		console.log("Initializing invite tracker...");
 		await invite_tracker(client);
-		console.log("");
 		
 		console.log("Executing level updater...");
 		await level_updater(client);
-		console.log("");
+		
+		console.log("Registering slash commands...");
+		let slash_commands = [];
+		let client_commands = client.commands.array();
+		for (let index = 0; index < client_commands.length; index++) {
+			if ((client_commands[index].type & constants.cmdTypes.slashCommand) && (client_commands[index].slash_format)) {
+				slash_commands.push(client_commands[index].slash_format);
+			}
+		}
+		
+		let count_added = 0;
+		let count_failed = 0;
+		let client_guilds = await client.guilds.fetch();
+		let guilds_array = client_guilds.array();
+		for (let guild_index = 0; guild_index < guilds_array.length; guild_index++) {
+			let guild_element = await guilds_array[guild_index].fetch();
+			await guild_element.commands.set(slash_commands).then(async (command) => { count_added++; }).catch(async (error) => { count_failed++; });
+		}
+		console.log("Registered in " + count_added + " guilds. (Not added in " + count_failed + " guilds).")
 		
 		console.log("Everything is ready!");
 		console.log("Connected as " + client.user.tag);
 		client.connected = true;
 	}).catch((error) => {
-		console.error(chalk.redBright("ERROR:") + " Connection failed, program terminated." + "\n", error);
+		console.error(chalk.redBright("ERROR:") + " Failed to log in." + "\n", error);
 		process.exit();
 	});
 	console.log("Connecting to Discord...");
@@ -276,22 +261,10 @@ run_bot();
 client.on("ready", async () => {
 	if (client.status_updating) { client.functions.activityUpdater(client); }
 	setInterval(function() { if (client.status_updating) { client.functions.activityUpdater(client); }}, 20000);
-	setInterval(function() {
-		if (client.connected) {
-			let ping = client.ws.ping;
-            let pingcolor = ping;
-            if (ping > 330) { pingcolor = chalk.red(ping); }
-            else if (ping > 225) { pingcolor = chalk.redBright(ping); }
-            else if (ping > 140) { pingcolor = chalk.yellowBright(ping); }
-            else if (ping > 75) { pingcolor = chalk.greenBright(ping); }
-            else if (ping > 30) { pingcolor = chalk.cyanBright(ping); }
-			console.log("Websocket latency: " + pingcolor + "ms.");
-		}
-	}, 120000);
+	setInterval(function() { if (client.connected) { console.log("Websocket latency: " + client.ws.ping + "ms."); } }, 120000);
 });
+
 client.on("invalidated", () => {
-	console.error(chalk.redBright("ERROR:") + " Invalid connection, exiting program...");
+	console.error(chalk.redBright("ERROR:") + " The actual connection was terminated.");
 	process.exit();
 });
-//client.on("error", (error) => { console.error(chalk.redBright("ERROR: "), error); });
-//client.on("warn", (warn) => { console.warn(chalk.yellowBright("WARNING: "), warn); });
