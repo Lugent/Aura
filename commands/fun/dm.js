@@ -1,7 +1,6 @@
 ﻿const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
-const download = require("file-download");
 module.exports = {
     name: "dm",
 	path: path.basename(__dirname),
