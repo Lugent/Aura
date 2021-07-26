@@ -7,11 +7,37 @@ String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() +
 module.exports = {
 	name: "help",
 	path: path.basename(__dirname),
+	type: constants.cmdTypes.normalCommand|constants.cmdTypes.selectMenuInteraction,
+	
+	select_id: "help_category",
+	/**
+	 * @param {Discord.Client} client
+	 * @param {Discord.SelectMenuInteraction} interaction
+	 */
+	async select_execute(client, interaction) {
+		let category = interaction.values[0];
+		
+		let commands = "";
+		let command_list = client.commands.array();
+		for (let command_index = 0; command_index < command_list.length; command_index++) {
+			let command = command_list[command_index];
+			if (command.path == category) {
+				commands += command.name + " " + client.functions.getTranslation(client, interaction.author, interaction.guild, "commands/general/help", command.usage ? command.usage : "") + "\n" + client.functions.getTranslation(client, interaction.author, interaction.guild, "commands/general/help", command.description ? command.description : "") + "\n\n";
+			}
+		}
+		
+		let embed = new Discord.MessageEmbed();
+		embed.setColor([47, 49, 54]);
+		embed.setTitle(client.functions.getTranslation(client, interaction.author, interaction.guild, "commands/general/help", "embed.category.title", [client.functions.getTranslation(client, interaction.author, interaction.guild, "commands/general/help", "category." + category)]));
+		embed.setDescription(commands);
+		embed.setFooter(client.functions.getTranslation(client, interaction.author, interaction.guild, "commands/general/help", "embed.category.footer"));
+		return interaction.update({embeds: [embed]});
+	},
+	
 	description: "help.description",
 	aliases: ["cmds"],
 	usage: "help.usage",
 	cooldown: 5,
-	
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
@@ -19,8 +45,6 @@ module.exports = {
 	 * @param {String} prefix
 	 */
 	async execute(client, message, args, prefix) {
-        const commands = client.commands;
-		
 		let hidden = false;
 		for (let argument_index = 0; argument_index < args.length; argument_index++) {
 			var argument = args[argument_index];
@@ -33,18 +57,36 @@ module.exports = {
 		}
 		
 		let categories = new Discord.Collection();
-		let command_list = commands.array();
+		let command_list = client.commands.array();
 		for (let command_index = 0; command_index < command_list.length; command_index++) {
 			let command = command_list[command_index];
 			let category = categories.get(command.path);
 			if (!category) {
-				categories.set(command.path, {name: "category." + command.path, commands: new Discord.Collection()});
-				category = categories.get(command.path);
+				if (((command.flags & constants.cmdFlags.ownerOnly) || (command.flags & constants.cmdFlags.noHelp)) && !hidden) { continue; }
+				//categories.set(command.path, {name: "category." + command.path, commands: new Discord.Collection()});
+				categories.set(command.path, {id: command.path, name: "category." + command.path});
+				//category = categories.get(command.path);
 			}
-			category.commands.set(command.name, command);
+			//category.commands.set(command.name, command);
 		}
 		
-        if (!args[0]) {
+		let category_string = "";
+		let category_list = categories.array();
+		let embed = new Discord.MessageEmbed();
+		let select = new Discord.MessageSelectMenu();
+		embed.setColor([47, 49, 54]);
+		embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "embed.title"));
+		select.setCustomId("help_category");
+		for (let option_index = 0; option_index < category_list.length; option_index++) {
+			category_string += client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", category_list[option_index].name) + "\n";
+			select.addOptions({label: client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", category_list[option_index].name), value: category_list[option_index].id});
+		}
+		embed.setDescription(category_string);
+		embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "embed.footer"));
+		select.setPlaceholder(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "select_menu"));
+		return message.reply({embeds: [embed], components: [{type: "ACTION_ROW", components: [select]}]});
+		
+        /*if (!args[0]) {
             let embed = new Discord.MessageEmbed();
             embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "list.title"));
 			
@@ -81,6 +123,6 @@ module.exports = {
 			if (command.aliases) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "aliases"), command.aliases.join(", "), false); }
 			if (command.cooldown) { embed.addField(client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown"), client.functions.getTranslation(client, message.author, message.guild, "commands/general/help", "cooldown.field", [(command.cooldown || 0)]), false); } // (command.cooldown || 0)
 			message.reply({embeds: [embed]}).catch((error) => { console.log(error); });
-		}
+		}*/
 	},
 };

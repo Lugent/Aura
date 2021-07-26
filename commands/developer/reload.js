@@ -5,11 +5,12 @@ const fs = require("fs");
 module.exports = {
 	name: "reload",
 	path: path.basename(__dirname),
+	type: constants.cmdTypes.normalCommand,
+	
 	description: "Actualiza todos los comandos o un comando en especifico.",
     usage: "[comando]",
     cooldown: 0,
     flags: constants.cmdFlags.ownerOnly,
-    
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
