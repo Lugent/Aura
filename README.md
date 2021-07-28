@@ -1,7 +1,7 @@
-# The Aura Pokémon
+# LugentBot
 ## The Discord bot
 
-It's another multi-propuse bot with the profile of a cool Pokémon because yes.
+It's just another multi-propuse bot.
 
 ## Invites
 - Stable version: [Link](https://discord.com/api/oauth2/authorize?client_id=610988333618823188&permissions=8&scope=bot%20applications.commands)
