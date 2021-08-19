@@ -1,4 +1,4 @@
-It's just another multi-propuse bot.
+It's just another multi-purpose bot.
 
 ## Invites
 - Stable (Inactive): [Link](https://discord.com/api/oauth2/authorize?client_id=610988333618823188&permissions=8&scope=bot%20applications.commands)
