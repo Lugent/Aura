@@ -4,11 +4,12 @@ const path = require("path");
 module.exports = {
     name: "say",
 	path: path.basename(__dirname),
+	type: constants.cmdTypes.normalCommand,
+	
     cooldown: 5,
     aliases: ["talk", "speak"],
     usage: "say.usage",
 	description: "say.description",
-
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
@@ -21,7 +22,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "empty_message"));
 			embed.setColor([255, 0, 0]);
-            return message.reply({embeds: [embed]}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
+            return message.reply({embeds: [embed]});
 		}
 
 		if (message.guild) {
@@ -29,7 +30,7 @@ module.exports = {
 				let embed = new Discord.MessageEmbed();
 				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "no_permissions"));
 				embed.setColor([255, 0, 0]);
-				return message.reply({embeds: [embed]}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
+				return message.reply({embeds: [embed]});
 			}
 		}
 
@@ -48,7 +49,7 @@ module.exports = {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/fun/say", "send_failure"));
 			embed.setColor([255, 0, 0]);
-			return message.reply({embeds: [embed]}).then(async (sent_message) => { sent_message.delete({timeout: 3000}); });
+			return message.reply({embeds: [embed]});
         });
     }
 };

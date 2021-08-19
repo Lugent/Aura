@@ -7,9 +7,10 @@ String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() +
 module.exports = {
 	name: "guild",
 	path: path.basename(__dirname),
-	description: "command.guild.desc",
+	type: constants.cmdTypes.normalCommand,
+	
+	description: "guild.desc",
 	aliases: ["server"],
-
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
@@ -18,7 +19,7 @@ module.exports = {
 	 * @returns {Discord.Message}
 	 */
 	async execute(client, message, args, prefix) {
-		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === process.env.OWNER_ID)))) {
+		if ((!message.guild) && (!((args[0]) && (message.author.id === process.env.OWNER_ID)))) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "guild_only"));
 			embed.setColor([255, 255, 0]);
@@ -29,7 +30,7 @@ module.exports = {
 		embed2.setDescription(":hourglass: " + client.functions.getTranslation(client, message.author, message.guild, "commands/information/guild", "loading"));
 		embed2.setColor([255, 255, 0]);
 		
-		let send_message = await message.channel.send({embed: embed2});
+		let send_message = await message.channel.send({embeds: [embed2]});
 		
 		let guild = message.guild;
 		if ((args[0]) && (message.author.id === process.env.OWNER_ID)) {

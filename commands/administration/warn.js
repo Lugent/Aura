@@ -1,79 +1,75 @@
 const Discord = require("discord.js");
+const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 module.exports = {
-    name: "warn",
+    id: "warn",
 	path: path.basename(__dirname),
-    cooldown: 5,
-    usage: "warn.usage",
-	description: "warn.description",
+	type: constants.cmdTypes.applicationsCommand,
 	
-	/**
-	 * @param {Discord.Client} client The client bot
-	 * @param {Discord.Message} message The target message
-	 * @param {Array} args The arguments as array entries
-	 * @param {String} prefix The used prefix
-	 */
-    async execute(client, message, args, prefix) {
-		if (!message.guild) { // This command only works with guilds
-			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "no_guild"));
-			embed.setColor([255, 0, 0]);
-			return message.channel.send({embeds: [embed]});
+	applications: [
+		{
+			format: {
+				name: "warn",
+				description: "warn.description",
+				type: "CHAT_INPUT",
+				options: [
+					{
+						type: "USER",
+						name: "member",
+						description: "warn.member.description",
+						required: true
+					},
+					{
+						type: "STRING",
+						name: "reason",
+						description: "warn.reason.description",
+						required: false
+					},
+					{
+						type: "BOOLEAN",
+						name: "is_slient",
+						description: "warn.slient.description",
+						required: false
+					}
+				]
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_ROLES)) { // Permission check
+					let embed = new Discord.MessageEmbed();
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_permission"));
+					embed.setColor([47, 49, 54]);
+					return interaction.reply({embeds: [embed], ephemeral: true});
+				}
+				
+				// Get the member argument
+				let get_member = interaction.options.getMember("member");
+				if (get_member.bot) { // Bots can't be warned
+					let embed = new Discord.MessageEmbed();
+					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "is_bot"));
+					embed.setColor([47, 49, 54]);
+					return interaction.reply({embeds: [embed], ephemeral: true});
+				}
+				
+				// Get the optional reason as string
+				let warn_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_reason");
+				
+				// Add the warn to the database
+				client.server_data.prepare("INSERT INTO warns (guild_id, user_id, reason) VALUES (?, ?, ?);").run(interaction.guild.id, get_member.user.id, warn_reason);
+				
+				// Prepare a embed and send it
+				// And make it as a ephemeral message if the silent argument is true
+				let embed = new Discord.MessageEmbed();
+				embed.setColor([47, 49, 54]);
+				embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success.title", [get_member.user.tag]));
+				embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success.description", [warn_reason]));
+				embed.setFooter(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success.footer", [interaction.user.tag]));
+				return interaction.reply({embeds: [embed], ephemeral: (interaction.options.getBoolean("is_slient") ?? false)});
+			}
 		}
-
-		// Minium need the required permissions
-		if (!message.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_ROLES)) {
-			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "no_permission"));
-			embed.setColor([255, 0, 0]);
-			return message.channel.send({embeds: [embed]});
-		}
-
-		// Need the first argument for the member input
-		if (!args[0]) {
-			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "need_member"));
-			embed.setColor([255, 0, 0]);
-			return message.channel.send({embeds: [embed]});
-		}
-
-		// Search the member via username and tag
-		// Otherwise, search via the first mention
-		// Otherwise, fetches the member via snowflake
-		// If everything fails, return undefined
-		let find_member = message.guild.members.cache.find(member => member.user.tag.toLowerCase().substring(0, args.join(" ").length) === args.join(" ").toLowerCase().substring(0, args.join(" ").length));
-		let mentioned_member = message.mentions.members.first();
-		let fetched_member = await message.guild.members.fetch(args[0]).catch(async (error) => { return undefined; });
-
-		// Check if the member is valid from above
-        let member = find_member || mentioned_member || fetched_member;
-		if (!member) { // Otherwise, send an error
-			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "dont_exists"));
-			embed.setColor([255, 0, 0]);
-			return message.channel.send({embeds: [embed]});
-		}
-
-		// If the id is the same as the executor, abort the command and send a error
-		if (member.user.id === message.author.id) {
-			let embed = new Discord.MessageEmbed();
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "yourself"));
-			embed.setColor([255, 0, 0]);
-			return message.channel.send({embeds: [embed]});
-		}
-
-		// Get the optional reason
-		let warn_reason = args.slice(1).join(" ");
-		if (!warn_reason.length) { warn_reason = client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "no_reason"); }
-
-		// Add the warn to the database
-		client.server_data.prepare("INSERT INTO warns (guild_id, user_id, reason) VALUES (?, ?, ?);").run(message.guild.id, member.user.id, warn_reason);
-
-		// Prepare a embed and send it
-		let embed = new Discord.MessageEmbed();
-		embed.setTitle(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "success.title", [member.user.tag]));
-		embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "success.description", [warn_reason]));
-		embed.setFooter(client.functions.getTranslation(client, message.author, message.guild, "commands/administration/warn", "success.footer", [message.author.tag]));
-		return message.reply({embeds: [embed]});
-	}
+	]
 };

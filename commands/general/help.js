@@ -5,7 +5,7 @@ const path = require("path");
 String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1); };
 
 module.exports = {
-	name: "help",
+	id: "help",
 	path: path.basename(__dirname),
 	type: constants.cmdTypes.normalCommand|constants.cmdTypes.selectMenuInteraction,
 	
@@ -34,17 +34,18 @@ module.exports = {
 		return interaction.update({embeds: [embed]});
 	},
 	
-	description: "help.description",
-	aliases: ["cmds"],
-	usage: "help.usage",
-	cooldown: 5,
+	command_name: "help",
+	command_description: "help.description",
+	command_aliases: ["cmds"],
+	command_usage: "help.usage",
+	command_cooldown: 5,
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
 	 * @param {Array} args
 	 * @param {String} prefix
 	 */
-	async execute(client, message, args, prefix) {
+	async command_execute(client, message, args, prefix) {
 		let hidden = false;
 		for (let argument_index = 0; argument_index < args.length; argument_index++) {
 			var argument = args[argument_index];

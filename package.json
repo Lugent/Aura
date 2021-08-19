@@ -1,12 +1,12 @@
 {
     "dependencies": {
         "@discordjs/opus": "^0.5.0",
-        "@discordjs/voice": "^0.3.0",
+        "@discordjs/voice": "^0.3.1",
         "better-sqlite3": "^7.2.0",
         "bufferutil": "^4.0.3",
-        "canvas": "^2.7.0",
+        "canvas": "^2.8.0",
         "chalk": "^4.1.1",
-        "discord.js": "^13.0.0-dev.4886ae2.1627300977",
+        "discord.js": "^13.2.0-dev.1629288463.d6e6244",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
         "ffmpeg-static": "^4.3.0",

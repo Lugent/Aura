@@ -7,7 +7,8 @@ const cmdFlags = {
 
 const cmdTypes = {
 	normalCommand: 1,
-	slashCommand: 2,
+	slashCommand: 2, // DEPRECATED
+	applicationsCommand: 2,
 	buttonInteraction: 4,
 	selectMenuInteraction: 8
 };

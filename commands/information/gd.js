@@ -1,19 +1,186 @@
 const Discord = require("discord.js");
 const path = require("path");
+const constants = require(process.cwd() + "/configurations/constants.js");
 const https = require("https");
 module.exports = {
-	name: "gd",
+	id: "gd",
 	path: path.basename(__dirname),
-    cooldown: 6,
-	description: "gd.usage",
+	type: constants.cmdTypes.normalCommand|constants.cmdTypes.applicationsCommand,
 
+	applications: [
+		{
+			format: {
+				name: "gd",
+				description: "Geometry Dash information",
+				type: "CHAT_INPUT",
+				options: [
+					{
+						type: "SUB_COMMAND",
+						name: "help",
+						description: "gd.help.description",
+						options: [
+							{
+								type: "STRING",
+								name: "command",
+								description: "help.search.description",
+								choices: [
+									{
+										name: "search",
+										value: "search"
+									}
+								]
+							}
+						]
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "search",
+						description: "Search levels",
+						options: [
+							{
+								type: "STRING",
+								name: "level_name",
+								description: "Name of the levels to search",
+								required: false
+							},
+							{
+								type: "STRING",
+								name: "filers",
+								description: "The filters to use",
+								required: false
+							}
+						]
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "level",
+						description: "Get level's information",
+						options: [
+							{
+								type: "STRING",
+								name: "level_id",
+								description: "The ID of the level",
+								required: true
+							}
+						]
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "profile",
+						description: "Get profile's information",
+						options: [
+							{
+								type: "STRING",
+								name: "profile_id",
+								description: "The ID of the profile",
+								required: true
+							}
+						]
+					}
+				]
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				const api_url = "https://gdbrowser.com/api/";
+				switch (interaction.options.getSubcommand()) {
+					case "help": {
+						switch (interaction.options.getString("command")) {
+							case "search": {
+								let embed = new Discord.MessageEmbed();
+								embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.title", ["/"]));
+								embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.page"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.page.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.difficulty"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.difficulty.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.length"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.length.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.count"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.count.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.song_id"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.song_id.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.custom_song"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.custom_song.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.list"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.list.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.creators"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.creators.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.user"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.user.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.type"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.type.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.featured"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.featured.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.original"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.original.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.two_player"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.two_player.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.coins"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.coins.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.epic"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.epic.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.starred"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.starred.description"));
+								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.no_star"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.no_star.description"));
+								embed.setColor([254, 223, 0]);
+								return interaction.reply({embeds: [embed]});
+								break;
+							}
+						}
+						break;
+					}
+					
+					case "search": {
+						let search_query = interaction.options.getString("level_name") ?? "*";
+						let search_filters = "";
+						
+						let raw_data = "";
+						let complete_url = api_url + "search/" + search_query + "?count=9" + search_filters;
+						console.log(complete_url);
+						interaction.deferReply();
+						https.get(complete_url, async (response) => {
+							response.on("data", async (chunk) => { raw_data += chunk; });
+							response.on("end", async () => {
+								console.log(raw_data);
+								if (!raw_data.startsWith("{")) {
+									if (raw_data === "-1") {
+										let embed = new Discord.MessageEmbed();
+										embed.setColor([47, 49, 54]);
+										embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "search.not_found"));
+										return interaction.editReply({embeds: [embed]});
+									}
+									
+									let embed = new Discord.MessageEmbed();
+									embed.setColor([47, 49, 54]);
+									embed.setDescription(raw_data);
+									return interaction.editReply({embeds: [embed]});
+								}
+								
+								let levels_data = JSON.parse(raw_data);
+								console.log(levels_data);
+								
+								let embed = new Discord.MessageEmbed();
+								embed.setColor([47, 49, 54]);
+								for (let index = 0; index < levels_data.length; index++) {
+									let level_name = (levels_data[index].epic ? ":fire:" : (levels_data[index].featured ? ":star:" : "")) + " " + levels_data[index].name;
+									
+									let level_info = [
+										":thermometer: " + levels_data[index].difficulty,
+										":hourglass: " + levels_data[index].length,
+										":arrow_heading_down: " + client.functions.getFormattedNumber(levels_data[index].downloads, 2),
+										":+1: " + client.functions.getFormattedNumber(levels_data[index].likes, 2),
+										":id: " + levels_data[index].id
+									];
+									embed.addField(level_name, level_info.join("\n"), true);
+								}
+								return interaction.editReply({embeds: [embed]});
+							});
+						}).on("error", (error) => { throw error; });
+						break;
+					}
+				}
+			}
+		}
+	],
+
+	command_name: "gd",
+	command_cooldown: 6,
+	command_description: "gd.usage",
 	/**
 	 * @param {Discord.Client} client
 	 * @param {Discord.Message} message
 	 * @param {Array} args
 	 * @param {String} prefix
 	 */
-	async execute(client, message, args, prefix) {
+	async command_execute(client, message, args, prefix) {
 		
 		let diff_to_color = [
 			{id: "Unrated", color: [182, 182, 182]},

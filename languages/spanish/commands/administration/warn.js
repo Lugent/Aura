@@ -5,7 +5,7 @@ let language = {
 	"dont_exists": "El miembro especificado no existe o es invalido.",
 	"yourself": "No te puedes advertir a ti mismo.",
 	"no_reason": "Sin razon",
-	"success.title", "%s ha sido advertido.",
+	"success.title": "%s ha sido advertido.",
 	"success.description": "Razon: %s",
 	"success.footer": "Operador: %s"
 };

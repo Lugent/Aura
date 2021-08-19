@@ -100,8 +100,8 @@ async function exp_handler(client, message) {
 			image_context.font = "82px Get-Digital";
 			image_context.textAlign = "center";
 			image_context.textBaseline = "bottom";
-			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
-			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4, client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4, client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
 			
 			// Arrow
 			image_context.beginPath();
@@ -120,7 +120,7 @@ async function exp_handler(client, message) {
 			// Upload file
 			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			var embed = new Discord.MessageEmbed();
-			embed.setAuthor(message.author.tag + ", " + client.functions.getTranslation(client, message.author, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
+			embed.setAuthor(message.author.tag + ", " + client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 			embed.setImage("attachment://levelup.png");
 			embed.setColor(0x66b3ff);
 			return message.channel.send({files: [attachment], embeds: [embed]});

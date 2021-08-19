@@ -16,7 +16,7 @@ module.exports = {
 	 */
     async execute(client, message, args, prefix)
     {
-		if ((message.channel.type !== "text") && (!((args[0]) && (message.author.id === process.env.OWNER_ID)))) {
+		if ((!message.guild) && (!((args[0]) && (message.author.id === process.env.OWNER_ID)))) {
 			let embed = new Discord.MessageEmbed();
 			embed.setDescription(":warning: " + client.functions.getTranslation(client, message.author, message.guild, "commands/ranking/leaderboard", "no_guild"));
 			embed.setColor([255, 255, 0]);
@@ -25,10 +25,9 @@ module.exports = {
 		
 		let guild = message.guild;
 		if (args[0]) {
-			console.log(typeof args[0]);
 			if ((args[0].startsWith("/guild:")) (message.author.id === process.env.OWNER_ID))
 			{
-				guild = await client.guilds.fetch(client, args[0].split("/guild:")[1]);
+				guild = await client.guilds.fetch(client, args[0].split("/guild:")[1]).catch((error) => { guild = undefined; });
 			}
 		}
 		

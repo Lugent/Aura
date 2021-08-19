@@ -52,13 +52,13 @@ async function command_loader(client, reload = false) {
 				if (isEmpty(command)) { continue; }
 				else if (!command.type || (command.flags & constants.cmdFlags.dontLoad)) {
 					count_skipped++;
-					console.log("Skipped " + "'" + command.name + "'" + ".");
+					console.log("Skipped " + "'" + command.id + "'" + ".");
 				}
 				else {
-					await client.commands.set(command.name, command);
+					await client.commands.set(command.id, command);
 					
 					let command_size = (file_size / 1024).toFixed(2);
-					console.log("Loaded " + "'" + command.name + "'" + "." + " (" + chalk.greenBright(command_size) + " KB)");
+					console.log("Loaded " + "'" + command.id + "'" + "." + " (" + chalk.greenBright(command_size) + " KB)");
 					count_load++;
 					count_commands++;
 					file_size_dir += file_size;

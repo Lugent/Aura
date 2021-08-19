@@ -25,13 +25,14 @@ function resourceMonitor(client) {
 }
 
 /**
- * @description Activity updater
- * @param {Discord.Client} client 
+ *
+ * @param {Number} length 
  */
-function activityUpdater(client) {
-	let status_data = require(process.cwd() + "/configurations/activity.js");
-	let status_info = status_data[client.functions.getRandomNumber(status_data.length)];
-    client.user.setPresence(status_info);
+function generateCode(length) {
+	let result = "";
+	let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_.";
+	for (var i = 0; i < length; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length));}
+	return result;
 }
 
 /**
@@ -51,7 +52,7 @@ async function generateRankIcon(client, Canvas, level_number) {
 }
 
 module.exports = {
-	activityUpdater: activityUpdater,
+	generateCode: generateCode,
 	resourceMonitor: resourceMonitor,
 	generateRankIcon: generateRankIcon
 };

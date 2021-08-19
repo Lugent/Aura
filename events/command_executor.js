@@ -2,21 +2,13 @@
 const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 
-// Create error logs folder
-const fs = require("fs");
-if (!fs.existsSync(process.cwd() + "/error-logs")) {
-	fs.mkdirSync(process.cwd() + "/error-logs");
-}
-
 /**
  * @param {Discord.Client} client
  * @param {Discord.Message|Discord.Interaction} executor
  */
 async function commandExecutor(client, executor) {
-	
-	if (executor instanceof Discord.Message) {
-		// Current guild's prefix, default if DM
-		let prefix = process.env.DEFAULT_PREFIX;
+	if (executor instanceof Discord.Message) { // KINDA DEPRECATED: The bot going to be interactions based
+		let prefix = process.env.DEFAULT_PREFIX; // Current guild's prefix, default if DM
 		if (executor.guild) {
 			let get_server_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(executor.guild.id);
 			if (get_server_prefix) { prefix = get_server_prefix.prefix; }
@@ -31,14 +23,14 @@ async function commandExecutor(client, executor) {
 		let [, matchedPrefix] = executor.content.match(prefixRegex);
 		let args = executor.content.slice(matchedPrefix.length).trim().split(/ +/);
 		let name = args.shift().toLowerCase();
-		let command = client.commands.get(name) || client.commands.find(cmd => { return cmd.aliases && cmd.aliases.includes(name); });
+		let command = client.commands.find(cmd => { return cmd.command_name && cmd.command_name.includes(name); }) || client.commands.find(cmd => { return cmd.command_aliases && cmd.command_aliases.includes(name); });
 		if (!command) {	return;	}
 		
 		// Type check; if the command is a message command
 		if (!(command.type & constants.cmdTypes.normalCommand)) { return; }
 		
 		// Flag check; if works with the bot's owner
-		if ((command.flags & constants.cmdFlags.ownerOnly) && (executor.author.id !== process.env.OWNER_ID)) {
+		if ((command.command_flags & constants.cmdFlags.ownerOnly) && (executor.author.id !== process.env.OWNER_ID)) {
 			let embed = new Discord.MessageEmbed();
 			embed.setColor([255, 0, 0]);
 			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "only_owner", [client.users.cache.get(process.env.OWNER_ID).tag]));
@@ -58,10 +50,10 @@ async function commandExecutor(client, executor) {
 		}
 
 		// Cooldown
-		if (!client.cooldowns.has(command.name)) { client.cooldowns.set(command.name, new Discord.Collection()); }
+		if (!client.cooldowns.has(command.command_name)) { client.cooldowns.set(command.command_name, new Discord.Collection()); }
 		let time_actual = Date.now();
-		let time_cooldown = (command.cooldown || 1) * 1000;
-		let time_data = client.cooldowns.get(command.name);
+		let time_cooldown = (command.command_cooldown || 1) * 1000;
+		let time_data = client.cooldowns.get(command.command_name);
 		if (time_data.has(executor.author.id)) {
 			let time_count = time_data.get(executor.author.id) + time_cooldown;
 			if (time_actual < time_count) { // Cooldown is active
@@ -74,62 +66,64 @@ async function commandExecutor(client, executor) {
 		}
 
 		// Execute command, throw error if fails
-		command.execute(client, executor, args, prefix).then((get_message) => {
+		command.command_execute(client, executor, args, prefix).then((get_message) => {
 			time_data.set(executor.author.id, time_actual);
 			setTimeout(() => time_data.delete(executor.author.id), time_cooldown);
 		}).catch(async (error) => {
-			console.error("Command failure: " + "\n" + command.name + " " + args.join(" ") + "\n" + "Stack trace: " + "\n", error);
-			try {
-				let textFileWrite = fs.createWriteStream(process.cwd() + "/error-logs/command_error_" + Date.now() + ".txt");
-				await textFileWrite.write(executor.author.tag + ": " + command.name + " " + args.join(" ") + "\n" + "Stack trace: " + "\n" + error.stack);
-				await textFileWrite.end();
-			}
-			finally {
-				return executor.reply({
-					content: ":no_entry: " + client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "command_error"),
-					files: [
-						new Discord.MessageAttachment(Buffer.from(error.stack), "command_error_" + Date.now() + ".txt")
-					]
-				});
-			}
-			return executor.reply(":no_entry: " + client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "command_error") + "\n" + "```" + error.stack + "```");
+			console.error("Command failure: " + "\n" + command.command_name + " " + args.join(" ") + "\n" + "Stack trace: " + "\n", error);
+			return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```"});
 		});
 	}
 	else if (executor instanceof Discord.Interaction) {
 		// Handle types
-		// Slash Command
-		if (executor.isCommand()) {
+		// Application Command
+		if (executor.isCommand() || executor.isContextMenu()) {
 			let name = executor.commandName;
-			let command = client.commands.find(cmd => { if (cmd.slash_name) { return cmd.slash_name.includes(name); } });
+			let command = client.commands.find(cmd => { return cmd.applications && cmd.applications.find(app => app.format.name.includes(name)); });
 			if (!command) { return; }
+
+			let handler = command.applications.find(cmd => cmd.format.name.includes(name));
+			if (!handler.execute) { return; }
 			
-			command.slash_execute(client, executor).then((response) => {
+			handler.execute(client, executor).then(() => {
 			}).catch(async (error) => {
-				console.error("Slash Command failure: " + "\n" + command.slash_name + "\n" + "Stack trace: " + "\n", error);
+				console.error("Application Command failure: " + "\n" + executor.commandName + "\n" + "Stack trace: " + "\n", error);
+				if (executor.deferred) {
+					return executor.editReply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
+				}
+				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
 		
 		// Button
 		if (executor.isButton()) {
 			let name = executor.customId;
-			let command = client.commands.find(cmd => { if (cmd.button_id) { return cmd.button_id.includes(name); } });
-			if (!command) {	return;	}
+			let command = client.commands.find(cmd => { return cmd.buttons && cmd.buttons.find(btn => btn.id.includes(name)); });
+			if (!command) { return; }
+
+			let handler = command.buttons.find(cmd => cmd.id.includes(name));
+			if (!handler.execute) { return; }
 			
-			command.button_execute(client, executor).then((response) => {
+			handler.execute(client, executor).then(() => {
 			}).catch(async (error) => {
-				console.error("Button failure: " + "\n" + command.customId + "\n" + "Stack trace: " + "\n", error);
+				console.error("Button failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
+				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
 		
 		// Select Menu
 		if (executor.isSelectMenu()) {
 			let name = executor.customId;
-			let command = client.commands.find(cmd => { if (cmd.select_id) { return cmd.select_id.includes(name); } });
-			if (!command) {	return;	}
+			let command = client.commands.find(cmd => { return cmd.selects && cmd.selects.find(slt => slt.id.includes(name)); });
+			if (!command) { return; }
+
+			let handler = command.selects.find(cmd => cmd.id.includes(name));
+			if (!handler.execute) { return; }
 			
-			command.select_execute(client, executor).then((response) => {
+			handler.execute(client, executor).then(() => {
 			}).catch(async (error) => {
-				console.error("Select Menu failure: " + "\n" + command.customId + "\n" + "Stack trace: " + "\n", error);
+				console.error("Select Menu failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
+				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
 	}

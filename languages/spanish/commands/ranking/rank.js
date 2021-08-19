@@ -7,6 +7,7 @@ let language = {
 	"xp": "XP",
 	"level": "Nv",
 	"rank": "Rank",
-	"embed.title": "Nivel actual de %s"
+	"embed.title": "Nivel actual de %s",
+	"button.label": "Tabla de Posiciones"
 };
 module.exports = language;
