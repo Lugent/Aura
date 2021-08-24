@@ -74,9 +74,7 @@ console.log("Databases active.");
 // Load event files
 let command_executor = require(process.cwd() + "/events/command_executor.js"); 
 let database_handler = require(process.cwd() + "/events/database_handler.js");
-let guild_join = require(process.cwd() + "/events/guild_join.js");
 let experience_handler = require(process.cwd() + "/events/experience_handler.js");
-let afk_handler = require(process.cwd() + "/events/afk_handler.js");
 let invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 
 // Execute events
@@ -88,14 +86,10 @@ client.on("interactionCreate", async (interaction) => {
 client.on("messageCreate", async (message) => {
 	await database_handler(client, message);
 	
-	let blacklist_guild;
-	let blacklist_user;
-	if (message.guild) { blacklist_guild = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(message.guild.id); }
-	else { blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(message.author.id); }
-	
+	let blacklist_guild = message.guild ? client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(message.guild.id) : false;
+	let blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(message.author.id);
 	if (blacklist_guild || blacklist_user) { return; }
 	
-	//afk_handler(client, message);
 	command_executor(client, message);
 	experience_handler(client, message);
 });
@@ -239,7 +233,7 @@ client.registerApplications = async function (client) {
 					applications_commands.push(result_command);
 				}
 			}
-		};
+		}
 		
 		for (let index = 0; index < applications_commands.length; index++) {
 			if (applications_commands[index].type == "CHAT_INPUT") {
@@ -248,7 +242,7 @@ client.registerApplications = async function (client) {
 		}
 
 		let guild_element = await guilds_array[guild_index].fetch();
-		await guild_element.commands.set(applications_commands).catch(async (error) => { console.error(guild_element.name + ": " + "\n", error); });
+		await guild_element.commands.set(applications_commands).catch(console.error);
 	}
 };
 
