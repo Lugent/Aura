@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const Canvas = require("canvas");
+Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Medium.otf", {family: "Stratum1"});
 
 /**
  * @param {Canvas.CanvasRenderingContext2D} context
@@ -77,8 +78,6 @@ async function exp_handler(client, message) {
 			let image_data_rank_front_padding = 100;
 			let image_data_rank_front_size = 384;
 			let image_data_right = (image_data_width - image_data_rank_front_size) - image_data_rank_front_padding;
-
-			Canvas.registerFont(process.cwd() + "/assets/fonts/DJB Get Digital.ttf", {family: "Get-Digital"});
 			
 			let image_canvas = Canvas.createCanvas(image_data_width, image_data_height);
 			let image_context = image_canvas.getContext("2d");
@@ -90,18 +89,12 @@ async function exp_handler(client, message) {
 			image_context.fillStyle = "#7289DA";
 			image_context.fillRect(0, 0, image_data_width, image_data_height);
 			
-			// Images
-			let rank_front_image = await client.functions.generateRankIcon(client, Canvas, level_index);
-			let rank_front_image_old = await client.functions.generateRankIcon(client, Canvas, level_index_old);
-			if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_width - (image_data_rank_front_padding + image_data_rank_front_size), image_data_rank_front_padding / 2, image_data_rank_front_size, image_data_rank_front_size); }
-			if (rank_front_image_old) { image_context.drawImage(rank_front_image_old, image_data_rank_front_padding, image_data_rank_front_padding / 2, image_data_rank_front_size, image_data_rank_front_size); }
-			
 			// String - Levels
-			image_context.font = "82px Get-Digital";
+			image_context.font = "96px Stratum1";
 			image_context.textAlign = "center";
 			image_context.textBaseline = "bottom";
-			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height - 4, client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
-			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height - 4, client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+			shadowed_text(image_context, image_data_rank_front_padding + (image_data_rank_front_size / 2), image_data_height / 2, level_index_old, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+			shadowed_text(image_context, image_data_width - (image_data_rank_front_padding + (image_data_rank_front_size / 2)), image_data_height / 2, level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
 			
 			// Arrow
 			image_context.beginPath();
@@ -118,12 +111,24 @@ async function exp_handler(client, message) {
 			image_context.fillRect(image_data_width / 2 - 96, 4 + 40, image_data_rank_front_size, image_data_rank_front_size);
 			
 			// Upload file
-			var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
-			var embed = new Discord.MessageEmbed();
+			let button = new Discord.MessageButton();
+			button.setStyle("PRIMARY");
+			button.setLabel(client.functions.getTranslation(client, message.guild, "events/experience_handler", "button.label"));
+			button.setCustomId("show_leaderboard");
+			button.setEmoji("🏆");
+
+			let button2 = new Discord.MessageButton();
+			button2.setStyle("PRIMARY");
+			button2.setLabel(client.functions.getTranslation(client, message.guild, "events/experience_handler", "button2.label"));
+			button2.setCustomId("show_rank");
+			button2.setEmoji("🏅");
+
+			let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
+			let embed = new Discord.MessageEmbed();
 			embed.setAuthor(message.author.tag + ", " + client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 			embed.setImage("attachment://levelup.png");
 			embed.setColor(0x66b3ff);
-			return message.channel.send({files: [attachment], embeds: [embed]});
+			return message.channel.send({files: [attachment], embeds: [embed], components: [{type: "ACTION_ROW", components: [button2, button]}]});
 		}
 	}
 }
