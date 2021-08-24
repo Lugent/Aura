@@ -6,7 +6,7 @@
         "bufferutil": "^4.0.3",
         "canvas": "^2.8.0",
         "chalk": "^4.1.1",
-        "discord.js": "^13.2.0-dev.1629288463.d6e6244",
+        "discord.js": "^13.2.0-dev.1629807143.c232baa",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
         "ffmpeg-static": "^4.3.0",
