@@ -112,7 +112,6 @@ module.exports = {
 								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.no_star"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.no_star.description"));
 								embed.setColor([254, 223, 0]);
 								return interaction.reply({embeds: [embed]});
-								break;
 							}
 						}
 						break;
