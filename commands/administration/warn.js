@@ -59,7 +59,7 @@ module.exports = {
 				let warn_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_reason");
 				
 				// Add the warn to the database
-				client.server_data.prepare("INSERT INTO warns (guild_id, user_id, reason) VALUES (?, ?, ?);").run(interaction.guild.id, get_member.user.id, warn_reason);
+				client.server_data.prepare("INSERT INTO warns (guild_id, user_id, time, reason) VALUES (?, ?, ?, ?);").run(interaction.guild.id, get_member.user.id, Date.now(), warn_reason);
 				
 				// Prepare a embed and send it
 				// And make it as a ephemeral message if the silent argument is true
