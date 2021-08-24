@@ -24,8 +24,15 @@ function setupDatabases(client) {
 	// Warns
 	let table_server_warn = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'warns';").get();
 	if (!table_server_warn["count(*)"]) {
-		data_server.prepare("CREATE TABLE warns (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, reason TEXT);").run();
+		data_server.prepare("CREATE TABLE warns (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, time NUMERIC, reason TEXT);").run();
 		data_server.prepare("CREATE UNIQUE INDEX warn_id ON warns (id);").run();
+	}
+	
+	// Mutes
+	let table_server_mute = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'mutes';").get();
+	if (!table_server_mute["count(*)"]) {
+		data_server.prepare("CREATE TABLE mutes (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, time NUMERIC, reason TEXT);").run();
+		data_server.prepare("CREATE UNIQUE INDEX mute_id ON mutes (id);").run();
 	}
 	
 	// Level
@@ -45,7 +52,7 @@ function setupDatabases(client) {
 	// Settings
 	let table_server_settings = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'settings';").get();
 	if (!table_server_settings["count(*)"]) {
-		data_server.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, prefix TEXT, language TEXT, starboard_channel TEXT);").run();
+		data_server.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, prefix TEXT, language TEXT, starboard_channel TEXT, muted_role TEXT);").run();
 		data_server.prepare("CREATE UNIQUE INDEX setting_id ON settings (id);").run();
 	}
 	data_server.pragma("synchronous = 1");
