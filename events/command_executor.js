@@ -23,7 +23,7 @@ async function commandExecutor(client, executor) {
 		let [, matchedPrefix] = executor.content.match(prefixRegex);
 		let args = executor.content.slice(matchedPrefix.length).trim().split(/ +/);
 		let name = args.shift().toLowerCase();
-		let command = client.commands.find(cmd => { return cmd.command_name && cmd.command_name.includes(name); }) || client.commands.find(cmd => { return cmd.command_aliases && cmd.command_aliases.includes(name); });
+		let command = client.commands.find(cmd => { return cmd.command_name && (cmd.command_name === name); }) || client.commands.find(cmd => { return cmd.command_aliases && cmd.command_aliases.includes(name); });
 		if (!command) {	return;	}
 		
 		// Type check; if the command is a message command
@@ -79,10 +79,10 @@ async function commandExecutor(client, executor) {
 		// Application Command
 		if (executor.isCommand() || executor.isContextMenu()) {
 			let name = executor.commandName;
-			let command = client.commands.find(cmd => { return cmd.applications && cmd.applications.find(app => app.format.name.includes(name)); });
+			let command = client.commands.find(cmd => { return cmd.applications && cmd.applications.find(app => (app.format.name === name)); });
 			if (!command) { return; }
 
-			let handler = command.applications.find(cmd => cmd.format.name.includes(name));
+			let handler = command.applications.find(cmd => (cmd.format.name === name));
 			if (!handler.execute) { return; }
 			
 			handler.execute(client, executor).then(() => {
@@ -98,10 +98,10 @@ async function commandExecutor(client, executor) {
 		// Button
 		if (executor.isButton()) {
 			let name = executor.customId;
-			let command = client.commands.find(cmd => { return cmd.buttons && cmd.buttons.find(btn => btn.id.includes(name)); });
+			let command = client.commands.find(cmd => { return cmd.buttons && cmd.buttons.find(btn => (btn.id === name)); });
 			if (!command) { return; }
 
-			let handler = command.buttons.find(cmd => cmd.id.includes(name));
+			let handler = command.buttons.find(cmd => (cmd.id === name));
 			if (!handler.execute) { return; }
 			
 			handler.execute(client, executor).then(() => {
@@ -114,10 +114,10 @@ async function commandExecutor(client, executor) {
 		// Select Menu
 		if (executor.isSelectMenu()) {
 			let name = executor.customId;
-			let command = client.commands.find(cmd => { return cmd.selects && cmd.selects.find(slt => slt.id.includes(name)); });
+			let command = client.commands.find(cmd => { return cmd.selects && cmd.selects.find(slt => (slt.id === name)); });
 			if (!command) { return; }
 
-			let handler = command.selects.find(cmd => cmd.id.includes(name));
+			let handler = command.selects.find(cmd => (cmd.id === name));
 			if (!handler.execute) { return; }
 			
 			handler.execute(client, executor).then(() => {
