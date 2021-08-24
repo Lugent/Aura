@@ -35,24 +35,7 @@ function generateCode(length) {
 	return result;
 }
 
-/**
- * 
- * @param {Discord.Client} client 
- * @param {Canvas.Canvas} Canvas 
- * @param {Number} level_number
- * @returns {Canvas.Image}
- */
-async function generateRankIcon(client, Canvas, level_number) {
-	let rank_front_image;
-	if (level_number > -1) {
-		let image_index = (level_number / client.config.exp_level_max) * 60;
-		rank_front_image = await Canvas.loadImage(process.cwd() + "/assets/images/ranking/rank_icon_" + Math.floor(image_index) + ".png");
-	}
-	return rank_front_image;
-}
-
 module.exports = {
 	generateCode: generateCode,
-	resourceMonitor: resourceMonitor,
-	generateRankIcon: generateRankIcon
+	resourceMonitor: resourceMonitor
 };
