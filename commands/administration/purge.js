@@ -2,8 +2,46 @@ const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 module.exports = {
-    name: "purge",
+    id: "purge",
 	path: path.basename(__dirname),
+	
+	applications: [
+		{
+			format: {
+				name: "purge",
+				description: "purge.description",
+				type: "CHAT_INPUT",
+				options: [
+					{
+						type: "INTEGER",
+						name: "amount",
+						description: "purge.amount.description",
+						required: true
+					},
+					{
+						type: "USER",
+						name: "member",
+						description: "purge.member.description",
+						required: false
+					}
+				]
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_MESSAGES)) { // Permission check
+					let embed = new Discord.MessageEmbed();
+					embed.setColor([47, 49, 54]);
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/purge", "no_permission"));
+					return interaction.reply({embeds: [embed], ephemeral: true});
+				}
+			}
+		}
+	],
+	
     cooldown: 1,
     usage: "command.purge.usage",
 	description: "command.purge.desc",
