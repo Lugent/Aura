@@ -276,29 +276,35 @@ function StringToCard(card, value) {
 async function deleteGame(client, id) { delete client.uno_games[id]; };
 
 async function removePlayerFromGame(client, interaction, game, user) {
+	let leave_embed = new Discord.MessageEmbed();
+	leave_embed.setColor([47, 49, 54]);
+	leave_embed.setDescription("**" + interaction.user.tag + "** left the game.");
+	
     game.dropped.push(game.players[user.id]);
     if (game.started && game.queue.length <= 2) {
         game.queue = game.queue.filter(player => player.id !== user.id);
         game.finished.push(game.queue[0]);
         deleteGame(client, game.channel.id);
-        return;
+		
+		let embed = new Discord.MessageEmbed();
+		embed.setColor([47, 49, 54]);
+		embed.setDescription("The game ended.")
+		return interaction.reply({embeds: [leave_embed, embed]});
     }
-	
-	let leave_embed = new Discord.MessageEmbed();
-	leave_embed.setColor([47, 49, 54]);
-	leave_embed.setDescription("**" + interaction.user.tag + "** left the game.");
 	
     if (game.started && (game.player.member.id === user.id)) {
         game.next();
 		
+		let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
 		let card_embed = new Discord.MessageEmbed();
 		card_embed.setColor([47, 49, 54]);
 		card_embed.setDescription("The actual card is: **" + game.flipped.toString() + "**");
+		card_embed.setImage("attachment://" + game.flipped.value + ".png");
 		
 		let turn_embed = new Discord.MessageEmbed();
 		turn_embed.setColor([47, 49, 54]);
 		turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn.");
-		interaction.reply({embeds: [leave_embed, card_embed, turn_embed]});
+		interaction.reply({attachments: [card_image], embeds: [leave_embed, card_embed, turn_embed]});
     }
 	
     delete game.players[user.id];
@@ -846,7 +852,7 @@ module.exports = {
 						if (warneds.length > 0) {
 							await interaction.deferReply();
 							game.dealAll(Math.max(1, game.rules.callout_amount), warneds);
-							return interaction.editReply({content: baddies.map(player => player.member.user.tag).join(", ") + ", forgot to say UNO!\nPick up " + Math.max(1, game.rules.callout_amount)});
+							return interaction.editReply({content: warneds.map(player => player.member.user.tag).join(", ") + ", forgot to say UNO!\nPick up " + Math.max(1, game.rules.callout_amount)});
 						}
 						return interaction.reply({content: "There's nobody to call out.", ephemeral: true});
 						break;
