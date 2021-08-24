@@ -19,11 +19,11 @@ module.exports = {
 	 */
     async execute(client, message, args, prefix)
     {
-		let uptime_count = client.functions.generateDurationString(client, message.author, message.guild, client.readyAt.getTime());
+		let uptime_count = client.functions.generateDurationString(client, message.author, client.readyAt.getTime());
 		
 		let button = new Discord.MessageButton();
 		button.setStyle("LINK");
-		button.setURL("https://github.com/Lucario-TheAuraPokemon/TheAuraPokemon-Bot/");
+		button.setURL("https://github.com/Lugent/Aura/");
 		button.setLabel("Github");
 
         let embed = new Discord.MessageEmbed();
@@ -34,6 +34,6 @@ module.exports = {
 		embed.addField(":gear: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.software") + ":", ":desktop: " + "Node.js " + process.version + "\n" + ":scroll: " + "discord.js v" + packages_json.dependencies["discord.js"]);
 		embed.addField(":file_cabinet: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.resources_usage") + ":", ":battery: " + client.statsCPU.total.toFixed(0) + "%" + " / " + ":card_box: " + (process.memoryUsage().rss / 1000000).toFixed(2) + "MB", true);
 		embed.addField(":satellite: " + client.functions.getTranslation(client, message.author, message.guild, "commands/general/about", "embed.time_connected") + ":", uptime_count, false);
-        return message.reply({embeds: [embed], components: [{type: "ACTION_ROW", components: [button]}]});
+        return interaction.reply({embeds: [embed], components: [{type: "ACTION_ROW", components: [button]}]});
     }
 };
