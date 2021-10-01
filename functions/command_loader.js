@@ -1,6 +1,5 @@
 const constants = require(process.cwd() + "/configurations/constants.js");
 const fs = require("fs");
-const chalk = require("chalk");
 
 function isEmpty(obj) {
     if (obj == null) { return true; }
@@ -23,8 +22,6 @@ async function command_loader(client, reload = false) {
 		});
 	}
 	
-	let total_size = 0;
-	let file_size = 0;
 	let count_skipped = 0;
 	let count_error = 0;
 	let count_commands = 0;
@@ -38,42 +35,36 @@ async function command_loader(client, reload = false) {
 		if (dir.startsWith("_") || dir.includes(".")) { continue; }
 		
 		console.log("");
-		console.log("Reading " + "'" + dir + "'" + " directory:");
+		console.log("Looking into " + "'" + dir + "'" + " directory:");
 		if (!files_dir.length) {
-			console.log(chalk.greenBright("NOTICE:") + " This directory is empty, no commands loaded.");
+			console.log("This directory is empty, no commands loaded.");
 			continue;
 		}
 		
 		for (let file of files_dir) {
 			try {
 				let path_file = process.cwd() + "/" + client.config.commands_dir + "/" + dir + "/" + file;
-				file_size = fs.statSync(path_file).size;
 				let command = require(path_file);
 				if (isEmpty(command)) { continue; }
-				else if (!command.type || (command.flags & constants.cmdFlags.dontLoad)) {
+				else if (!command.id || !command.type || (command.flags & constants.cmdFlags.dontLoad)) {
 					count_skipped++;
-					console.log("Skipped " + "'" + command.id + "'" + ".");
+					console.log("Skipped " + "'" + (command.id || command.name) + "'" + ".");
 				}
 				else {
 					await client.commands.set(command.id, command);
 					
-					let command_size = (file_size / 1024).toFixed(2);
-					console.log("Loaded " + "'" + command.id + "'" + "." + " (" + chalk.greenBright(command_size) + " KB)");
+					console.log("Loaded " + "'" + command.id + "'.");
 					count_load++;
 					count_commands++;
-					file_size_dir += file_size;
-					total_size += file_size;
 				}
 			} catch (error) {
+				console.error("Couldn't load " + "'" + file.replace(".js", "") + "'" + ":" + "\n", error);
 				count_error++;
-				console.error(chalk.redBright("ERROR:") + " Couldn't load " + "'" + file.replace(".js", "") + "'" + ":" + "\n", error);
 			}
 		}
-		let directory_size = (file_size_dir / 1024).toFixed(2);
-		console.log("Loaded " + chalk.greenBright(count_load) + " commands." + " (" + chalk.greenBright(directory_size) + " KB).");
+		console.log("Loaded " + count_load + " commands.");
 	}
-	let final_size = (total_size / 1024).toFixed(2);
 	console.log("");
-	console.log("Loaded all " + chalk.greenBright(count_commands) + " commands" + " (" + chalk.greenBright(final_size) + " KB in total)." + " " + "(" + chalk.redBright(count_error) + " errored)" + " " + "(" + chalk.yellowBright(count_skipped) + " skipped)");
+	console.log("Loaded all " + count_commands + " commands." + " (" + count_error + " errored)" + " " + "(" + count_skipped + " skipped)");
 }
 module.exports = command_loader;

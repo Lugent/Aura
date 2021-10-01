@@ -2,33 +2,29 @@ const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
 const fs = require("fs");
+const dayjs = require("dayjs");
+dayjs.extend(require("dayjs/plugin/relativeTime"));
+dayjs.extend(require("dayjs/plugin/calendar"));
+require("dayjs/locale/es");
+
+function getTranslatedRelativeTime(time, guild) {
+	let get_language = "es";
+	let server_data = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(guild.id);
+	let server_language = server_data.language;
+	switch (server_language) {
+		case "en": { get_language = "en"; break; }
+	}
+	dayjs.locale(get_language);
+	return dayjs(time).fromNow();
+}
 
 const Card = class {
-	constructor(id, color) {
-		this.id = id;
-		this.color = color;
-		this.wild = !this.color;
-	}
-	
-	static deserialize(obj) {
-		return new Card(obj.id, obj.color);
-	}
-	
-	serialize() {
-		return {id: this.id, color: this.color, wild: this.wild};
-	}
-	
-	get idName() {
-		return ((this.id > 9) ? ({10: "Skip", 11: "Reverse", 12: "+2", 13: "Color", 14: "+4"}[this.id]) : this.id);
-    }
-	
-	get colorName() {
-        return {0: "Wild", 1: "Red", 2: "Yellow", 3: "Green", 4: "Blue"}[this.color];
-    }
-	
-	get emojiIcon() {
-		return {0: "⚪", 1: "🔴", 2: "🟡", 3: "🟢", 4: "🔵"}[this.color];
-	}
+	constructor(id, color) { this.id = id; this.color = color; this.wild = !this.color; }
+	static deserialize(obj) { return new Card(obj.id, obj.color); }
+	serialize() { return {id: this.id, color: this.color, wild: this.wild}; }
+	get idName() { return ((this.id > 9) ? ({10: "Skip", 11: "Reverse", 12: "+2", 13: "Color", 14: "+4"}[this.id]) : this.id); }
+	get colorName() { return {0: "Wild", 1: "Red", 2: "Yellow", 3: "Green", 4: "Blue"}[this.color]; }
+	get emojiIcon() { return {0: "⚪", 1: "🔴", 2: "🟡", 3: "🟢", 4: "🔵"}[this.color]; }
 	
 	get icon() {
 		let color_folder = "";
@@ -81,26 +77,26 @@ const Card = class {
 }
 
 const Player = class {
-	constructor(member, game) {
-		this.member = member;
-		this.game = game;
-		this.id = member.user.id;
-		this.hand = [];
-		this.called = false;
-		this.finished = false;
-		this.cardsPlayed = 0;
-	}
+	constructor(member, game) { this.member = member; this.game = game; this.id = member.user.id; this.hand = []; this.called = false; this.finished = false; this.cardsPlayed = 0; }
 	
 	static async deserialize(obj, game) {
-		let member = game.channel.guild;
+		let member = await game.channel.guild.members.fetch({user: obj.id, force: true});
+		
+		let player = new Player(member, game);
+        player.called = obj.called;
+        player.finished = obj.finished;
+        player.hand = obj.hand.map(c => Card.deserialize(c));
+        player.cardsPlayed = obj.cardsPlayed || 0;
+        player.cardsChanged();
+        return player;
 	}
-	
+	serialize() { return {id: this.id, hand: this.hand.map(c => c.serialize()), called: this.called, finished: this.finished, cardsPlayed: this.cardsPlayed}; }
 	sortHand() { this.hand.sort((a, b) => { return (a.value > b.value); }); }
 	outputFormat() { return {id: this.id, cardsPlayed: this.cardsPlayed, name: this.member.user.tag}; }
 	cardsChanged() { this.sortHand(); }
 	
 	async getCard(card, value, extra) {
-		let find_card = new Card(Number(value), Number(card)); //StringToCard(card, value);
+		let find_card = new Card(Number(value), Number(card));
 		if (!find_card) { return undefined; }
 		
 		if (find_card.wild) {
@@ -119,8 +115,9 @@ const Player = class {
 }
 
 const Game = class {
-	constructor(client, channel) {
+	constructor(client, guild, channel) {
 		this.client = client;
+		this.guild = guild;
 		this.channel = channel;
 		this.players = {};
 		this.queue = [];
@@ -131,6 +128,7 @@ const Game = class {
         this.started = false;
         this.confirm = false;
         this.lastChange = Date.now();
+		this.totalTime = Date.now();
         this.drawn = 0;
         this.timeStarted = null;
         this.rules = {
@@ -138,12 +136,75 @@ const Game = class {
 			decks: 4, // game decks
 			callouts: true, // enabled callouts
 			callout_amount: 4, // amount of cards of successfull callout
-			pickup_skip: true, // skip a turn on pickup cards
+			pickup_skip: false, // skip a turn on pickup cards
 			reverse_skip: false, // skip a turn on using reverse
 			stackeable_two: true, // +2 stackeable
 			stackeable_quad: true, // +4 stakeable
 			one_winner: false // if the game ends if someone wins
 		};
+	}
+	
+	async deserialize(obj, client) {
+        let guild = await client.guilds.fetch(obj.guild);
+		if (!guild) { return null; }
+		
+		let channel = await guild.channels.fetch(obj.channel);
+		if (!channel) { return null; }
+		
+        let game = new Game(client, guild, channel);
+        for (const id in obj.players) { if (obj.players[id]) { game.players[id] = await Player.deserialize(obj.players[id], game); } }
+        game.queue = obj.queue.map(p => game.players[p]);
+        game.deck = obj.deck.map(c => Card.deserialize(c));
+        game.discard = obj.discard.map(c => Card.deserialize(c));
+        game.finished = obj.finished.map(p => game.players[p]);
+        game.dropped = obj.dropped.map(p => game.players[p]);
+        game.started = obj.started;
+        game.confirm = obj.confirm;
+		game.totalTime = obj.totalTime,
+        game.lastChange = Date.now();
+        game.rules = obj.rules;
+        game.timeStarted = obj.timeStarted || (obj.started ? Date.now() : null);
+        game.drawn = obj.drawn || 0;
+        return game;
+    }
+
+    serialize() {
+        let obj = {
+			guild: this.guild.id,
+			channel: this.channel.id,
+            players: {},
+            queue: this.queue.map(p => p.id),
+            deck: this.deck.map(c => c.serialize()),
+            discard: this.discard.map(c => c.serialize()),
+            finished: this.finished.filter(p => !!p).map(p => p.id),
+            dropped: this.dropped.filter(p => !!p).map(p => p.id),
+            started: this.started,
+            confirm: this.confirm,
+            totalTime: this.totalTime,
+            lastChange: Date.now(),
+            rules: this.rules,
+            timeStarted: this.timeStarted,
+            drawn: this.drawn,
+        };
+        for (const id in this.players) { obj.players[id] = this.players[id].serialize(); }
+        return obj;
+    }
+	
+	async load() {
+		let file_name = "uno_" + this.channel.id + ".json";
+		if (fs.existsSync(process.cwd() + "/temp/" + file_name)) {
+			let game_data = JSON.parse(await fs.readFileSync(process.cwd() + "/temp/" + file_name));
+			return this.deserialize(game_data, this.client);
+		}
+		return undefined;
+	}
+	
+	async save() {
+		let file_name = "uno_" + this.channel.id + ".json";
+		if (fs.existsSync(process.cwd() + "/temp/" + file_name)) { await fs.rmSync(process.cwd() + "/temp/" + file_name); }
+		await fs.appendFileSync(process.cwd() + "/temp/" + file_name, JSON.stringify(this.serialize()));
+		console.log("UNO Game " + this.channel.id + " saved!");
+		return true;
 	}
 	
 	get player() { return this.queue[0]; }
@@ -194,7 +255,6 @@ const Game = class {
         for (const player of players) {
             player.cardsChanged();
             player.called = false;
-            if (cards[player.id].length > 0) { /* */ }
         }
     }
 
@@ -273,50 +333,72 @@ function StringToCard(card, value) {
 	return new Card(id, color);
 }
 
-async function deleteGame(client, id) { delete client.uno_games[id]; };
+async function generateCardEmbed(game) {
+	let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
+	let card_embed = new Discord.MessageEmbed();
+	card_embed.setColor([47, 49, 54]);
+	card_embed.setDescription("The actual card in table is:" + "\n" + "**" + game.flipped.toString() + "**");
+	card_embed.setFooter("Cards in deck: " + game.deck.length + " | " + "Cards discarded: " + game.discard.length);
+	card_embed.setImage("attachment://" + game.flipped.value + ".png");
+	return {embed: card_embed, image: card_image}
+}
+
+async function deleteGame(client, id) {
+	let file_name = "uno_" + id + ".json";
+	if (fs.existsSync(process.cwd() + "/temp/" + file_name)) {
+		fs.rmSync(process.cwd() + "/temp/" + file_name);
+	}
+	delete client.uno_games[id];
+};
 
 async function removePlayerFromGame(client, interaction, game, user) {
 	let leave_embed = new Discord.MessageEmbed();
 	leave_embed.setColor([47, 49, 54]);
-	leave_embed.setDescription("**" + interaction.user.tag + "** left the game.");
 	
-    game.dropped.push(game.players[user.id]);
-    if (game.started && game.queue.length <= 2) {
-        game.queue = game.queue.filter(player => player.id !== user.id);
-        game.finished.push(game.queue[0]);
-        deleteGame(client, game.channel.id);
+	game.dropped.push(game.players[user.id]);
+	if (game.started) {
+		if (game.queue.length <= 2) {
+			let game_time = game.totalTime;
+			game.queue = game.queue.filter(p => p.id !== user.id);
+			game.finished.push(game.queue[0]);
+			deleteGame(client, game.channel.id);
+			
+			leave_embed.setDescription("**" + interaction.user.tag + "** left and the game ended because everyone leaved.");
+			return interaction.reply({embeds: [leave_embed]});
+		}
+		else if (game.player.member.id === user.id) {
+			game.next();
+			
+			delete game.players[user.id];
+			game.queue = game.queue.filter(p => p.id !== user.id);
+			leave_embed.setDescription("**" + interaction.user.tag + "** left the game while it was their turn." + "\n" + "Now it's **" + game.player.member.user.tag + "**'s turn.");
 		
-		let embed = new Discord.MessageEmbed();
-		embed.setColor([47, 49, 54]);
-		embed.setDescription("The game ended.")
-		return interaction.reply({embeds: [leave_embed, embed]});
-    }
-	
-    if (game.started && (game.player.member.id === user.id)) {
-        game.next();
-		
-		let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
-		let card_embed = new Discord.MessageEmbed();
-		card_embed.setColor([47, 49, 54]);
-		card_embed.setDescription("The actual card is: **" + game.flipped.toString() + "**");
-		card_embed.setImage("attachment://" + game.flipped.value + ".png");
-		
-		let turn_embed = new Discord.MessageEmbed();
-		turn_embed.setColor([47, 49, 54]);
-		turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn.");
-		interaction.reply({attachments: [card_image], embeds: [leave_embed, card_embed, turn_embed]});
-    }
-	
-    delete game.players[user.id];
-    game.queue = game.queue.filter(p => p.id !== user.id);
-    if (!game.started && !game.queue.length) {
-        deleteGame(client, game.channel.id);
-		
-		let embed = new Discord.MessageEmbed();
-		embed.setColor([47, 49, 54]);
-		embed.setDescription("The game was cancelled since all players leaved.")
-		return interaction.reply({embeds: [leave_embed, embed]});
-    }
+			let actual_card = await generateCardEmbed(game);
+			return interaction.reply({attachments: [actual_card.image], embeds: [actual_card.embed, leave_embed]});
+		}
+		else {
+			delete game.players[user.id];
+			game.queue = game.queue.filter(p => p.id !== user.id);
+			
+			leave_embed.setDescription("**" + interaction.user.tag + "** left the game, now there are " + game.queue.length + " players.");
+			return interaction.reply({embeds: [leave_embed]});
+		}
+	}
+	else {
+		if (game.queue.length <= 1) {
+			deleteGame(client, game.channel.id);
+			
+			leave_embed.setDescription("**" + interaction.user.tag + "** left and the game was cancelled because everyone leaved.");
+			return interaction.reply({embeds: [leave_embed]});
+		}
+		else {
+			delete game.players[user.id];
+			game.queue = game.queue.filter(p => p.id !== user.id);
+			
+			leave_embed.setDescription("**" + interaction.user.tag + "** left the game, now there are " + game.queue.length + " players awaiting.");
+			return interaction.reply({embeds: [leave_embed]});
+		}
+	}
 }
 
 module.exports = {
@@ -438,7 +520,7 @@ module.exports = {
 				switch (interaction.options.getSubcommand()) {
 					case "join": {
 						let game = client.uno_games[interaction.channel.id];
-						if (!game) { game = client.uno_games[interaction.channel.id] = new Game(client, interaction.channel); }
+						if (!game) { game = client.uno_games[interaction.channel.id] = new Game(client, interaction.guild, interaction.channel); }
 						
 						if (game.started) {
 							let embed = new Discord.MessageEmbed();
@@ -455,17 +537,59 @@ module.exports = {
 							return interaction.reply({embeds: [embed], ephemeral: true});
 						}
 						else {
+							await interaction.deferReply();
+							
+							let save_game = await game.load();
+							if (save_game) {
+								game = client.uno_games[interaction.channel.id] = save_game;
+								
+								let embeds = [];
+								let files = [];
+								let components = [];
+								let embed = new Discord.MessageEmbed();
+								embed.setColor([47, 49, 54]);
+								embed.setDescription("Detected and loaded a previous saved game.");
+								
+								if (game.started) {
+									let players_embed = new Discord.MessageEmbed();
+									players_embed.setColor([47, 49, 54]);
+									players_embed.setTitle("The game was restored with " + game.queue.length + " players");
+									players_embed.setDescription(game.queue.map(player => (player.member.user.tag + ": " + player.hand.length + " cards")).join("\n"));
+								
+									let actual_card = await generateCardEmbed(game);
+									
+									let turn_embed = new Discord.MessageEmbed();
+									turn_embed.setColor([47, 49, 54]);
+									turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn.");
+									embeds.push(turn_embed);
+									
+									let card_button = new Discord.MessageButton();
+									card_button.setCustomId("show_card_hand");
+									card_button.setStyle("SECONDARY");
+									card_button.setEmoji("🖐️");
+									card_button.setLabel("Show your hand");
+									return interaction.editReply({files: [actual_card.image], embeds: [embed, players_embed, turn_embed, actual_card.embed], components: [{type: "ACTION_ROW", components: [card_button]}]});
+								}
+								else {
+									let players_embed = new Discord.MessageEmbed();
+									players_embed.setColor([47, 49, 54]);
+									players_embed.setTitle("The game was restored with " + game.queue.length + " players");
+									players_embed.setDescription(game.queue.map(player => (player.member.user.tag)).join("\n"));
+									return interaction.editReply({embeds: [embed, players_embed]});
+								}
+							}
+							
 							if (game.queue.length === 1) {
 								let embed = new Discord.MessageEmbed();
 								embed.setColor([47, 49, 54]);
 								embed.setDescription("**" + interaction.user.tag + "** created a game, use `/uno join` to join the game.");
-								return interaction.reply({embeds: [embed]});
+								return interaction.editReply({embeds: [embed]});
 							}
 							
 							let embed = new Discord.MessageEmbed();
 							embed.setColor([47, 49, 54]);
 							embed.setDescription("**" + interaction.user.tag + "** joined the game, now there are " + game.queue.length + " players awaiting.");
-							return interaction.reply({embeds: [embed]});
+							return interaction.editReply({embeds: [embed]});
 						}
 						break;
 					}
@@ -522,38 +646,31 @@ module.exports = {
 						let players_embed = new Discord.MessageEmbed();
 						players_embed.setColor([47, 49, 54]);
 						players_embed.setTitle("The game started with " + game.queue.length + " players");
-						players_embed.setDescription(game.queue.map(player => (player.member.user.tag + " | " + player.hand.length + " cards")).join("\n"));
+						players_embed.setDescription(game.queue.map(player => (player.member.user.tag)).join("\n"));
 					
-						let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
-						let card_embed = new Discord.MessageEmbed();
-						card_embed.setColor([47, 49, 54]);
-						card_embed.setDescription("The actual card is: **" + game.flipped.toString() + "**");
-						card_embed.setImage("attachment://" + game.flipped.value + ".png");
+						let actual_card = await generateCardEmbed(game);
 						
 						let turn_embed = new Discord.MessageEmbed();
 						turn_embed.setColor([47, 49, 54]);
 						turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn.");
 						
-						let suggestion_embed = new Discord.MessageEmbed();
-						suggestion_embed.setColor([47, 49, 54]);
-						suggestion_embed.setDescription("Use `/uno hand` in order to view your current cards.");
-						return interaction.editReply({files: [card_image], embeds: [players_embed, card_embed, turn_embed, suggestion_embed]});
+						let card_button = new Discord.MessageButton();
+						card_button.setCustomId("show_card_hand");
+						card_button.setStyle("SECONDARY");
+						card_button.setEmoji("🖐️");
+						card_button.setLabel("Show your hand");
+						return interaction.editReply({files: [actual_card.image], embeds: [players_embed, turn_embed, actual_card.embed], components: [{type: "ACTION_ROW", components: [card_button]}]});
 						break;
 					}
 					
 					case "hand": {
 						let game = client.uno_games[interaction.channel.id];
 						if (!game) { return interaction.reply({content: "There's not a currently game in progress.", ephemeral: true}); }
-						if (!game.started) { return interaction.reply({content: "The game didn't started.", ephemeral: true}); }
+						if (!game.started) { return interaction.reply({content: "The game hasn't started.", ephemeral: true}); }
 						
 						let player = game.players[interaction.user.id];
 						if (!player) { return interaction.reply({content: "You're not joined to this game.", ephemeral: true}); }
 						await interaction.deferReply({ephemeral: true});
-						
-						/*let cards = "";
-						for (let index = 0; index < player.hand.length; index++) {
-							cards += "**" + player.hand[index].toString() + "** \ ";
-						}*/
 						
 						let embed = new Discord.MessageEmbed();
 						embed.setColor([47, 49, 54]);
@@ -582,7 +699,7 @@ module.exports = {
 						if (!game.started) {
 							let embed = new Discord.MessageEmbed();
 							embed.setColor([47, 49, 54]);
-							embed.setDescription("The game didn't started.");
+							embed.setDescription("The game hasn't started.");
 							return interaction.reply({embeds: [embed], ephemeral: true});
 						}
 						
@@ -606,7 +723,7 @@ module.exports = {
 								default: {
 									let embed = new Discord.MessageEmbed();
 									embed.setColor([47, 49, 54]);
-									embed.setDescription("You don't have that card, use `/uno hand` if you're confused.");
+									embed.setDescription("You don't have that card.");
 									return interaction.reply({embeds: [embed], ephemeral: true});;
 									break;
 								}
@@ -619,6 +736,7 @@ module.exports = {
 							game.player.hand.splice(game.player.hand.indexOf(get_card), 1);
 							game.player.cardsChanged();
 							
+							let total_embeds = [];
 							let special_description;
 							let special_embed = new Discord.MessageEmbed();
 							special_embed.setColor([47, 49, 54]);
@@ -626,7 +744,7 @@ module.exports = {
 								game.finished.push(game.player);
 								game.player.finished = true;
 								
-								special_description = "**" + interaction.user.tag + "** has no more cards, and ended at Rank #" + game.finished.length + ".";
+								special_description = "**" + interaction.user.tag + "** has no more cards, and ended at rank " + game.finished.length + ".";
 								if (game.rules.one_winner) { special_description = "**" + interaction.user.tag + "** has no more cards."; }
 								
 								if ((game.queue.length === 2) || game.rules.one_winner) {
@@ -645,16 +763,20 @@ module.exports = {
 							play_embed.setColor([47, 49, 54]);
 							switch (get_card.id) {
 								case 10: { // skip
+									let skipped_name = game.queue[1].member.user.tag;
 									let skipped = game.queue.shift();
 									game.queue.push(skipped);
 									
-									play_embed.setDescription("**" + interaction.user.tag + "** played a **" + get_card.toString() + "**, now **" + skipped.member.user.tag + "** skips a turn.");
+									let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**, now **" + skipped_name + "** skips a turn.";
+									if (game.player.hand.length) { embed_description += "\n" + "**" + interaction.user.tag + "** have " + game.player.hand.length + " cards remaining."; }
+									play_embed.setDescription(embed_description);
 									special_card = true;
 									break;
 								}
 								
 								case 11: { // reverse
 									let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**.";
+									embed_description += "Now has " + game.player.hand.length + " cards remaining.";
 									if (game.queue.length > 2) {
 										let player = game.queue.shift();
 										game.queue.reverse();
@@ -674,6 +796,7 @@ module.exports = {
 								
 								case 12: { // +2
 									let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**.";
+									if (game.player.hand.length) { embed_description += "\n" + "**" + interaction.user.tag + "** have " + game.player.hand.length + " cards remaining."; }
 									if (game.rules.stackeable_two) {
 										let amount = 0;
 										for (let index = game.discard.length - 1; index >= 0; index--) {
@@ -699,13 +822,16 @@ module.exports = {
 								}
 								
 								case 13: { // color
-									play_embed.setDescription("**" + interaction.user.tag + "** played a **" + get_card.toString() + "**, and the color changed to **" + get_card.colorName + "**.");
+									let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**, and the color changed to **" + get_card.colorName + "**.";
+									if (game.player.hand.length) { embed_description += "\n" + "**" + interaction.user.tag + "** have " + game.player.hand.length + " cards remaining."; }
+									play_embed.setDescription(embed_description);
 									special_card = true;
 									break;
 								}
 								
 								case 14: { // +4
-									let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**.";
+									let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**, and the color changed to **" + get_card.colorName + "**.";
+									if (game.player.hand.length) { embed_description += "\n" + "**" + interaction.user.tag + "** have " + game.player.hand.length + " cards remaining."; }
 									if (game.rules.stackeable_quad) {
 										let amount = 0;
 										for (let index = game.discard.length - 1; index >= 0; index--) {
@@ -725,7 +851,7 @@ module.exports = {
 										embed_description += "\n" + "And skips a turn.";
 									}
 									
-									embed_description += "\n" + "And the color changed to **" + get_card.colorName + "**.";
+									embed_description += "\n" + "and the color changed to **" + get_card.colorName + "**.";
 									play_embed.setDescription(embed_description);
 									special_card = true;
 									break;
@@ -734,18 +860,29 @@ module.exports = {
 							
 							await game.next();
 							
-							if (!special_card) { play_embed.setDescription("**" + interaction.user.tag + "** played a **" + get_card.toString() + "**."); }
+							if (!special_card) {
+								let embed_description = "**" + interaction.user.tag + "** played a **" + get_card.toString() + "**.";
+								if (game.player.hand.length) { embed_description += "\n" + "**" + interaction.user.tag + "** have " + game.player.hand.length + " cards remaining."; }
+								play_embed.setDescription(embed_description);
+							}
+							total_embeds.push(play_embed);
 							
-							let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
-							let card_embed = new Discord.MessageEmbed();
-							card_embed.setColor([47, 49, 54]);
-							card_embed.setDescription("The actual card is: **" + game.flipped.toString() + "**");
-							card_embed.setImage("attachment://" + game.flipped.value + ".png");
+							if (!game.player.hand.length) { total_embeds.push(special_embed); }
+
+							let actual_card = await generateCardEmbed(game);
+							
+							let card_button = new Discord.MessageButton();
+							card_button.setCustomId("show_card_hand");
+							card_button.setStyle("SECONDARY");
+							card_button.setEmoji("🖐️");
+							card_button.setLabel("Show your hand");
 							
 							let turn_embed = new Discord.MessageEmbed();
 							turn_embed.setColor([47, 49, 54]);
 							turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn.");
-							return special_description ? interaction.editReply({files: [card_image], embeds: [special_embed, play_embed, card_embed, turn_embed]}) : interaction.editReply({files: [card_image], embeds: [play_embed, card_embed, turn_embed]});
+							total_embeds.push(turn_embed);
+							total_embeds.push(actual_card.embed);
+							return interaction.editReply({files: [actual_card.image], embeds: total_embeds, components: [{type: "ACTION_ROW", components: [card_button]}]});
 						}
 						else {
 							let embed = new Discord.MessageEmbed();
@@ -775,7 +912,7 @@ module.exports = {
 						if (!game.started) {
 							let embed = new Discord.MessageEmbed();
 							embed.setColor([47, 49, 54]);
-							embed.setDescription("The game didn't started.");
+							embed.setDescription("The game hasn't started.");
 							return interaction.reply({embeds: [embed], ephemeral: true});
 						}
 						
@@ -796,16 +933,18 @@ module.exports = {
 						
 						await game.next();
 						
-						let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
-						let card_embed = new Discord.MessageEmbed();
-						card_embed.setColor([47, 49, 54]);
-						card_embed.setDescription("The actual card is: **" + game.flipped.toString() + "**");
-						card_embed.setImage("attachment://" + game.flipped.value + ".png");
+						let actual_card = await generateCardEmbed(game);
 
 						let turn_embed = new Discord.MessageEmbed();
 						turn_embed.setColor([47, 49, 54]);
 						turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn.");
-						return interaction.editReply({files: [card_image], embeds: [draw_embed, card_embed, turn_embed]});
+						
+						let card_button = new Discord.MessageButton();
+						card_button.setCustomId("show_card_hand");
+						card_button.setStyle("SECONDARY");
+						card_button.setEmoji("🖐️");
+						card_button.setLabel("Show your hand");
+						return interaction.editReply({files: [actual_card.image], embeds: [draw_embed, turn_embed, actual_card.embed], components: [{type: "ACTION_ROW", components: [card_button]}]});
 						break;
 					}
 					
@@ -820,26 +959,52 @@ module.exports = {
 						players_embed.setDescription(game.queue.map(player => player.member.user.tag).join("\n"));
 						if (!game.started) { return interaction.editReply({embeds: [players_embed]}); }
 						
-						players_embed.setDescription(game.queue.map(player => (player.member.user.tag + " | " + player.hand.length + " cards")).join("\n"));
+						players_embed.setDescription(game.queue.map(player => (player.member.user.tag + ": " + player.hand.length + " cards")).join("\n"));
 					
-						let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
-						let card_embed = new Discord.MessageEmbed();
-						card_embed.setColor([47, 49, 54]);
-						card_embed.setDescription("The actual card is: **" + game.flipped.toString() + "**");
-						card_embed.setImage("attachment://" + game.flipped.value + ".png");
+						let actual_card = await generateCardEmbed(game);
 						
 						let turn_embed = new Discord.MessageEmbed();
 						turn_embed.setColor([47, 49, 54]);
 						turn_embed.setDescription("It's **" + game.player.member.user.tag + "**'s turn");
-						return interaction.editReply({files: [card_image], embeds: [players_embed, card_embed, turn_embed]});
+						
+						let card_button = new Discord.MessageButton();
+						card_button.setCustomId("show_card_hand");
+						card_button.setStyle("SECONDARY");
+						card_button.setEmoji("🖐️");
+						card_button.setLabel("Show your hand");
+						return interaction.editReply({files: [actual_card.image], embeds: [players_embed, actual_card.embed, turn_embed], components: [{type: "ACTION_ROW", components: [card_button]}]});
 						break;
 					}
 					
 					case "callout": {
 						let game = client.uno_games[interaction.channel.id];
-						if (!game) { return interaction.reply({content: "There's not a currently game in progress.", ephemeral: true}); }
-						if (!game.players.hasOwnProperty(interaction.user.id) || game.players[interaction.user.id].finished) { return interaction.reply({content: "You didn't joined the game.", ephemeral: true}); }
-						if (!game.rules.callouts) { return interaction.reply({content: "Callouts aren't enabled for this game.", ephemeral: true}); }
+						if (!game) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("There's not a currently game in progress.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
+						
+						if (!game.players[interaction.user.id]) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("You didn't joined to the game.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
+						
+						if (!game.started) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("The game hasn't started.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
+						
+						if (!game.rukes.callouts) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("Callouts aren't enabled for this game.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
 						
 						let warneds = [];
 						for (const player of game.queue) {
@@ -852,24 +1017,64 @@ module.exports = {
 						if (warneds.length > 0) {
 							await interaction.deferReply();
 							game.dealAll(Math.max(1, game.rules.callout_amount), warneds);
-							return interaction.editReply({content: warneds.map(player => player.member.user.tag).join(", ") + ", forgot to say UNO!\nPick up " + Math.max(1, game.rules.callout_amount)});
+							
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription(warneds.map(player => player.member.user.tag).join(", ") + " forgot to say UNO!" + "\n" + "Pick up " + Math.max(1, game.rules.callout_amount));
+							return interaction.editReply({embeds: [embed], ephemeral: true});
 						}
-						return interaction.reply({content: "There's nobody to call out.", ephemeral: true});
+						
+						let embed = new Discord.MessageEmbed();
+						embed.setColor([47, 49, 54]);
+						embed.setDescription("There's nobody to call out.");
+						return interaction.reply({embeds: [embed], ephemeral: true});
 						break;
 					}
 					
 					case "uno": {
 						let game = client.uno_games[interaction.channel.id];
-						if (!game) { return interaction.reply({content: "There's not a currently game in progress.", ephemeral: true}); }
-						if (!game.players.hasOwnProperty(interaction.user.id)) { return interaction.reply({content: "You didn't joined the game.", ephemeral: true}); }
-						if (game.players[interaction.user.id].hand.length > 1) { return interaction.reply({content: "You don't have one card.", ephemeral: true}); }
+						if (!game) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("There's not a currently game in progress.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
+						
+						if (!game.players[interaction.user.id]) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("You didn't joined to the game.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
+						
+						if (!game.started) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("The game hasn't started.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
+						
+						if (game.players[interaction.user.id].hand.length > 1) {
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("You don't have one card.");
+							return interaction.reply({embeds: [embed], ephemeral: true});
+						}
 						
 						let player = game.players[interaction.user.id];
 						if (!player.called) {
 							player.called = true;
-							return interaction.reply({content: "UNO! One card left!"});
+							
+							let embed = new Discord.MessageEmbed();
+							embed.setColor([47, 49, 54]);
+							embed.setDescription("UNO! One card left!");
+							return interaction.reply({embeds: [embed]});
 						}
-						return interaction.reply({content: "You already said UNO!", ephemeral: true});
+						
+						let embed = new Discord.MessageEmbed();
+						embed.setColor([47, 49, 54]);
+						embed.setDescription("You already said UNO!");
+						return interaction.reply({embeds: [embed], ephemeral: true});
 						break;
 					}
 				}

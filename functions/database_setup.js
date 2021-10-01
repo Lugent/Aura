@@ -52,7 +52,7 @@ function setupDatabases(client) {
 	// Settings
 	let table_server_settings = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'settings';").get();
 	if (!table_server_settings["count(*)"]) {
-		data_server.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, prefix TEXT, language TEXT, starboard_channel TEXT, muted_role TEXT);").run();
+		data_server.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, prefix TEXT, language TEXT);").run();
 		data_server.prepare("CREATE UNIQUE INDEX setting_id ON settings (id);").run();
 	}
 	data_server.pragma("synchronous = 1");
@@ -71,7 +71,7 @@ function setupDatabases(client) {
 	// Settings
 	let table_user_settings = data_user.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'settings';").get();
 	if (!table_user_settings["count(*)"]) {
-		data_user.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, language TEXT);").run();
+		data_user.prepare("CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, rank_image TEXT);").run();
 		data_user.prepare("CREATE UNIQUE INDEX setting_id ON settings (id);").run();
 	}
 	

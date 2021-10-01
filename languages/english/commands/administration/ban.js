@@ -12,6 +12,6 @@ let language = {
     "yourself.ownership": "You can easily transfer the ownership to another one and exit manually.",
     "is_owership": "Impossible to do that with the ownership.",
     "cannot_ban": "Cannot ban, if the member has a higher role that me or if the permission aren't configured correctly.",
-    "fatal_error": "Can't ban, se ha ocurrido un error inespecificado."
+    "fatal_error": "Can't ban, an unknown error occurred."
 };
 module.exports = language;

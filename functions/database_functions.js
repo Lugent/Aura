@@ -11,7 +11,7 @@ function handleServerDatabase(client, guild) {
 	let get_server_settings = client.server_data.prepare("SELECT * FROM settings WHERE guild_id = ?;").get(guild.id);
 	if (!get_server_settings) {
 		try {
-			client.server_data.prepare("INSERT INTO settings (guild_id, prefix, language, starboard_channel, muted_role) VALUES (?, ?, ?, ?, ?);").run(guild.id, process.env.DEFAULT_PREFIX, process.env.DEFAULT_LANGUAGE, "", "");
+			client.server_data.prepare("INSERT INTO settings (guild_id, prefix, language) VALUES (?, ?, ?);").run(guild.id, process.env.DEFAULT_PREFIX, process.env.DEFAULT_LANGUAGE);
 		}
 		catch (error) {
 			console.error("ERROR: " + "Cannot create settings for guild: " + guild.name + "\n", error);
@@ -47,7 +47,7 @@ function handleUserDatabase(client, user) {
 	let get_user_settings = client.user_data.prepare("SELECT * FROM settings WHERE user_id = ?;").get(user.id);
 	if (!get_user_settings) {
 		try {
-			client.user_data.prepare("INSERT INTO settings (user_id, language) VALUES (?, ?)").run(user.id, client.config.default.language);
+			client.user_data.prepare("INSERT INTO settings (user_id, rank_image) VALUES (?, ?)").run(user.id, undefined);
 		}
 		catch (error) {
 			console.error("ERROR: " + "Cannot create settings for user: " + user.tag + "\n", error);

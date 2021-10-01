@@ -25,17 +25,23 @@ function resourceMonitor(client) {
 }
 
 /**
+ * @param {Discord.Client} client 
+ */
+async function autoSaveGame(client) { setInterval(() => { for (const id in client.uno_games) { if (client.uno_games[id].started) { client.uno_games[id].save(); } } }, 1000 * 30); }
+
+/**
  *
  * @param {Number} length 
  */
 function generateCode(length) {
 	let result = "";
-	let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_.";
+	let chars = "0123456789" + "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "-_.";
 	for (var i = 0; i < length; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length));}
 	return result;
 }
 
 module.exports = {
 	generateCode: generateCode,
-	resourceMonitor: resourceMonitor
+	resourceMonitor: resourceMonitor,
+	autoSaveGame: autoSaveGame
 };

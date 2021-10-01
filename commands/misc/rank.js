@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
-const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
+const constants = require(process.cwd() + "/configurations/constants.js");
+const Canvas = require("canvas");
+Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Medium.otf", {family: "Stratum1"});
 
 /**
  * @param {Canvas.CanvasRenderingContext2D} context
@@ -11,7 +13,7 @@ const path = require("path");
  * @param {String} shadow_color 
  * @param {Number} offset 
  */
- function shadowed_text(context, x, y, string, color, shadow_color, offset) {
+function shadowed_text(context, x, y, string, color, shadow_color, offset) {
 	context.fillStyle = shadow_color;
 	context.fillText(string, x + offset, y + offset);
 
@@ -19,14 +21,10 @@ const path = require("path");
 	context.fillText(string, x, y);
 }
 
-const Canvas = require("canvas");
-Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Medium.otf", {family: "Stratum1"});
-
 /**
  * 
  * @param {Discord.Client} client 
  * @param {Discord.CommandInteraction|Discord.ContextMenuInteraction} interaction 
- * @returns 
  */
 async function execute_rank(client, interaction) {
 	let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(interaction.guild.id);
@@ -38,7 +36,8 @@ async function execute_rank(client, interaction) {
 		return interaction.reply({embeds: [embed], ephemeral: true});
 	}
 	
-	let get_member = interaction.options.getMember("member") ?? (interaction.targetId ? await interaction.guild.members.fetch(interaction.targetId) : interaction.member);
+	let get_member = interaction.options ? interaction.options.getMember("member") : (interaction.targetId ? await interaction.guild.members.fetch(interaction.targetId) : interaction.member);
+	if (!get_member) { get_member = interaction.member; }
 	if (get_member.user.bot) {
 		let embed = new Discord.MessageEmbed();
 		embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "bot_member"));
@@ -108,22 +107,17 @@ async function execute_rank(client, interaction) {
 			case "dnd": { image_context.fillStyle = "#F04747"; break; }
 		}
 	}
-	image_context.fillRect(image_data_position - 16, image_data_avatar_padding - 16, image_data_avatar_size + 32, image_data_avatar_size + 32);
+	image_context.fillRect(image_data_position - 8, image_data_avatar_padding - 8, image_data_avatar_size + 16, image_data_avatar_size + 16);
 
 	// Avatar
 	let avatar_image = await Canvas.loadImage(get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 512})); // 4096
 	image_context.drawImage(avatar_image, image_data_position, image_data_avatar_padding, image_data_avatar_size, image_data_avatar_size);
-	
-	// Rank
-	//let rank_front_image = await client.functions.generateRankIcon(client, Canvas, level_index);
-	//if (rank_front_image) { image_context.drawImage(rank_front_image, image_data_position + image_data_avatar_size + 16, 0, image_data_rank_front_size, image_data_rank_front_size); }
 	
 	// Level
 	image_context.font = "96px Stratum1";
 	image_context.textAlign = "center";
 	image_context.textBaseline = "middle";
 	shadowed_text(image_context, image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)), image_data_avatar_padding + (image_data_avatar_size / 2), level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
-	//shadowed_text(image_context, 64, image_data_height - 92, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "level") + ". " + level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
 	
 	// Rank
 	image_context.font = "64px Stratum1";
@@ -135,8 +129,8 @@ async function execute_rank(client, interaction) {
 	// Path
 	image_context.beginPath();
 	image_context.moveTo(8, (image_data_height - 8));
-	image_context.lineTo(64, (image_data_height - 88));
-	image_context.lineTo((image_data_width - 64), (image_data_height - 88));
+	image_context.lineTo(64, (image_data_height - 64));
+	image_context.lineTo((image_data_width - 64), (image_data_height - 64));
 	image_context.lineTo((image_data_width - 8), (image_data_height - 8));
 	image_context.closePath();
 	image_context.clip();
@@ -144,24 +138,24 @@ async function execute_rank(client, interaction) {
 	// Render
 	// Background
 	image_context.fillStyle = "#F04747";
-	image_context.fillRect(8, (image_data_height - 88), (image_data_width - 16), (image_data_height - 8));
+	image_context.fillRect(8, (image_data_height - 64), (image_data_width - 16), (image_data_height - 8));
 	
 	// Foreground
 	let progress_bar = ((get_level.score - score_actual) / (score_goal - score_actual)) * (image_data_width - 16);
 	image_context.fillStyle = "#43B581";
-	image_context.fillRect(8, (image_data_height - 88), progress_bar, (image_data_height - 8));
+	image_context.fillRect(8, (image_data_height - 64), progress_bar, (image_data_height - 8));
 	
 	// Score
 	let target_xp = client.functions.getFormattedNumber(score_goal, 2);
 	if (level_index >= client.config.exp_level_max) { target_xp = client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp_max"); }
-	image_context.font = "64px Stratum1";
+	image_context.font = "52px Stratum1";
 	image_context.textAlign = "center";
 	image_context.textBaseline = "middle";
-	shadowed_text(image_context, image_data_width / 2, image_data_height - 48, client.functions.getFormattedNumber(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, interaction.guild, "commands_rank", "xp"), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+	shadowed_text(image_context, image_data_width / 2, image_data_height - 38, client.functions.getFormattedNumber(get_level.score, 2) + " / " + target_xp + " " + client.functions.getTranslation(client, interaction.guild, "commands_rank", "xp"), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
 
 	// Upload file
-	var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png");
-	var embed = new Discord.MessageEmbed();
+	let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "rank.png");
+	let embed = new Discord.MessageEmbed();
 	embed.setAuthor(client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "embed.title", [get_member.user.tag]), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
 	embed.setImage("attachment://rank.png");
 	embed.setColor([47, 49, 54]);
@@ -174,6 +168,11 @@ async function execute_rank(client, interaction) {
 	return interaction.editReply({files: [attachment], embeds: [embed], components: [{type: "ACTION_ROW", components: [button]}]});
 }
 
+/**
+ * 
+ * @param {Discord.Client} client 
+ * @param {Discord.CommandInteraction|Discord.ContextMenuInteraction} interaction 
+ */
 async function execute_leaderboard(client, interaction) {
 	let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(interaction.guild.id);
 	let get_disabled_functions = get_features.disabled_functions.trim().split(" ");
@@ -204,7 +203,7 @@ async function execute_leaderboard(client, interaction) {
 		if (level_index > 9) { break; }
 		
 		// background
-		image_context.fillStyle = "#2f3136";
+		image_context.fillStyle = (level_element.user_id == interaction.user.id) ? "#FAA61A" : "#2f3136";
 		image_context.fillRect(offset_x + 2, offset_y + 2, 1276, 68);
 		
 		// avatar
@@ -275,7 +274,7 @@ module.exports = {
 			 * @param {Discord.Client} client
 			 * @param {Discord.CommandInteraction} interaction
 			 */
-			async execute(client, interaction) { execute_rank(client, interaction); },
+			async execute(client, interaction) { execute_rank(client, interaction); }
 		},
 		{
 			format: {
@@ -288,7 +287,84 @@ module.exports = {
 			 * @param {Discord.Client} client
 			 * @param {Discord.CommandInteraction} interaction
 			 */
-			async execute(client, interaction) { execute_leaderboard(client, interaction); },
+			async execute(client, interaction) { execute_leaderboard(client, interaction); }
+		},
+		{
+			format: {
+				name: "xp",
+				description: "xp.description",
+				type: "CHAT_INPUT",
+				options: [
+					{
+						type: "SUB_COMMAND",
+						name: "set",
+						description: "xp.set.description",
+						options: [
+							{
+								type: "USER",
+								name: "member",
+								description: "xp.set.member.description",
+								required: true
+							},
+							{
+								type: "STRING",
+								name: "type",
+								description: "xp.set.type.description",
+								required: true,
+								choices: [
+									{value: "score", name: "score"},
+									{value: "level", name: "level"},
+								]
+							},
+							{
+								type: "INTEGER",
+								name: "number",
+								description: "xp.set.number.description",
+								required: true
+							}
+						]
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "delete",
+						description: "xp.delete.description",
+						options: [
+							{
+								type: "USER",
+								name: "member",
+								description: "xp.delete.member.description",
+								required: true
+							},
+						]
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "recalculate",
+						description: "xp.recalculate.description"
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "blacklist",
+						description: "xp.blacklist.description",
+						options: [
+							{
+								type: "USER",
+								name: "member",
+								description: "xp.blacklist.member.description",
+								required: true
+							},
+						]
+					},
+				]
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				
+			}
 		},
 		{
 			format: {
@@ -300,7 +376,7 @@ module.exports = {
 			 * @param {Discord.Client} client
 			 * @param {Discord.ContextMenuInteraction} interaction
 			 */
-			async execute(client, interaction) { execute_rank(client, interaction); },
+			async execute(client, interaction) { execute_rank(client, interaction); }
 		}
 	],
 	buttons: [

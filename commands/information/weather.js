@@ -2,8 +2,25 @@ const Discord = require("discord.js");
 const path = require("path");
 const weather = require("weather-js");
 module.exports = {
-    name: "weather",
+    id: "weather",
 	path: path.basename(__dirname),
+	
+	applications: [
+		{
+			format: {
+				
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+					
+			}
+		}
+	],
+	
     cooldown: 5,
     usage: "cweather.usage",
 	description: "weather.description",

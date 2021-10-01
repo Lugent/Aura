@@ -2,6 +2,30 @@ const Discord = require("discord.js");
 const path = require("path");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const https = require("https");
+const Canvas = require("canvas");
+Canvas.registerFont(process.cwd() + "/assets/fonts/PUSAB.otf", {family: "Pusab"});
+
+/**
+ * @param {Canvas.CanvasRenderingContext2D} context
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} string 
+ * @param {String} color 
+ * @param {String} outline_color
+ * @param {String} shadow_color 
+ * @param {Number} shadow_offset 
+ */
+function shadowed_text(context, x, y, string, color, outline_color, shadow_color, shadow_offset) {
+	context.fillStyle = shadow_color;
+	context.fillText(string, x + shadow_offset, y + shadow_offset);
+
+	context.fillStyle = color;
+	context.fillText(string, x, y);
+	
+	context.strokeStyle = outline_color;
+	context.strokeText(string, x, y);
+}
+
 module.exports = {
 	id: "gd",
 	path: path.basename(__dirname),
@@ -122,14 +146,14 @@ module.exports = {
 						let search_filters = "";
 						
 						let raw_data = "";
-						let complete_url = api_url + "search/" + search_query + "?count=9" + search_filters;
+						let complete_url = api_url + "search/" + search_query + "?count=10" + search_filters;
 						console.log(complete_url);
-						interaction.deferReply();
+						await interaction.deferReply();
 						https.get(complete_url, async (response) => {
 							response.on("data", async (chunk) => { raw_data += chunk; });
 							response.on("end", async () => {
 								console.log(raw_data);
-								if (!raw_data.startsWith("{")) {
+								if (!raw_data.startsWith("[")) {
 									if (raw_data === "-1") {
 										let embed = new Discord.MessageEmbed();
 										embed.setColor([47, 49, 54]);
@@ -146,10 +170,44 @@ module.exports = {
 								let levels_data = JSON.parse(raw_data);
 								console.log(levels_data);
 								
+								let image_canvas = Canvas.createCanvas(1280, 720);
+								let image_context = image_canvas.getContext("2d");
+								image_context.patternQuality = "nearest";
+								image_context.quality = "nearest";
+								image_context.imageSmoothingEnabled = false;
+								
+								image_context.fillStyle = "#C1743F";
+								image_context.fillRect(0, 0, 1280, 720);
+								
 								let embed = new Discord.MessageEmbed();
 								embed.setColor([47, 49, 54]);
 								for (let index = 0; index < levels_data.length; index++) {
-									let level_name = (levels_data[index].epic ? ":fire:" : (levels_data[index].featured ? ":star:" : "")) + " " + levels_data[index].name;
+									let difficulty_image = await Canvas.loadImage(process.cwd() + "/assets/images/geometrydash/difficulties/" + levels_data[index].difficultyFace + ".png");
+									image_context.drawImage(difficulty_image, 16, 16 + (70 * index), 64, 64);
+									
+									let pos_x = 16 + 70
+									let pos_y = 16 + (70 * index)
+									image_context.font = "32px Pusab";
+									image_context.textAlign = "left";
+									image_context.textBaseline = "top";
+									shadowed_text(image_context, pos_x, pos_y, levels_data[index].name, "#ffffff", "#000000", "#000000", 2);
+									shadowed_text(image_context, pos_x, pos_y + 26, "By " + levels_data[index].author, ((levels_data[index].accountID !== "0") ? "#ffc800" : "#55cc37"), "#000000", "#000000", 2);
+									
+									for (let coin_index = 0; coin_index < levels_data[index].coins; coin_index++) {
+										let coin_image = await Canvas.loadImage(process.cwd() + "/assets/images/geometrydash/" + (levels_data[index].verifiedCoins ? "silvercoin" : "browncoin") + ".png");
+										image_context.drawImage(coin_image, (pos_x + (4 + (32 * coin_index))) + image_context.measureText(levels_data[index].name).width, pos_y, 32, 32)
+									}
+
+									/*image_context.fillStyle = "#000000";
+									image_context.fillText(text_string, pos_x + 2, pos_y + 2);
+
+									image_context.fillStyle = "#ffffff";
+									image_context.fillText(text_string, pos_x, pos_y);
+									
+									image_context.strokeStyle = "#000000";
+									image_context.strokeText(text_string, pos_x, pos_y);*/
+									
+									/*let level_name = (levels_data[index].epic ? ":fire:" : (levels_data[index].featured ? ":star:" : "")) + " " + levels_data[index].name;
 									
 									let level_info = [
 										":thermometer: " + levels_data[index].difficulty,
@@ -158,9 +216,12 @@ module.exports = {
 										":+1: " + client.functions.getFormattedNumber(levels_data[index].likes, 2),
 										":id: " + levels_data[index].id
 									];
-									embed.addField(level_name, level_info.join("\n"), true);
+									embed.addField(level_name, level_info.join("\n"), true);*/
 								}
-								return interaction.editReply({embeds: [embed]});
+								
+								let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "gd.png");
+								embed.setImage("attachment://gd.png");
+								return interaction.editReply({embeds: [embed], files: [attachment]});
 							});
 						}).on("error", (error) => { throw error; });
 						break;
