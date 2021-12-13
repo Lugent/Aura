@@ -28,7 +28,8 @@ module.exports = function (client) {
 
 	// Client time functions
 	let time_functions = require(process.cwd() + "/functions/time_functions.js");
-	client.functions.ISODateToJSDate = time_functions.ISODateToJSDate;
+	client.functions.convertISODate = time_functions.convertISODate;
+	client.functions.convertISOString = time_functions.convertISOString;
 	client.functions.generateDateString = time_functions.generateDateString;
 	client.functions.generateTimeString = time_functions.generateTimeString;
 	client.functions.generateDurationString = time_functions.generateDurationString;
@@ -50,7 +51,7 @@ module.exports = function (client) {
 	client.guild_invites = new Discord.Collection();
 
 	// Client states
-	client.connected = false; // don't change this
+	//client.connected = false; // don't change this
 
 	// Databases
 	let setupDatabases = require(process.cwd() + "/functions/database_setup.js");
@@ -84,6 +85,7 @@ module.exports = function (client) {
 
 			let guild_element = await guilds_array[guild_index].fetch();
 			await guild_element.commands.set(applications_commands).catch(console.error);
+			//console.log(applications_commands);
 		}
 	};
 }

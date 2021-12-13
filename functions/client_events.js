@@ -140,7 +140,7 @@ module.exports = function (client) {
 	});
 
 	client.on("ready", async () => {
-		setInterval(function() { if (client.connected) { console.log("Websocket latency: " + client.ws.ping + "ms."); } }, 120000);
+		//setInterval(function() { if (client.connected) { console.log("Websocket latency: " + client.ws.ping + "ms."); } }, 120000);
 	});
 
 	client.on("invalidated", () => {

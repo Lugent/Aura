@@ -12,6 +12,7 @@ let language = {
     "yourself.ownership": "Facilmente puedes darle el servidor a otro y luego salir manualmente.",
     "is_owership": "No es posible hacer eso porque es el propietario del servidor..",
     "cannot_kick": "No se puede expulsar, o si el miembro tiene un rol mas alto que el mio o si los permisos estan mal configurados.",
-    "fatal_error": "No se ha podido expulsar, se ha ocurrido un error inespecificado."
+    "fatal_error": "No se ha podido expulsar, se ha ocurrido un error inespecificado.",
+	"mission_bot_permissions": "No tengo permisos para hacer eso"
 };
 module.exports = language;

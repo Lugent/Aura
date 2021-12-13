@@ -179,7 +179,12 @@ module.exports = {
 							console.log(error)
 							let embed = new Discord.MessageEmbed();
 							embed.setColor([47, 49, 54]);
+							if (error.code == 50013) {
+						embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "mission_bot_permissions"));
+						}
+						else {
 							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "fatal_error"));
+						}
 							return interaction.reply({embeds: [embed], ephemeral: true});
 						});
 						break;

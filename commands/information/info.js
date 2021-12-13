@@ -9,12 +9,12 @@ require("dayjs/locale/es");
 
 dayjs.updateLocale("es", {
 	calendar: {
-		lastDay: function (now) { return "[Ayer a la" + ((this.hour() !== 1) ? "s" : "") + "]" + this.format("H:mm"); },
-		sameDay: function (now) { return "[Hoy a la" + ((this.hour() !== 1) ? "s" : "") + "]" + this.format("H:mm"); },
-		nextDay: function (now) { return "[Mañana a la" + ((this.hour() !== 1) ? "s" : "") + "]" + this.format("H:mm"); },
-		lastWeek: function (now) { return "[Ultima] dddd [a la" + ((this.hour() !== 1) ? "s" : "") + "]" + this.format("H:mm"); }, 
-		nextWeek: function (now) { return "dddd [a la" + ((this.hour() !== 1) ? "s" : "") + "]" + this.format("H:mm"); },
-		sameElse: function (now) { return this.format("DD/MM/YYYY"); },
+		lastDay: function (now) { return "Ayer a la" + ((this.hour() !== 1) ? "s" : "") + " " + this.format("h:mm:ss a"); },
+		sameDay: function (now) { return "Hoy a la" + ((this.hour() !== 1) ? "s" : "") + " " + this.format("h:mm:ss a"); },
+		nextDay: function (now) { return "Mañana a la" + ((this.hour() !== 1) ? "s" : "") + " " + this.format("h:mm:ss a"); },
+		lastWeek: function (now) { return "Ultimo " + this.format("dddd") + " a la" + ((this.hour() !== 1) ? "s" : "") + " " + this.format("h:mm:ss a"); }, 
+		nextWeek: function (now) { return "dddd  a la" + ((this.hour() !== 1) ? "s" : "") + " " + this.format("h:mm:ss a"); },
+		sameElse: function (now) { return "El " + this.format("DD/MM/YYYY") + " a las " + this.format("h:mm:ss a"); },
 	}
 });
 
@@ -48,6 +48,11 @@ module.exports = {
 								required: false
 							}
 						]
+					},
+					{
+						type: "SUB_COMMAND",
+						name: "guild",
+						description: "info.guild.description"
 					}
 				]
 			},
@@ -121,7 +126,7 @@ module.exports = {
 						// Create the user embed
 						let user_embed = new Discord.MessageEmbed();
 						user_embed.setColor([47, 49, 54]);
-						user_embed.setAuthor(get_user.tag, get_user.displayAvatarURL({dynamic: true, size: 2048}));
+						user_embed.setAuthor({name: get_user.tag, iconURL: get_user.displayAvatarURL({dynamic: true, size: 2048})});
 						if (user_tags.length) { user_embed.setTitle(user_tags); }
 						user_embed.setDescription(user_description.join("\n"));
 						user_embed.setThumbnail(get_user.displayAvatarURL({dynamic: true, size: 2048}));
@@ -145,28 +150,37 @@ module.exports = {
 							
 							// status
 							let member_status = client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.offline");
-							switch (find_member.presence.status) {
-								case "online": { client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.online"); break; }
-								case "idle ": { client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.afk"); break; }
-								case "dnd": { client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.do_not_disturb"); break; }
+							if (find_member.presence) {
+								switch (find_member.presence.status) {
+									case "online": { client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.online"); break; }
+									case "idle ": { client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.afk"); break; }
+									case "dnd": { client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.status.do_not_disturb"); break; }
+								}
 							}
 							
 							// Build embed's text
 							let member_description = [
 								client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.join_date") + ": " + dayjs(find_member.joinedAt).calendar() + " (" + dayjs(find_member.joinedAt).fromNow() + ")",
-								client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.roles") + ": " + member_roles,
+								(client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.roles") + ": ") + (member_roles.length ? member_roles : client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.roles.none")),
 								(find_member.premiumSince ? client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.boost_date") + ": " + dayjs(find_member.premiumSince).calendar() + " (" + dayjs(find_member.premiumSince).fromNow() + ")" : ""),
 							];
 							
 							// Create the member embed
 							let member_embed = new Discord.MessageEmbed();
 							member_embed.setColor([47, 49, 54]);
-							member_embed.setAuthor(interaction.guild.name, interaction.guild.iconURL({dynamic: true, size: 2048}));
+							member_embed.setAuthor({name: interaction.guild.name, iconURL: interaction.guild.iconURL({dynamic: true, size: 2048})});
 							member_embed.setTitle(member_tags + find_member.displayName);
 							member_embed.setDescription(member_description.join("\n"));
 							embeds.push(member_embed);
 						}
 						return interaction.editReply({embeds: embeds}); // And finally send all!
+					}
+					
+					case "guild": {
+						let get_guild = interaction.guild; // Get the current guild
+						await interaction.deferReply(); // Using this to make Discord thinks that the interaction is working
+						
+						console.log("test");
 					}
 				}
 			}

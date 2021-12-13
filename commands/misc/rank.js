@@ -91,7 +91,9 @@ async function execute_rank(client, interaction) {
 	image_context.imageSmoothingEnabled = false;
 
 	// Background
-	image_context.fillStyle = "#7289DA";
+	let get_profile = client.bot_data.prepare("SELECT * FROM profiles WHERE user_id = ?;").get(get_member.user.id);
+	let get_colour = get_profile ? (get_profile.accent_colour.startsWith("#") ? get_profile.accent_colour : "#7289DA") : "#7289DA"
+	image_context.fillStyle = get_colour;
 	image_context.fillRect(0, 0, image_data_width, image_data_height);
 
 	// Card
@@ -99,6 +101,9 @@ async function execute_rank(client, interaction) {
 	image_context.fillRect(8, 8, (image_data_width - 16), (image_data_height - 16));
 
 	// Avatar frame
+	image_context.fillStyle = "#000000";
+	image_context.fillRect((image_data_position - 8) + 4, (image_data_avatar_padding - 8) + 4, (image_data_avatar_size + 16) + 4, (image_data_avatar_size + 16) + 4);
+	
 	image_context.fillStyle = "#99AAB5";
 	if (get_member.presence) {
 		switch (get_member.presence.status) {
@@ -113,11 +118,53 @@ async function execute_rank(client, interaction) {
 	let avatar_image = await Canvas.loadImage(get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 512})); // 4096
 	image_context.drawImage(avatar_image, image_data_position, image_data_avatar_padding, image_data_avatar_size, image_data_avatar_size);
 	
+	// A white drawing to fill space lmao
+	image_context.lineWidth = 16;
+	
+	image_context.strokeStyle = "#000000";
+	image_context.beginPath();
+	image_context.moveTo((image_data_width - ((image_data_avatar_padding + image_data_avatar_size) * 2)) + 4, (image_data_avatar_padding + 48) + 4);
+	image_context.lineTo(((image_data_width - ((image_data_avatar_padding + image_data_avatar_size) * 2) + (image_data_avatar_size / 2)) - 16) + 4, (image_data_avatar_padding + (image_data_avatar_size / 2)) + 4);
+	image_context.lineTo((image_data_width - ((image_data_avatar_padding + image_data_avatar_size) * 2)) + 4, ((image_data_avatar_padding + image_data_avatar_size) - 48) + 4);
+	image_context.stroke();
+	
+	image_context.strokeStyle = "#ffffff";
+	image_context.beginPath();
+	image_context.moveTo(image_data_width - ((image_data_avatar_padding + image_data_avatar_size) * 2), image_data_avatar_padding + 48);
+	image_context.lineTo((image_data_width - ((image_data_avatar_padding + image_data_avatar_size) * 2) + (image_data_avatar_size / 2)) - 16, (image_data_avatar_padding + (image_data_avatar_size / 2)));
+	image_context.lineTo(image_data_width - ((image_data_avatar_padding + image_data_avatar_size) * 2), (image_data_avatar_padding + image_data_avatar_size) - 48);
+	image_context.stroke();
+	
 	// Level
-	image_context.font = "96px Stratum1";
+	// Shadow
+	image_context.fillStyle = "#000000";
+	image_context.beginPath();
+	image_context.moveTo((image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2))) + 4, image_data_avatar_padding + 4);
+	image_context.lineTo((image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)) - (image_data_avatar_size / 2)) + 4, (image_data_avatar_padding + (image_data_avatar_size / 2)) + 4);
+	image_context.lineTo((image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2))) + 4, (image_data_avatar_padding + image_data_avatar_size) + 4);
+	image_context.lineTo((image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)) + (image_data_avatar_size / 2)) + 4, (image_data_avatar_padding + (image_data_avatar_size / 2)) + 4);
+	image_context.closePath();
+	image_context.fill();
+	
+	// Background
+	image_context.fillStyle = "#4f545c";
+	image_context.beginPath();
+	image_context.moveTo(image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)), image_data_avatar_padding);
+	image_context.lineTo((image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)) - (image_data_avatar_size / 2)), (image_data_avatar_padding + (image_data_avatar_size / 2)));
+	image_context.lineTo(image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)), (image_data_avatar_padding + image_data_avatar_size));
+	image_context.lineTo((image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)) + (image_data_avatar_size / 2)), (image_data_avatar_padding + (image_data_avatar_size / 2)));
+	image_context.closePath();
+	image_context.fill();
+	
+	// Text
+	image_context.font = "82px Stratum1";
 	image_context.textAlign = "center";
 	image_context.textBaseline = "middle";
 	shadowed_text(image_context, image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)), image_data_avatar_padding + (image_data_avatar_size / 2), level_index, "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
+	
+	image_context.font = "64px Stratum1";
+	image_context.textBaseline = "bottom";
+	shadowed_text(image_context, image_data_width - (image_data_avatar_padding + (image_data_avatar_size / 2)), image_data_height - 192, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "level"), "rgb(255, 255, 255)", "rgb(0, 0, 0)", 4);
 	
 	// Rank
 	image_context.font = "64px Stratum1";
@@ -200,53 +247,80 @@ async function execute_leaderboard(client, interaction) {
 	let members_get = await interaction.guild.members.fetch();
 	for (let level_index = 0; level_index < levels_database.length; level_index++) {
 		let level_element = levels_database[level_index];
-		if (level_index > 9) { break; }
+		if (level_index >= 20) { break; }
+		
+		let bar_space = 1272;
 		
 		// background
-		image_context.fillStyle = (level_element.user_id == interaction.user.id) ? "#FAA61A" : "#2f3136";
-		image_context.fillRect(offset_x + 2, offset_y + 2, 1276, 68);
+		image_context.fillStyle = "#2f3136"; //(level_element.user_id == interaction.user.id) ? "#FAA61A" : "#2f3136";
+		image_context.fillRect(offset_x + 2, offset_y + 2, bar_space, 44);
+		
+		// role colour
+		let member_object = await interaction.guild.members.fetch(level_element.user_id).catch(error => { return undefined; });
+		image_context.fillStyle = (member_object ? member_object.displayHexColor : "#ffffff")
+		image_context.fillRect(offset_x + 2, offset_y + 2, 44, 44);
+		
+		// rank
+		image_context.font = "36px Stratum1";
+		image_context.textAlign = "center";
+		image_context.textBaseline = "top";
+		shadowed_text(image_context, offset_x + (8 + 64), offset_y + 6, (level_index + 1), "#ffffff", "#000000", 2);
 		
 		// avatar
 		let user_object = await client.users.fetch(level_element.user_id).catch(error => { return undefined; });
-		let avatar_image = await Canvas.loadImage(user_object.displayAvatarURL({format: "png", dynamic: false, size: 64}));
-		image_context.drawImage(avatar_image, offset_x + 4, offset_y + 4, 64, 64);
+		if (user_object) {
+			let avatar_image = await Canvas.loadImage(user_object.displayAvatarURL({format: "png", dynamic: false, size: 64}));
+			image_context.drawImage(avatar_image, offset_x + (96 + 12), offset_y + 4, 48, 48);
+		}
 		
 		// name
-		image_context.font = "48px Stratum1";
+		image_context.font = "36px Stratum1";
 		image_context.textAlign = "left";
 		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (8 + 64), offset_y + 6, user_object.tag, "#ffffff", "#000000", 2);
-		
-		// level
-		image_context.font = "48px Stratum1";
-		image_context.textAlign = "right";
-		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (1276 - 392), offset_y + 6, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "level") + ". " + level_element.level, "#ffffff", "#000000", 2);
+		shadowed_text(image_context, offset_x + (16 + 144), offset_y + 6, user_object ? user_object.username : (level_element.user_id), "#ffffff", "#000000", 2);
 		
 		// score
-		image_context.font = "48px Stratum1";
+		image_context.font = "36px Stratum1";
 		image_context.textAlign = "right";
 		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (1276 - 132), offset_y + 6, client.functions.getFormattedNumber(level_element.score, 2) + " " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp"), "#ffffff", "#000000", 2);
+		shadowed_text(image_context, offset_x + (bar_space - 128), offset_y + 6, client.functions.getFormattedNumber(level_element.score, 2) + " " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp"), "#ffffff", "#000000", 2);
 		
-		// rank
-		image_context.font = "48px Stratum1";
+		// level
+		image_context.font = "36px Stratum1";
 		image_context.textAlign = "right";
 		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (1276 - 4), offset_y + 6, "#" + (level_index + 1), "#ffffff", "#000000", 2);
+		shadowed_text(image_context, offset_x + (bar_space - 16), offset_y + 6, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "level") + ". " + client.functions.getFormattedNumber(level_element.level, 0), "#ffffff", "#000000", 2);
 		
 		// offsets
-		offset_y = (72 * ((level_index + 1)));
+		offset_y = (48 * ((level_index + 1)));
 		//offset_x = (640 * Math.floor((level_index + 1) / 10));
 	}
 	
-	
-	var attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "leaderboard.png");
-	var embed = new Discord.MessageEmbed();
-	embed.setAuthor(client.functions.getTranslation(client, interaction.guild, "commands/ranking/leaderboard", "embed.author", [interaction.guild.name]), interaction.guild.iconURL());
+	let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "leaderboard.png");
+	let embed = new Discord.MessageEmbed();
+	embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/ranking/leaderboard", "embed.author", [interaction.guild.name]), iconURL: interaction.guild.iconURL()});
 	embed.setImage("attachment://leaderboard.png");
 	embed.setColor([47, 49, 54]);
 	return interaction.editReply({files: [attachment], embeds: [embed]});
+}
+/**
+ * 
+ * @param {Discord.Client} client 
+ * @param {Discord.CommandInteraction} interaction 
+ */
+async function execute_xp(client, interaction) {
+	switch (interaction.options.getSubcommand()) {
+		case "recalculate": {
+			let guild_members = await interaction.guild.members.fetch();
+			let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(interaction.guild.id);
+			
+			for (let member_index = 0; member_index < levels_database.length; member_index++) {
+				let level_element = levels_database[member_index];
+				
+			}
+			break;
+		}
+	}
 }
 
 module.exports = {
@@ -331,10 +405,16 @@ module.exports = {
 						options: [
 							{
 								type: "USER",
-								name: "member",
-								description: "xp.delete.member.description",
-								required: true
+								name: "member_user",
+								description: "xp.delete.member_user.description",
+								required: false
 							},
+							{
+								type: "STRING",
+								name: "member_id",
+								description: "xp.delete.member_id.description",
+								required: false
+							}
 						]
 					},
 					{
@@ -362,9 +442,7 @@ module.exports = {
 			 * @param {Discord.Client} client
 			 * @param {Discord.CommandInteraction} interaction
 			 */
-			async execute(client, interaction) {
-				
-			}
+			async execute(client, interaction) { execute_xp(client, interaction); }
 		},
 		{
 			format: {

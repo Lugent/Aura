@@ -53,7 +53,7 @@ module.exports = {
         delete require.cache[require.resolve(command_path)];
         try {
 	        let newCommand = require(command_path);
-            client.commands.set(newCommand.name, newCommand);
+            client.commands.set(newCommand.id, newCommand);
 
 			let embed = new Discord.MessageEmbed();
             embed.setDescription(":white_check_mark: " + "Comando **" + command.id + "** actualizado.");

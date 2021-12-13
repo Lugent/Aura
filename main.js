@@ -37,9 +37,9 @@ async function run_bot() {
 
 	// Login
 	let login_time = Date.now();
-	let login_check = setInterval(function() {  if (!client.connected) { console.log("Request is taking too long!"); } }, 10000);
+	//let login_check = setInterval(function() {  if (!client.connected) { console.log("Request is taking too long!"); } }, 10000);
 	client.login(process.env.DISCORD_TOKEN).then(async () => {
-		clearInterval(login_check);
+		//clearInterval(login_check);
 		console.log("Connected to Discord in " + (Date.now() - login_time) + "ms");
 		console.log("Client logged as " + client.user.tag);
 		

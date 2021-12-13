@@ -1,37 +1,58 @@
-const Discord = require("discord.js");
+﻿const Discord = require("discord.js");
 const constants = require(process.cwd() + "/configurations/constants.js");
 const path = require("path");
-module.exports = {
-	name: "ping",
-	path: path.basename(__dirname),
-	type: constants.cmdTypes.normalCommand,
+const child_process = require("child_process");
 
-    cooldown: 5,
-	description: "ping.description",
-	/**
-	 * @param {Discord.Client} client
-	 * @param {Discord.Message} message
-	 * @param {Array} args
-	 * @param {String} prefix
-	 */
-	async execute(client, message, args, prefix) {
-        var embed = new Discord.MessageEmbed();
-		embed.setColor([254, 254, 254]);
-		embed.setDescription(client.functions.getTranslation(client, message.author, message.guild, "commands/general/ping", "loading"));
-        message.reply({embeds: [embed]}).then(async old_message => {
-            let ping = (old_message.createdTimestamp - message.createdTimestamp);
-			let selfping = client.ws.ping;
-            let pingcolor = [254, 254, 254];
-            if (ping > 330) { pingcolor = [127, 0, 0]; }
-            else if (ping > 225) { pingcolor = [255, 0, 0]; }
-            else if (ping > 140) { pingcolor = [255, 255, 0]; }
-            else if (ping > 75) { pingcolor = [0, 255, 0]; }
-            else if (ping > 30) { pingcolor = [0, 255, 255]; }
-            
-            var embed = new Discord.MessageEmbed();
-			embed.setColor(pingcolor);
-			embed.setDescription(":satellite_orbital: " + "Roundtrip Latency: **" + ping + "**ms" + "\n" + ":satellite: " + "Bot Latency: **" + selfping + "**ms");
-            old_message.edit({embeds: [embed]});
-        });
-	},
-};
+module.exports = {
+    id: "ping",
+	path: path.basename(__dirname),
+	type: constants.cmdTypes.applicationsCommand,
+	
+	applications: [
+		{
+			format: {
+				name: "ping",
+				description: "ping.description",
+				type: "CHAT_INPUT",
+				options: [
+					{
+						type: "STRING",
+						name: "target_ip",
+						description: "ping.target_ip.description",
+						required: true
+					}
+				]
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				let get_ip = interaction.options.getString("target_ip");
+				if (!get_ip) {
+					let embed = new Discord.MessageEmbed();
+					embed.setColor([47, 49, 54]);
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/general/ping", "no_ip"));
+					return interaction.reply({embeds: [embed], ephemeral: true});
+				}
+				await interaction.deferReply();
+				
+				try {
+					let result = await child_process.execSync("ping " + get_ip);
+					let embed = new Discord.MessageEmbed();
+					embed.setColor([47, 49, 54]);
+					embed.setDescription("```\n" + result.toString("utf8") + "\n```");
+					return interaction.editReply({embeds: [embed], ephemeral: true});
+					//return interaction.editReply(result.toString("utf8"));
+				}
+				catch (error) {
+					let embed = new Discord.MessageEmbed();
+					embed.setDescription(error.message);
+					embed.setColor([47, 49, 54]);
+					return interaction.editReply({embeds: [embed]});
+				}
+			}
+		}
+	]
+}

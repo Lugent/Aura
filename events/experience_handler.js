@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
-const Canvas = require("canvas");
+/*const Canvas = require("canvas");
 Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Medium.otf", {family: "Stratum1"});
-
+*/
 /**
  * @param {Canvas.CanvasRenderingContext2D} context
  * @param {Number} x 
@@ -11,13 +11,14 @@ Canvas.registerFont(process.cwd() + "/assets/fonts/Stratum1-Medium.otf", {family
  * @param {String} shadow_color 
  * @param {Number} offset 
  */
+ /*
 function shadowed_text(context, x, y, string, color, shadow_color, offset) {
 	context.fillStyle = shadow_color;
 	context.fillText(string, x + offset, y + offset);
 
 	context.fillStyle = color;
 	context.fillText(string, x, y);
-}
+}*/
 
 /**
  * @description Executes all guild's experience system related
@@ -71,7 +72,7 @@ async function exp_handler(client, message) {
 			
 			let next_level = level_index + 1;
 			if (next_level > client.config.exp_level_max) { next_level = client.config.exp_level_max; }
-
+/*
 			let image_data_width = 1600;
 			let image_data_height = 496;
 			
@@ -108,7 +109,7 @@ async function exp_handler(client, message) {
 			image_context.lineTo((image_data_width / 2) + 96, (image_data_rank_front_size / 2) + 40);
 			image_context.clip();
 			image_context.fillStyle = "rgb(255, 255, 255)";
-			image_context.fillRect(image_data_width / 2 - 96, 4 + 40, image_data_rank_front_size, image_data_rank_front_size);
+			image_context.fillRect(image_data_width / 2 - 96, 4 + 40, image_data_rank_front_size, image_data_rank_front_size);*/
 			
 			// Upload file
 			let button = new Discord.MessageButton();
@@ -123,12 +124,13 @@ async function exp_handler(client, message) {
 			button2.setCustomId("show_rank");
 			button2.setEmoji("🏅");
 
-			let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
+			//let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			let embed = new Discord.MessageEmbed();
-			embed.setAuthor(message.author.tag + ", " + client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.title"), get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}));
-			embed.setImage("attachment://levelup.png");
+			embed.setAuthor({name: message.author.tag + ", " + client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.title"), iconURL: get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
+			embed.setDescription("**" + level_index_old + "**" + " -> " + "**" + level_index + "**");
+			//embed.setImage("attachment://levelup.png");
 			embed.setColor(0x66b3ff);
-			return message.channel.send({files: [attachment], embeds: [embed], components: [{type: "ACTION_ROW", components: [button2, button]}]});
+			return message.channel.send({embeds: [embed], components: [{type: "ACTION_ROW", components: [button2, button]}]}); // files: [attachment]
 		}
 	}
 }

@@ -17,6 +17,12 @@ function setupDatabases(client) {
 		data_bot.prepare("CREATE TABLE blacklist (id INTEGER PRIMARY KEY AUTOINCREMENT, target_id TEXT, type TEXT, time NUMERIC, reason TEXT);").run();
 		data_bot.prepare("CREATE UNIQUE INDEX blacklist_id ON blacklist (id);").run();
 	}
+	
+	let table_bot_profiles = data_bot.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'profiles';").get();
+	if (!table_bot_profiles["count(*)"]) {
+		data_bot.prepare("CREATE TABLE profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, accent_colour TEXT, karma NUMERIC, bio TEXT, gender TEXT, birthdate NUMERIC, birthdate_year NUMERIC);").run();
+		data_bot.prepare("CREATE UNIQUE INDEX profiles_id ON profiles (id);").run();
+	}
 	client.bot_data = data_bot;
 	/* BOT DATA */
 	
@@ -33,6 +39,13 @@ function setupDatabases(client) {
 	if (!table_server_mute["count(*)"]) {
 		data_server.prepare("CREATE TABLE mutes (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, time NUMERIC, reason TEXT);").run();
 		data_server.prepare("CREATE UNIQUE INDEX mute_id ON mutes (id);").run();
+	}
+	
+	// Profiles
+	let table_server_profiles = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'profiles';").get();
+	if (!table_server_profiles["count(*)"]) {
+		data_server.prepare("CREATE TABLE profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, credits NUMERIC);").run();
+		data_server.prepare("CREATE UNIQUE INDEX profiles_id ON profiles (id);").run();
 	}
 	
 	// Level
