@@ -6,7 +6,7 @@
         "canvas": "^2.8.0",
         "chalk": "^4.1.2",
         "dayjs": "^1.10.6",
-        "discord.js": "^13.4.0-dev.1639353941.2ce244b",
+        "discord.js": "^14.0.0-dev.1641816211.ed0cfd9",
         "dotenv": "^8.2.0",
         "ffmpeg-static": "^4.4.0",
         "libsodium-wrappers": "^0.7.9",
@@ -16,7 +16,7 @@
         "tweetnacl": "^1.0.3",
         "utf-8-validate": "^5.0.5",
         "weather-js": "^2.0.0",
-        "ytdl-core": "^4.9.1",
+        "ytdl-core": "^4.9.2",
         "zlib-sync": "^0.1.7"
     }
 }

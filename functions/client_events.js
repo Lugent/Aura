@@ -6,7 +6,7 @@ const command_executor = require(process.cwd() + "/events/command_executor.js");
 const database_handler = require(process.cwd() + "/events/database_handler.js");
 const experience_handler = require(process.cwd() + "/events/experience_handler.js");
 const invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
-
+const level_updater = require(process.cwd() + "/functions/experience_updater.js");
 
 // Execute events
 /**
@@ -141,6 +141,8 @@ module.exports = function (client) {
 
 	client.on("ready", async () => {
 		//setInterval(function() { if (client.connected) { console.log("Websocket latency: " + client.ws.ping + "ms."); } }, 120000);
+		await invite_tracker(client);
+		await level_updater(client);
 	});
 
 	client.on("invalidated", () => {

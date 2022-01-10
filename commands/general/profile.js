@@ -11,6 +11,55 @@ module.exports = {
 	applications: [
 		{
 			format: {
+				name: "serverprofile",
+				description: "serverprofile.description",
+				type: "CHAT_INPUT",
+				options: [
+					{
+						type: "SUB_COMMAND",
+						name: "view",
+						description: "serverprofile.view.description",
+						options: [
+							{
+								type: "USER",
+								name: "target_user",
+								description: "serverprofile.view.target_user.description",
+								required: false
+							}
+						]
+					}
+				]
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				let get_user = interaction.user;
+				await interaction.deferReply();
+				
+				let get_profile = client.server_data.prepare("SELECT * FROM profiles WHERE guild_id = ? AND user_id = ?;").get(interaction.guild.id, get_user.id);
+				if (!get_profile) {
+					client.server_data.prepare("INSERT INTO profiles (guild_id, user_id, credits) VALUES (?, ?, ?);").run(interaction.guild.id, get_user.id, 0);
+					get_profile = client.server_data.prepare("SELECT * FROM profiles WHERE guild_id = ? AND user_id = ?;").get(interaction.guild.id, get_user.id);
+				}
+				console.log(get_profile);
+				
+				let embed_description = [
+					client.functions.getTranslation(client, interaction.guild, "commands/general/serverprofile", "embed.description.credits", [get_profile.credits])
+				];
+				
+				let embed = new Discord.MessageEmbed();
+				embed.setColor([47, 49, 54]);
+				embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/general/serverprofile", "embed.title", [get_user.tag]), iconURL: get_user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
+				embed.setDescription(embed_description.join("\n"));
+				return interaction.editReply({embeds: [embed]});
+			}
+		},
+		
+		{
+			format: {
 				name: "profile",
 				description: "profile.description",
 				type: "CHAT_INPUT",

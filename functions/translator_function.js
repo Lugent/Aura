@@ -45,7 +45,7 @@ function getTranslation(client, guild, index, string, values) {
 		console.error(error);
 	}
 	finally {
-		if (!language_data) { return string; }
+		if (!language_data) { return index + " | " + string; }
 		
 		translated_string = language_data[string];
 		//console.log(translated_string)

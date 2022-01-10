@@ -270,7 +270,7 @@ async function execute_leaderboard(client, interaction) {
 		let user_object = await client.users.fetch(level_element.user_id).catch(error => { return undefined; });
 		if (user_object) {
 			let avatar_image = await Canvas.loadImage(user_object.displayAvatarURL({format: "png", dynamic: false, size: 64}));
-			image_context.drawImage(avatar_image, offset_x + (96 + 12), offset_y + 4, 48, 48);
+			image_context.drawImage(avatar_image, offset_x + (96 + 12), offset_y + 2, 44, 44);
 		}
 		
 		// name
@@ -309,15 +309,84 @@ async function execute_leaderboard(client, interaction) {
  * @param {Discord.CommandInteraction} interaction 
  */
 async function execute_xp(client, interaction) {
+	let get_features = client.server_data.prepare("SELECT * FROM features WHERE guild_id = ?;").get(interaction.guild.id);
+	let get_disabled_functions = get_features.disabled_functions.trim().split(" ");
+	if (get_disabled_functions.includes("exp")) {
+		let embed = new Discord.MessageEmbed();
+		embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "is_disabled"));
+		embed.setColor([47, 49, 54]);
+		return interaction.reply({embeds: [embed], ephemeral: true});
+	}
+	await interaction.deferReply();
+	
 	switch (interaction.options.getSubcommand()) {
 		case "recalculate": {
-			let guild_members = await interaction.guild.members.fetch();
-			let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(interaction.guild.id);
+			let guild_members = await interaction.guild.members.fetch(); // get members
+			let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(interaction.guild.id); // get actual rankings
 			
+			// counters for visual tracking
+			let count_added = 0;
+			let count_recalculated = 0;
+			let count_nochange = 0; // unused
+			let count_removed = 0;
+			
+			console.log("Recalculating levels for guild (" + interaction.guild.id + ")")
+			
+			// part one: check rankings
 			for (let member_index = 0; member_index < levels_database.length; member_index++) {
 				let level_element = levels_database[member_index];
-				
+				let get_member = await interaction.guild.members.fetch(level_element.user_id).catch(error => { return undefined; });
+				if (!get_member) { // remove it already since it's gone
+					client.server_data.prepare("DELETE FROM exp WHERE guild_id = ? AND user_id = ?;").run(interaction.guild.id, level_element.user_id);
+					console.log("Member (" + level_element.user_id + ") doesn't exists and was deleted!");
+					count_removed++;
+				}
+				else { // recalculate their level based on their actual score
+					let previous_level = 0; // easy hack to do this from zero
+					let next_level = previous_level + 1;
+					let exp_score_base = client.config.exp_score_base;
+					let score_goal = (next_level * next_level) * exp_score_base;
+					let score_max = (client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
+					let finished_level = false;
+					let level_up = false;
+					while (!finished_level) {
+						if ((next_level <= client.config.exp_level_max) && (level_element.score > score_goal)) {
+							previous_level = next_level;
+							next_level = previous_level + 1;
+							exp_score_base = client.config.exp_score_base;
+							score_goal = (next_level * next_level) * exp_score_base;
+							level_up = true;
+						}
+						else {
+							finished_level = true;
+							//if (!level_up) { count_nochange++; }
+						}
+					}
+					count_recalculated++;
+					
+					if (level_element.score > score_max) { level_element.score = score_max; }
+					client.server_data.prepare("UPDATE exp SET level = ?, score = ? WHERE guild_id = ? AND user_id = ?;").run(previous_level, level_element.score, level_element.guild_id, level_element.user_id);
+					console.log("Recalculated member (" + guild_members.get(level_element.user_id).user.tag + ") to level " + previous_level + " with " + level_element.score + " score.");
+				}
 			}
+			
+			// part two: check if there are members not in the member list
+			guild_members.forEach(async function (member) {
+				if (!member.user.bot) {
+					let get_level = levels_database.find((element) => element.user_id == member.user.id);
+					if (!get_level) {
+						client.server_data.prepare("INSERT INTO exp (guild_id, user_id, level, score, messages) VALUES (?, ?, ?, ?, ?);").run(interaction.guild.id, member.user.id, 0, 0, 0);
+						console.log("Member (" + member.user.tag + ") registered to the rankings.");
+					}
+				}
+			});
+			
+			console.log("Done! Added " + count_added + ", " + count_recalculated + " recalculated and " + count_removed + " removed.")
+			break;
+		}
+		
+		case "delete": {
+			
 			break;
 		}
 	}

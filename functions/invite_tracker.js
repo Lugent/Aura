@@ -24,5 +24,6 @@ async function invite_tracker(client) {
 			});
 		});
 	});
+	//console.log("Registering " + invite_count + " invites on " + guilds_count + " guilds.");
 }
 module.exports = invite_tracker;

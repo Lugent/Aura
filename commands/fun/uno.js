@@ -333,6 +333,22 @@ function StringToCard(card, value) {
 	return new Card(id, color);
 }
 
+async function generateHandEmbed(client, interaction) {
+	let game = client.uno_games[interaction.channel.id];
+	if (!game) { return interaction.reply({content: "There's not a currently game in progress.", ephemeral: true}); }
+	if (!game.started) { return interaction.reply({content: "The game hasn't started.", ephemeral: true}); }
+	
+	let player = game.players[interaction.user.id];
+	if (!player) { return interaction.reply({content: "You're not joined to this game.", ephemeral: true}); }
+	await interaction.deferReply({ephemeral: true});
+	
+	let embed = new Discord.MessageEmbed();
+	embed.setColor([47, 49, 54]);
+	embed.setAuthor("Your current cards", interaction.user.displayAvatarURL({format: "png", dynamic: true, size: 64}));
+	embed.setDescription(player.hand.join(" / "));
+	return interaction.editReply({embeds: [embed], ephemeral: true});
+}
+
 async function generateCardEmbed(game) {
 	let card_image = new Discord.MessageAttachment(game.flipped.icon, game.flipped.value + ".png");
 	let card_embed = new Discord.MessageEmbed();
@@ -405,6 +421,18 @@ module.exports = {
     id: "uno",
 	path: path.basename(__dirname),
 	type: constants.cmdTypes.applicationsCommand,
+	
+	buttons: [
+		{
+			id: "show_card_hand",
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.ButtonInteraction} interaction
+			 */
+			async execute(client, interaction) { generateHandEmbed(client, interaction); }
+		}
+	],
 	
 	applications: [
 		{
@@ -664,19 +692,7 @@ module.exports = {
 					}
 					
 					case "hand": {
-						let game = client.uno_games[interaction.channel.id];
-						if (!game) { return interaction.reply({content: "There's not a currently game in progress.", ephemeral: true}); }
-						if (!game.started) { return interaction.reply({content: "The game hasn't started.", ephemeral: true}); }
-						
-						let player = game.players[interaction.user.id];
-						if (!player) { return interaction.reply({content: "You're not joined to this game.", ephemeral: true}); }
-						await interaction.deferReply({ephemeral: true});
-						
-						let embed = new Discord.MessageEmbed();
-						embed.setColor([47, 49, 54]);
-						embed.setAuthor("Your current cards", interaction.user.displayAvatarURL({format: "png", dynamic: true, size: 64}));
-						embed.setDescription(player.hand.join(" / "));
-						return interaction.editReply({embeds: [embed], ephemeral: true});
+						generateHandEmbed(client, interaction)
 						break;
 					}
 					

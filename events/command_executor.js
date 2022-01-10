@@ -7,7 +7,7 @@ const constants = require(process.cwd() + "/configurations/constants.js");
  * @param {Discord.Message|Discord.Interaction} executor
  */
 async function commandExecutor(client, executor) {
-	if (executor instanceof Discord.Message) { // KINDA DEPRECATED: The bot going to be interactions based
+	if (executor instanceof Discord.Message) { // DEPRECATED: The bot going to be interaction based
 		let prefix = process.env.DEFAULT_PREFIX; // Current guild's prefix, default if DM
 		if (executor.guild) {
 			let get_server_prefix = client.server_data.prepare("SELECT prefix FROM settings WHERE guild_id = ?;").get(executor.guild.id);

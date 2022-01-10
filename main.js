@@ -21,8 +21,6 @@ let client = new Discord.Client({
 const client_setup = require(process.cwd() + "/functions/client_setup.js");
 const client_events = require(process.cwd() + "/functions/client_events.js");
 const command_loader = require(process.cwd() + "/functions/command_loader.js");
-const level_updater = require(process.cwd() + "/functions/experience_updater.js");
-const invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 async function run_bot() {
 	console.log("Loading client...");
 	client_setup(client);
@@ -44,8 +42,6 @@ async function run_bot() {
 		console.log("Client logged as " + client.user.tag);
 		
 		console.log("Executing post-login functions...");
-		await invite_tracker(client);
-		await level_updater(client);
 		
 		console.log("Registering application commands to all guilds...");
 		await client.registerApplications(client);
