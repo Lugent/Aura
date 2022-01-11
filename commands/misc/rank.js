@@ -36,7 +36,7 @@ async function execute_rank(client, interaction) {
 		return interaction.reply({embeds: [embed], ephemeral: true});
 	}
 	
-	let get_member = interaction.options ? interaction.options.getMember("member") : (interaction.targetId ? await interaction.guild.members.fetch(interaction.targetId) : interaction.member);
+	let get_member = interaction.isContextMenuCommand() ? interaction.targetMember : interaction.options.getMember("member");
 	if (!get_member) { get_member = interaction.member; }
 	if (get_member.user.bot) {
 		let embed = new Discord.MessageEmbed();

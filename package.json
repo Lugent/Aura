@@ -6,7 +6,7 @@
         "canvas": "^2.8.0",
         "chalk": "^4.1.2",
         "dayjs": "^1.10.6",
-        "discord.js": "^14.0.0-dev.1641816211.ed0cfd9",
+        "discord.js": "^14.0.0-dev.1641902624.db25f52",
         "dotenv": "^8.2.0",
         "ffmpeg-static": "^4.4.0",
         "libsodium-wrappers": "^0.7.9",
