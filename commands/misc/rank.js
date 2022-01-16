@@ -36,7 +36,7 @@ async function execute_rank(client, interaction) {
 		return interaction.reply({embeds: [embed], ephemeral: true});
 	}
 	
-	let get_member = interaction.isContextMenuCommand() ? interaction.targetMember : interaction.options.getMember("member");
+	let get_member = interaction.isContextMenuCommand() ? interaction.targetMember : (interaction.isButton() ? interaction.member :interaction.options.getMember("member"));
 	if (!get_member) { get_member = interaction.member; }
 	if (get_member.user.bot) {
 		let embed = new Discord.MessageEmbed();
@@ -215,6 +215,22 @@ async function execute_rank(client, interaction) {
 	return interaction.editReply({files: [attachment], embeds: [embed], components: [{type: "ACTION_ROW", components: [button]}]});
 }
 
+async function hexToRgb(hex) {
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result ? {r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16)} : null;
+}
+
+async function isDarkColor(hexColor) {
+	const {r, g, b} = hexToRgb(hexColor);
+	let colorArray = [r / 255, g / 255, b / 255].map(v => {
+		if (v <= 0.03928) { return (v / 12.92);}
+		return Math.pow((v + 0.055) / 1.055, 2.4);
+	});
+
+	const luminance = (0.2126 * colorArray[0]) + (0.7152 * colorArray[1]) + (0.0722 * colorArray[2]);
+	return (luminance <= 0.179);
+}
+
 /**
  * 
  * @param {Discord.Client} client 
@@ -240,68 +256,88 @@ async function execute_leaderboard(client, interaction) {
 	image_context.fillStyle = "#7289DA";
 	image_context.fillRect(0, 0, 1280, 720);
 	
-	// test member
+	
+	// rendering values
 	let offset_x = 0;
-	let offset_y = 0;
+	let offset_y = 48;
+	let bar_space = 1276;
+	
+	// header
+	image_context.fillStyle = "#2f3136";
+	image_context.fillRect(2, 2, bar_space, 44);
+	
 	let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(interaction.guild.id);
 	let members_get = await interaction.guild.members.fetch();
-	for (let level_index = 0; level_index < levels_database.length; level_index++) {
+	for (let level_index = 0; level_index < 14; level_index++) {
 		let level_element = levels_database[level_index];
-		if (level_index >= 20) { break; }
-		
-		let bar_space = 1272;
+		if (level_index > 14) { break; }
 		
 		// background
 		image_context.fillStyle = "#2f3136"; //(level_element.user_id == interaction.user.id) ? "#FAA61A" : "#2f3136";
 		image_context.fillRect(offset_x + 2, offset_y + 2, bar_space, 44);
 		
-		// role colour
-		let member_object = await interaction.guild.members.fetch(level_element.user_id).catch(error => { return undefined; });
-		image_context.fillStyle = (member_object ? member_object.displayHexColor : "#ffffff")
-		image_context.fillRect(offset_x + 2, offset_y + 2, 44, 44);
-		
-		// rank
-		image_context.font = "36px Stratum1";
-		image_context.textAlign = "center";
-		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (8 + 64), offset_y + 6, (level_index + 1), "#ffffff", "#000000", 2);
-		
-		// avatar
-		let user_object = await client.users.fetch(level_element.user_id).catch(error => { return undefined; });
-		if (user_object) {
-			let avatar_image = await Canvas.loadImage(user_object.displayAvatarURL({format: "png", dynamic: false, size: 64}));
-			image_context.drawImage(avatar_image, offset_x + (96 + 12), offset_y + 2, 44, 44);
+		if (level_element) {		
+			// role colour
+			let member_object = await interaction.guild.members.fetch(level_element.user_id).catch(error => { return undefined; });
+			image_context.fillStyle = ((member_object && !isDarkColor(member_object.displayHexColor)) ? member_object.displayHexColor : "#ffffff");
+			image_context.fillRect(offset_x + 2, offset_y + 2, 44, 44);
+			
+			// rank
+			image_context.font = "36px Stratum1";
+			image_context.textAlign = "center";
+			image_context.textBaseline = "top";
+			shadowed_text(image_context, offset_x + (8 + 64), offset_y + 4, (level_index + 1), "#ffffff", "#000000", 2);
+			
+			// avatar
+			let user_object = await client.users.fetch(level_element.user_id).catch(error => { return undefined; });
+			if (user_object) {
+				let avatar_image = await Canvas.loadImage(user_object.displayAvatarURL({format: "png", dynamic: false, size: 64}));
+				image_context.drawImage(avatar_image, offset_x + (96 + 12), offset_y + 2, 44, 44);
+			}
+			
+			// name
+			image_context.font = "36px Stratum1";
+			image_context.textAlign = "left";
+			image_context.textBaseline = "top";
+			shadowed_text(image_context, offset_x + (16 + 144), offset_y + 6, (member_object && member_object.nickname) ? member_object.nickname : (user_object ? user_object.username : (level_element.user_id)), ((member_object && !isDarkColor(member_object.displayHexColor)) ? member_object.displayHexColor : "#ffffff"), "#000000", 2);
+			
+			// score
+			image_context.font = "36px Stratum1";
+			image_context.textAlign = "right";
+			image_context.textBaseline = "top";
+			shadowed_text(image_context, offset_x + (bar_space - 128), offset_y + 4, client.functions.getFormattedNumber(level_element.score, 2) + " " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp"), "#ffffff", "#000000", 2);
+			
+			// level
+			image_context.font = "36px Stratum1";
+			image_context.textAlign = "right";
+			image_context.textBaseline = "top";
+			shadowed_text(image_context, offset_x + (bar_space - 16), offset_y + 4, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "level") + ". " + client.functions.getFormattedNumber(level_element.level, 0), "#ffffff", "#000000", 2);
+		}
+		else {
+			// No Data
+			image_context.font = "36px Stratum1";
+			image_context.textAlign = "center";
+			image_context.textBaseline = "top";
+			shadowed_text(image_context, (bar_space / 2), offset_y + 4, "No Data", "#cccccc", "#000000", 2);
 		}
 		
-		// name
-		image_context.font = "36px Stratum1";
-		image_context.textAlign = "left";
-		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (16 + 144), offset_y + 6, user_object ? user_object.username : (level_element.user_id), "#ffffff", "#000000", 2);
-		
-		// score
-		image_context.font = "36px Stratum1";
-		image_context.textAlign = "right";
-		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (bar_space - 128), offset_y + 6, client.functions.getFormattedNumber(level_element.score, 2) + " " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp"), "#ffffff", "#000000", 2);
-		
-		// level
-		image_context.font = "36px Stratum1";
-		image_context.textAlign = "right";
-		image_context.textBaseline = "top";
-		shadowed_text(image_context, offset_x + (bar_space - 16), offset_y + 6, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "level") + ". " + client.functions.getFormattedNumber(level_element.level, 0), "#ffffff", "#000000", 2);
-		
 		// offsets
-		offset_y = (48 * ((level_index + 1)));
+		offset_y = (48 * ((level_index + 2)));
 		//offset_x = (640 * Math.floor((level_index + 1) / 10));
 	}
+	
+	let button = new Discord.MessageButton();
+	button.setStyle("PRIMARY");
+	button.setLabel(client.functions.getTranslation(client, interaction.guild, "events/experience_handler", "button2.label"));
+	button.setCustomId("show_rank");
+	button.setEmoji("🏅");
 	
 	let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "leaderboard.png");
 	let embed = new Discord.MessageEmbed();
 	embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/ranking/leaderboard", "embed.author", [interaction.guild.name]), iconURL: interaction.guild.iconURL()});
 	embed.setImage("attachment://leaderboard.png");
 	embed.setColor([47, 49, 54]);
-	return interaction.editReply({files: [attachment], embeds: [embed]});
+	return interaction.editReply({files: [attachment], embeds: [embed], components: [{type: "ACTION_ROW", components: [button]}]});
 }
 /**
  * 
