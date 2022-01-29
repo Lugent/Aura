@@ -36,7 +36,7 @@ async function execute_rank(client, interaction) {
 		return interaction.reply({embeds: [embed], ephemeral: true});
 	}
 	
-	let get_member = interaction.isContextMenuCommand() ? interaction.targetMember : (interaction.isButton() ? interaction.member :interaction.options.getMember("member"));
+	let get_member = interaction.isContextMenu() ? interaction.targetMember : (interaction.isButton() ? interaction.member :interaction.options.getMember("member"));
 	if (!get_member) { get_member = interaction.member; }
 	if (get_member.user.bot) {
 		let embed = new Discord.MessageEmbed();
@@ -63,8 +63,8 @@ async function execute_rank(client, interaction) {
 	if (next_level > client.config.exp_level_max) { next_level = client.config.exp_level_max; }
 	
 	let exp_score_base = client.config.exp_score_base;
-	let score_actual = (level_index * level_index) * exp_score_base;
-	let score_goal = (next_level * next_level) * exp_score_base;
+	let score_actual = client.config.exp_formula(level_index); //(level_index * level_index) * exp_score_base;
+	let score_goal = client.config.exp_formula(next_level); //(next_level * next_level) * exp_score_base;
 	
 	let image_data_width = 1200; // 400
 	let image_data_height = 600;
@@ -266,6 +266,14 @@ async function execute_leaderboard(client, interaction) {
 	image_context.fillStyle = "#2f3136";
 	image_context.fillRect(2, 2, bar_space, 44);
 	
+	image_context.font = "36px Stratum1";
+	image_context.textAlign = "left";
+	image_context.textBaseline = "top";
+	shadowed_text(image_context, offset_x + 2, offset_y + 2, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "leaderboard_member"), "#ffffff", "#000000", 2);
+	
+	image_context.textAlign = "left";
+	shadowed_text(image_context, 1280 - (offset_x + 2), offset_y + 2, client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "leaderboard_score"), "#ffffff", "#000000", 2);
+	
 	let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(interaction.guild.id);
 	let members_get = await interaction.guild.members.fetch();
 	for (let level_index = 0; level_index < 14; level_index++) {
@@ -305,7 +313,7 @@ async function execute_leaderboard(client, interaction) {
 			image_context.font = "36px Stratum1";
 			image_context.textAlign = "right";
 			image_context.textBaseline = "top";
-			shadowed_text(image_context, offset_x + (bar_space - 128), offset_y + 4, client.functions.getFormattedNumber(level_element.score, 2) + " " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp"), "#ffffff", "#000000", 2);
+			shadowed_text(image_context, offset_x + (bar_space - 144), offset_y + 4, client.functions.getFormattedNumber(level_element.score, 2) + " " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "xp"), "#ffffff", "#000000", 2);
 			
 			// level
 			image_context.font = "36px Stratum1";
@@ -356,6 +364,13 @@ async function execute_xp(client, interaction) {
 	await interaction.deferReply();
 	
 	switch (interaction.options.getSubcommand()) {
+		default: {
+			let embed = new Discord.MessageEmbed();
+			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/ranking/rank", "not_done_yet"));
+			embed.setColor([47, 49, 54]);
+			return interaction.editReply({embeds: [embed]});
+		}
+
 		case "recalculate": {
 			let guild_members = await interaction.guild.members.fetch(); // get members
 			let levels_database = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? ORDER BY score DESC;").all(interaction.guild.id); // get actual rankings
@@ -374,23 +389,23 @@ async function execute_xp(client, interaction) {
 				let get_member = await interaction.guild.members.fetch(level_element.user_id).catch(error => { return undefined; });
 				if (!get_member) { // remove it already since it's gone
 					client.server_data.prepare("DELETE FROM exp WHERE guild_id = ? AND user_id = ?;").run(interaction.guild.id, level_element.user_id);
-					console.log("Member (" + level_element.user_id + ") doesn't exists and was deleted!");
+					//console.log("Member (" + level_element.user_id + ") doesn't exists and was deleted!");
 					count_removed++;
 				}
 				else { // recalculate their level based on their actual score
-					let previous_level = 0; // easy hack to do this from zero
+					let previous_level = 1; // easy hack to do this from zero - nvm, do this from one
 					let next_level = previous_level + 1;
-					let exp_score_base = client.config.exp_score_base;
-					let score_goal = (next_level * next_level) * exp_score_base;
-					let score_max = (client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
+					//let exp_score_base = client.config.exp_score_base;
+					let score_goal = client.config.exp_formula(next_level); //(next_level * next_level) * exp_score_base;
+					let score_max = client.config.exp_formula(client.config.exp_level_max); //(client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
 					let finished_level = false;
 					let level_up = false;
 					while (!finished_level) {
 						if ((next_level <= client.config.exp_level_max) && (level_element.score > score_goal)) {
 							previous_level = next_level;
 							next_level = previous_level + 1;
-							exp_score_base = client.config.exp_score_base;
-							score_goal = (next_level * next_level) * exp_score_base;
+							//exp_score_base = client.config.exp_score_base;
+							score_goal = client.config.exp_formula(next_level); //(next_level * next_level) * exp_score_base;
 							level_up = true;
 						}
 						else {
@@ -402,7 +417,7 @@ async function execute_xp(client, interaction) {
 					
 					if (level_element.score > score_max) { level_element.score = score_max; }
 					client.server_data.prepare("UPDATE exp SET level = ?, score = ? WHERE guild_id = ? AND user_id = ?;").run(previous_level, level_element.score, level_element.guild_id, level_element.user_id);
-					console.log("Recalculated member (" + guild_members.get(level_element.user_id).user.tag + ") to level " + previous_level + " with " + level_element.score + " score.");
+					//console.log("Recalculated member (" + guild_members.get(level_element.user_id).user.tag + ") to level " + previous_level + " with " + level_element.score + " score.");
 				}
 			}
 			
@@ -412,19 +427,31 @@ async function execute_xp(client, interaction) {
 					let get_level = levels_database.find((element) => element.user_id == member.user.id);
 					if (!get_level) {
 						client.server_data.prepare("INSERT INTO exp (guild_id, user_id, level, score, messages) VALUES (?, ?, ?, ?, ?);").run(interaction.guild.id, member.user.id, 0, 0, 0);
-						console.log("Member (" + member.user.tag + ") registered to the rankings.");
+						//console.log("Member (" + member.user.tag + ") registered to the rankings.");
 					}
 				}
 			});
 			
-			console.log("Done! Added " + count_added + ", " + count_recalculated + " recalculated and " + count_removed + " removed.")
-			break;
+			//console.log("Done! Added " + count_added + ", " + count_recalculated + " recalculated and " + count_removed + " removed.")
+
+			let embed = new Discord.MessageEmbed();
+			embed.setDescription("Levels recalculated. Added " + count_added + " members, recalculated " + count_recalculated + " members and removed " + count_removed + " members.");
+			embed.setColor([47, 49, 54]);
+			return interaction.editReply({embeds: [embed]});
 		}
 		
-		case "delete": {
-			
+		case "set": {
+			let get_member = interaction.options.getMember("member");
+			let get_level = interaction.options.getInteger("level");
+
+			let get_level_data = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? AND user_id = ?;").all(interaction.guild.id, get_member.user.id);
 			break;
 		}
+
+		/*case "delete": {
+			
+			break;
+		}*/
 	}
 }
 
@@ -486,19 +513,9 @@ module.exports = {
 								required: true
 							},
 							{
-								type: "STRING",
-								name: "type",
-								description: "xp.set.type.description",
-								required: true,
-								choices: [
-									{value: "score", name: "score"},
-									{value: "level", name: "level"},
-								]
-							},
-							{
 								type: "INTEGER",
-								name: "number",
-								description: "xp.set.number.description",
+								name: "level",
+								description: "xp.set.level.description",
 								required: true
 							}
 						]

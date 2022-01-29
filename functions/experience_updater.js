@@ -15,17 +15,17 @@ async function updateGuildLevels(client) {
 				
 				let previous_level = get_level.level;
 				let next_level = get_level.level + 1;
-				let exp_score_base = client.config.exp_score_base;
-				let score_goal = (next_level * next_level) * exp_score_base;
-				let score_max = (client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
+				//let exp_score_base = client.config.exp_score_base;
+				let score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
+				let score_max = client.config.exp_formula(client.config.exp_level_max); //(client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
 				let finished_level = false;
 				let level_up = false;
 				while (!finished_level) {
 					if ((next_level <= client.config.exp_level_max) && (get_level.score > score_goal)) {
 						get_level.level = next_level;
 						next_level = get_level.level + 1;
-						exp_score_base = client.config.exp_score_base;
-						score_goal = (next_level * next_level) * exp_score_base;
+						//exp_score_base = client.config.exp_score_base;
+						score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
 						level_up = true;
 						updated_count++;
 					}

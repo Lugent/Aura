@@ -38,22 +38,22 @@ async function exp_handler(client, message) {
 		
 		let get_level_data = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? AND user_id = ?;").get(message.guild.id, message.author.id);
 		let get_level = get_level_data;
-		if (!get_level) { get_level = {guild_id: message.guild.id, user_id: message.author.id, level: 0, score: 0, messages: 0}; }
+		if (!get_level) { get_level = {guild_id: message.guild.id, user_id: message.author.id, level: 1, score: 0, messages: 0}; }
 		get_level.score += client.functions.getRandomNumber(client.config.exp_gain_rate);
 		get_level.messages++;
 		
 		let previous_level = get_level.level;
 		let next_level = get_level.level + 1;
-		let exp_score_base = client.config.exp_score_base;
-		let score_goal = (next_level * next_level) * exp_score_base;
-		let score_max = (client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
+		//let exp_score_base = client.config.exp_score_base;
+		let score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
+		let score_max = client.config.exp_formula(client.config.exp_level_max); //(client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
 		let finished_level = false;
 		while (!finished_level) {
 			if ((next_level <= client.config.exp_level_max) && (get_level.score > score_goal)) {
 				get_level.level = next_level;
 				next_level = get_level.level + 1;
-				exp_score_base = client.config.exp_score_base;
-				score_goal = (next_level * next_level) * exp_score_base;
+				//exp_score_base = client.config.exp_score_base;
+				score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
 			}
 			else { finished_level = true; }
 		}

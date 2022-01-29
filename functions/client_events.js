@@ -52,7 +52,10 @@ module.exports = function (client) {
 
 	client.on("guildMemberAdd", async (member) => {
 		if (member.guild.me.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)) {
+			console.log(client.guild_invites);
+
 			let get_guild = client.guild_invites.get(member.guild.id);
+			console.log(get_guild);
 			await member.guild.invites.fetch().then(async (invites) => {
 				let guild_invite = invites.find(invite => get_guild.get(invite.code) < invite.uses);
 				if (guild_invite) {
@@ -121,7 +124,7 @@ module.exports = function (client) {
 		console.log("ID: " + guild.id);
 		client.registerApplications(client);
 		
-		await guild_join(client, guild);
+		//await guild_join(client, guild);
 		await invite_tracker(client);
 	});
 

@@ -77,7 +77,7 @@ async function commandExecutor(client, executor) {
 	else if (executor instanceof Discord.Interaction) {
 		// Handle types
 		// Application Command
-		if (executor.isCommand() || executor.isContextMenuCommand()) {
+		if (executor.isCommand() || executor.isContextMenu()) {
 			let name = executor.commandName;
 			let command = client.commands.find(cmd => { return cmd.applications && cmd.applications.find(app => (app.format.name === name)); });
 			if (!command) { return; }

@@ -9,6 +9,28 @@ module.exports = {
 	applications: [
 		{
 			format: {
+				name: "unban",
+				description: "unban.description",
+				type: "CHAT_INPUT",
+				
+				
+			},
+			
+			/**
+			 * @param {Discord.Client} client
+			 * @param {Discord.CommandInteraction} interaction
+			 */
+			async execute(client, interaction) {
+				if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) { // Permission check
+					let embed = new Discord.MessageEmbed();
+					embed.setColor([47, 49, 54]);
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "bans.no_permission"));
+					return interaction.reply({embeds: [embed], ephemeral: true});
+				}
+			}
+		},
+		{
+			format: {
 				name: "bans",
 				description: "bans.description",
 				type: "CHAT_INPUT"
@@ -78,12 +100,6 @@ module.exports = {
 								name: "reason",
 								description: "ban.reason.description",
 								required: false
-							},
-							{
-								type: "BOOLEAN",
-								name: "is_slient",
-								description: "ban.slient.description",
-								required: false
 							}
 						]
 					},
@@ -103,12 +119,6 @@ module.exports = {
 								name: "reason",
 								description: "ban.reason.description",
 								required: false
-							},
-							{
-								type: "BOOLEAN",
-								name: "is_slient",
-								description: "ban.slient.description",
-								required: false
 							}
 						]
 					}
@@ -126,66 +136,49 @@ module.exports = {
 					embed.setColor([47, 49, 54]);
 					return interaction.reply({embeds: [embed], ephemeral: true});
 				}
+				await interaction.deferReply({ephemeral: true});
 				
 				// Get the optional reason as string
-				let ban_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "no_reason");
-				
 				// The commands works different when using ID or USER
+				let ban_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "no_reason");
 				switch (interaction.options.getSubcommand()) {
 					case "member": {
-							let get_member = interaction.options.getMember("target_member"); // Get the member argument
+						let get_member = interaction.options.getMember("target_member");
+						
+						let embed = new Discord.MessageEmbed();
+						embed.setColor([47, 49, 54]);
+						get_member.ban({reason: ban_reason}).then(async (member) => {
+							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success_banned", [get_member.user.username, ban_reason]));
+							return interaction.editReply({embeds: [embed]});
+						}).catch(async (error) => {
+							console.log(error);
 							
-							// Ban the member if possible
-							// Prepare a embed and send it
-							// And make it as a ephemeral message if the silent argument is true
-							get_member.ban({reason: ban_reason}).then(async (member) => {
-								let embed = new Discord.MessageEmbed();
-								embed.setColor([47, 49, 54]);
-								embed.setThumbnail(get_member.user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
-								embed.setAuthor(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success.operator", [interaction.user.tag]), interaction.user.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
-								embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success.title", [get_member.user.tag])); // member.user.tag
-								embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success.reason", [kick_reason])); // kick_reason
-								return interaction.reply({embeds: [embed], ephemeral: (interaction.options.getBoolean("is_slient") ?? false)});
-							}).catch(async (error) => {
-								console.log(error)
-								let embed = new Discord.MessageEmbed();
-								embed.setColor([47, 49, 54]);
-								embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "fatal_error"));
-								return interaction.reply({embeds: [embed], ephemeral: true});
-							});
-							break;
-						}
+							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "fatal_error"));
+							if (error.code == 50013) { embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "missing_bot_permissions")); }
+							return interaction.editReply({embeds: [embed]});
+						});
+						break;
+					}
 					case "id": {
-						let get_user = await client.users.fetch(interaction.options.getString("target_id")).catch(error => { get_member = undefined; }); // Get the member argument
+						let get_user = await client.users.fetch(interaction.options.getString("target_id")).catch((error) => { get_user = undefined; });
 						if (!get_user) {
 							let embed = new Discord.MessageEmbed();
 							embed.setColor([47, 49, 54]);
 							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "dont_exists"));
-							return interaction.reply({embeds: [embed], ephemeral: true});
+							return interaction.editReply({embeds: [embed]});
 						}
 						
-						// Ban the user if possible
-						// Prepare a embed and send it
-						// And make it as a ephemeral message if the silent argument is true
+						let embed = new Discord.MessageEmbed();
+						embed.setColor([47, 49, 54]);
 						interaction.guild.members.ban(get_user.id, {reason: ban_reason}).then(async (member) => {
-							let embed = new Discord.MessageEmbed();
-							embed.setColor([47, 49, 54]);
-							embed.setThumbnail(get_member.user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
-							embed.setAuthor(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success.operator", [interaction.user.tag]), interaction.user.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
-							embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success.title", [get_user.tag])); // member.user.tag
-							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success.reason", [kick_reason])); // kick_reason
-							return interaction.reply({embeds: [embed], ephemeral: (interaction.options.getBoolean("is_slient") ?? false)});
+							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success_banned", [get_user.username, ban_reason]));
+							return interaction.editReply({embeds: [embed]});
 						}).catch(async (error) => {
-							console.log(error)
-							let embed = new Discord.MessageEmbed();
-							embed.setColor([47, 49, 54]);
-							if (error.code == 50013) {
-						embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "mission_bot_permissions"));
-						}
-						else {
+							console.log(error);
+							
 							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "fatal_error"));
-						}
-							return interaction.reply({embeds: [embed], ephemeral: true});
+							if (error.code == 50013) { embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "missing_bot_permissions")); }
+							return interaction.editReply({embeds: [embed]});
 						});
 						break;
 					}

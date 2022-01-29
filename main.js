@@ -6,7 +6,7 @@ process.on("unhandledRejection", (error) => { console.error("Unhandled promise r
 
 // Load variables
 const dotenv = require("dotenv");
-let dotenv_result = dotenv.config();
+dotenv.config();
 
 // Client
 const intents = Object.values(Discord.Intents.FLAGS).reduce((acc, p) => acc | p, 0);
@@ -14,7 +14,8 @@ let client = new Discord.Client({
 	intents: intents,
 	allowedMentions: {repliedUser: false}, 
 	presence: {status: "online"},
-	partials: ["MESSAGE", "CHANNEL", "REACTION", "USER", "GUILD_MEMBER"]
+	partials: ["MESSAGE", "CHANNEL", "REACTION", "USER", "GUILD_MEMBER"],
+	//ws: { properties: { $browser: "Discord iOS" } }
 });
 
 // Execute bot
@@ -35,9 +36,7 @@ async function run_bot() {
 
 	// Login
 	let login_time = Date.now();
-	//let login_check = setInterval(function() {  if (!client.connected) { console.log("Request is taking too long!"); } }, 10000);
 	client.login(process.env.DISCORD_TOKEN).then(async () => {
-		//clearInterval(login_check);
 		console.log("Connected to Discord in " + (Date.now() - login_time) + "ms");
 		console.log("Client logged as " + client.user.tag);
 		
