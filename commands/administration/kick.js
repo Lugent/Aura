@@ -24,12 +24,6 @@ module.exports = {
 						name: "reason",
 						description: "kick.reason.description",
 						required: false
-					},
-					{
-						type: "BOOLEAN",
-						name: "is_slient",
-						description: "kick.slient.description",
-						required: false
 					}
 				]
 			},
@@ -45,42 +39,22 @@ module.exports = {
 					embed.setColor([47, 49, 54]);
 					return interaction.reply({embeds: [embed], ephemeral: true});
 				}
+				await interaction.deferReply({ephemeral: true});
 				
 				// Get the member argument
 				let get_member = interaction.options.getMember("member");
-				
-				// Get the optional reason as string
-				let kick_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "no_reason");
-				
-				// Check if is the target is kickeable
-				/*if (!get_member.kickable) {
-					let embed = new Discord.MessageEmbed();
-					embed.setColor([47, 49, 54]);
-					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "cannot_kick"));
-					return interaction.reply({embeds: [embed], ephemeral: true});
-				}*/
+				let kick_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "no_reason"); // Get the optional reason as string
 				
 				// Kick the member if possible
+				// Prepare a embed and send it
+				let embed = new Discord.MessageEmbed();
+				embed.setColor([47, 49, 54]);
 				get_member.kick(kick_reason).then((member) => {
-					// Prepare a embed and send it
-					// And make it as a ephemeral message if the silent argument is true
-					let embed = new Discord.MessageEmbed();
-					embed.setColor([47, 49, 54]);
-					embed.setThumbnail(get_member.user.displayAvatarURL({format: "png", dynamic: true, size: 4096}));
-					embed.setAuthor(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "success.operator", [interaction.user.tag]), interaction.user.displayAvatarURL({format: "png", dynamic: true, size: 4096})); // message.author.tag \ message.author.id
-					embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "success.title", [get_member.user.tag])); // member.user.tag
-					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "success.reason", [kick_reason])); // kick_reason
-					return interaction.reply({embeds: [embed], ephemeral: (interaction.options.getBoolean("is_slient") ?? false)});
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "success_kick", [get_member.user.username, kick_reason]));
+					return interaction.editReply({embeds: [embed]});
 				}).catch(async (error) => {
-					let embed = new Discord.MessageEmbed();
-					embed.setColor([47, 49, 54]);
-					if (error.code == 50013) {
-						embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "mission_bot_permissions"));
-					}
-					else {
-						embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", "fatal_error"));
-					}
-					return interaction.reply({embeds: [embed], ephemeral: true});
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/kick", (error.code == 50013) ? "mission_bot_permissions" : "fatal_error"));
+					return interaction.editReply({embeds: [embed]});
 				});
 			}
 		}

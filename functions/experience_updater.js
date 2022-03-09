@@ -11,7 +11,7 @@ async function updateGuildLevels(client) {
 			if (!member.user.bot) {
 				let get_level_data = client.server_data.prepare("SELECT * FROM exp WHERE guild_id = ? AND user_id = ?;").get(guild.id, member.user.id);
 				let get_level = get_level_data;
-				if (!get_level) { get_level = {guild_id: guild.id, user_id: member.user.id, level: 0, score: 0, messages: 0}; added_count++; }
+				if (!get_level) { get_level = {guild_id: guild.id, user_id: member.user.id, level: 1, score: 0, messages: 0}; added_count++; }
 				
 				let previous_level = get_level.level;
 				let next_level = get_level.level + 1;

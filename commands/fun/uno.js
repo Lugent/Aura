@@ -18,13 +18,13 @@ function getTranslatedRelativeTime(time, guild) {
 	return dayjs(time).fromNow();
 }
 
-const Card = class {
+const UnoCard = class {
 	constructor(id, color) { this.id = id; this.color = color; this.wild = !this.color; }
-	static deserialize(obj) { return new Card(obj.id, obj.color); }
+	static deserialize(obj) { return new UnoCard(obj.id, obj.color); }
 	serialize() { return {id: this.id, color: this.color, wild: this.wild}; }
 	get idName() { return ((this.id > 9) ? ({10: "Skip", 11: "Reverse", 12: "+2", 13: "Color", 14: "+4"}[this.id]) : this.id); }
 	get colorName() { return {0: "Wild", 1: "Red", 2: "Yellow", 3: "Green", 4: "Blue"}[this.color]; }
-	get emojiIcon() { return {0: "⚪", 1: "🔴", 2: "🟡", 3: "🟢", 4: "🔵"}[this.color]; }
+	get emojiIcon() { return {0: "⚪", 1: "🔴", 2: "🟡", 3: "🟢", 4: "🔵"}[this.color]; } // UNUSED
 	
 	get icon() {
 		let color_folder = "";
@@ -44,8 +44,7 @@ const Card = class {
 			case 14: { id_file = "+4"; break; }
 		}
 		
-		let target_file = process.cwd() + "/assets/images/uno/" + color_folder + "_cards/" + id_file + ".png";
-		if (this.wild) { return process.cwd() + "/assets/images/uno/wild_cards/" + id_file + ".png"; }
+		let target_file = (this.wild) ? (process.cwd() + "/assets/images/uno/wild_cards/" + id_file + ".png") : (process.cwd() + "/assets/images/uno/" + color_folder + "_cards/" + id_file + ".png");
 		if (fs.existsSync(target_file)) { return target_file; }
 		return process.cwd() + "/assets/images/uno/unknown_card.png";
 	}
@@ -76,16 +75,16 @@ const Card = class {
 	}
 }
 
-const Player = class {
+const UnoPlayer = class {
 	constructor(member, game) { this.member = member; this.game = game; this.id = member.user.id; this.hand = []; this.called = false; this.finished = false; this.cardsPlayed = 0; }
 	
 	static async deserialize(obj, game) {
 		let member = await game.channel.guild.members.fetch({user: obj.id, force: true});
 		
-		let player = new Player(member, game);
+		let player = new UnoPlayer(member, game);
         player.called = obj.called;
         player.finished = obj.finished;
-        player.hand = obj.hand.map(c => Card.deserialize(c));
+        player.hand = obj.hand.map(c => UnoCard.deserialize(c));
         player.cardsPlayed = obj.cardsPlayed || 0;
         player.cardsChanged();
         return player;
@@ -96,7 +95,7 @@ const Player = class {
 	cardsChanged() { this.sortHand(); }
 	
 	async getCard(card, value, extra) {
-		let find_card = new Card(Number(value), Number(card));
+		let find_card = new UnoCard(Number(value), Number(card));
 		if (!find_card) { return undefined; }
 		
 		if (find_card.wild) {
@@ -114,7 +113,7 @@ const Player = class {
 	}
 }
 
-const Game = class {
+const UnoGame = class {
 	constructor(client, guild, channel) {
 		this.client = client;
 		this.guild = guild;
@@ -151,11 +150,11 @@ const Game = class {
 		let channel = await guild.channels.fetch(obj.channel);
 		if (!channel) { return null; }
 		
-        let game = new Game(client, guild, channel);
-        for (const id in obj.players) { if (obj.players[id]) { game.players[id] = await Player.deserialize(obj.players[id], game); } }
+        let game = new UnoGame(client, guild, channel);
+        for (const id in obj.players) { if (obj.players[id]) { game.players[id] = await UnoPlayer.deserialize(obj.players[id], game); } }
         game.queue = obj.queue.map(p => game.players[p]);
-        game.deck = obj.deck.map(c => Card.deserialize(c));
-        game.discard = obj.discard.map(c => Card.deserialize(c));
+        game.deck = obj.deck.map(c => UnoCard.deserialize(c));
+        game.discard = obj.discard.map(c => UnoCard.deserialize(c));
         game.finished = obj.finished.map(p => game.players[p]);
         game.dropped = obj.dropped.map(p => game.players[p]);
         game.started = obj.started;
@@ -219,7 +218,7 @@ const Game = class {
 	addPlayer(member) {
         this.lastChange = Date.now();
         if (!this.players[member.user.id]) {
-            let player = this.players[member.user.id] = new Player(member, this);
+            let player = this.players[member.user.id] = new UnoPlayer(member, this);
             this.queue.push(player);
             return player;
         }
@@ -278,15 +277,15 @@ const Game = class {
     generateDeck() {
         for (let d = 0; d < this.rules.decks; d++) {
             for (const color of [1, 2, 3, 4]) {
-                this.deck.push(new Card(0, color)); // 0
-                for (let i = 1; i < 10; i++) { for (let ii = 0; ii < 2; ii++) { this.deck.push(new Card(i, color)); } } // 1 - 9
-                for (let i = 0; i < 2; i++) { this.deck.push(new Card(10, color)); } // Skip
-                for (let i = 0; i < 2; i++) { this.deck.push(new Card(11, color)); } // Reverse
-                for (let i = 0; i < 2; i++) { this.deck.push(new Card(12, color)); } // +2
+                this.deck.push(new UnoCard(0, color)); // 0
+                for (let i = 1; i < 10; i++) { for (let ii = 0; ii < 2; ii++) { this.deck.push(new UnoCard(i, color)); } } // 1 - 9
+                for (let i = 0; i < 2; i++) { this.deck.push(new UnoCard(10, color)); } // Skip
+                for (let i = 0; i < 2; i++) { this.deck.push(new UnoCard(11, color)); } // Reverse
+                for (let i = 0; i < 2; i++) { this.deck.push(new UnoCard(12, color)); } // +2
             }
             for (let i = 0; i < 4; i++) {
-                this.deck.push(new Card(13, 0)); // Change Color
-                this.deck.push(new Card(14, 0)); // +4
+                this.deck.push(new UnoCard(13, 0)); // Change Color
+                this.deck.push(new UnoCard(14, 0)); // +4
             }
         }
         this.shuffleDeck();
@@ -330,7 +329,7 @@ function StringToCard(card, value) {
 	}
 	
 	if (Number.isNaN(id) || (color < 0)) { return undefined; }
-	return new Card(id, color);
+	return new UnoCard(id, color);
 }
 
 async function generateHandEmbed(client, interaction) {
@@ -548,7 +547,7 @@ module.exports = {
 				switch (interaction.options.getSubcommand()) {
 					case "join": {
 						let game = client.uno_games[interaction.channel.id];
-						if (!game) { game = client.uno_games[interaction.channel.id] = new Game(client, interaction.guild, interaction.channel); }
+						if (!game) { game = client.uno_games[interaction.channel.id] = new UnoGame(client, interaction.guild, interaction.channel); }
 						
 						if (game.started) {
 							let embed = new Discord.MessageEmbed();

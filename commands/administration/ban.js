@@ -132,8 +132,8 @@ module.exports = {
 			async execute(client, interaction) {
 				if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) { // Permission check
 					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "no_permission"));
 					embed.setColor([47, 49, 54]);
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "no_permission"));
 					return interaction.reply({embeds: [embed], ephemeral: true});
 				}
 				await interaction.deferReply({ephemeral: true});
@@ -141,20 +141,19 @@ module.exports = {
 				// Get the optional reason as string
 				// The commands works different when using ID or USER
 				let ban_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "no_reason");
+				
+				let embed = new Discord.MessageEmbed();
+				embed.setColor([47, 49, 54]);
 				switch (interaction.options.getSubcommand()) {
 					case "member": {
 						let get_member = interaction.options.getMember("target_member");
-						
-						let embed = new Discord.MessageEmbed();
-						embed.setColor([47, 49, 54]);
 						get_member.ban({reason: ban_reason}).then(async (member) => {
 							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success_banned", [get_member.user.username, ban_reason]));
 							return interaction.editReply({embeds: [embed]});
 						}).catch(async (error) => {
 							console.log(error);
 							
-							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "fatal_error"));
-							if (error.code == 50013) { embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "missing_bot_permissions")); }
+							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", (error.code == 50013) ? "missing_bot_permissions" : "fatal_error"));
 							return interaction.editReply({embeds: [embed]});
 						});
 						break;
@@ -162,22 +161,17 @@ module.exports = {
 					case "id": {
 						let get_user = await client.users.fetch(interaction.options.getString("target_id")).catch((error) => { get_user = undefined; });
 						if (!get_user) {
-							let embed = new Discord.MessageEmbed();
-							embed.setColor([47, 49, 54]);
 							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "dont_exists"));
 							return interaction.editReply({embeds: [embed]});
 						}
 						
-						let embed = new Discord.MessageEmbed();
-						embed.setColor([47, 49, 54]);
 						interaction.guild.members.ban(get_user.id, {reason: ban_reason}).then(async (member) => {
 							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "success_banned", [get_user.username, ban_reason]));
 							return interaction.editReply({embeds: [embed]});
 						}).catch(async (error) => {
 							console.log(error);
 							
-							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "fatal_error"));
-							if (error.code == 50013) { embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", "missing_bot_permissions")); }
+							embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/ban", (error.code == 50013) ? "missing_bot_permissions" : "fatal_error"));
 							return interaction.editReply({embeds: [embed]});
 						});
 						break;

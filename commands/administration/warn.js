@@ -41,34 +41,31 @@ module.exports = {
 			async execute(client, interaction) {
 				if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.MANAGE_ROLES)) { // Permission check
 					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_permission"));
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_permission"));
 					embed.setColor([47, 49, 54]);
 					return interaction.reply({embeds: [embed], ephemeral: true});
 				}
+				await interaction.deferReply({ephemeral: true});
 				
 				// Get the member argument
 				let get_member = interaction.options.getMember("member");
 				if (get_member.bot) { // Bots can't be warned
 					let embed = new Discord.MessageEmbed();
-					embed.setDescription(":no_entry: " + client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "is_bot"));
+					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "is_bot"));
 					embed.setColor([47, 49, 54]);
-					return interaction.reply({embeds: [embed], ephemeral: true});
+					return interaction.editReply({embeds: [embed]});
 				}
 				
 				// Get the optional reason as string
-				let warn_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_reason");
-				
 				// Add the warn to the database
+				let warn_reason = interaction.options.getString("reason") ?? client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "no_reason");
 				client.server_data.prepare("INSERT INTO warns (guild_id, user_id, time, reason) VALUES (?, ?, ?, ?);").run(interaction.guild.id, get_member.user.id, Date.now(), warn_reason);
 				
 				// Prepare a embed and send it
-				// And make it as a ephemeral message if the silent argument is true
 				let embed = new Discord.MessageEmbed();
 				embed.setColor([47, 49, 54]);
-				embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success.title", [get_member.user.tag]));
-				embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success.description", [warn_reason]));
-				embed.setFooter(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success.footer", [interaction.user.tag]));
-				return interaction.reply({embeds: [embed], ephemeral: (interaction.options.getBoolean("is_slient") ?? false)});
+				embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/warn", "success_warn", [get_member.user.username, warn_reason]));
+				return interaction.editReply({embeds: [embed]});
 			}
 		}
 	]

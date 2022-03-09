@@ -46,7 +46,7 @@ module.exports = {
 					let select = new Discord.MessageSelectMenu();
 					select.setCustomId("guild_language");
 					for (let option_index = 0; option_index < languages_avaliable.length; option_index++) {
-						select.addOptions({label: languages_avaliable[option_index].name, value: languages_avaliable[option_index].id, emoji: languages_avaliable[option_index].emoji, default: (languages_avaliable[option_index].id === guild_settings.language)});
+						select.addOptions({label: languages_avaliable[option_index].name, value: languages_avaliable[option_index].id, emoji: null, default: (languages_avaliable[option_index].id === guild_settings.language)}); // languages_avaliable[option_index].emoji
 					}
 					select.setPlaceholder(client.functions.getTranslation(client, interaction.guild, "commands/administration/language", "select_menu"));
 					return interaction.reply({embeds: [embed], components: [{type: "ACTION_ROW", components: [select]}]});

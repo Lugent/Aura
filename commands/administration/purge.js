@@ -39,6 +39,7 @@ module.exports = {
 					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/purge", "no_permission"));
 					return interaction.reply({embeds: [embed], ephemeral: true});
 				}
+				await interaction.deferReply();
 
 				// Get the amount and the optional member, then make a search filter
 				let message_amount = interaction.options.getInteger("amount")
@@ -52,7 +53,7 @@ module.exports = {
 					let embed = new Discord.MessageEmbed();
 					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/purge", "no_messages"));
 					embed.setColor([47, 49, 54]);
-					return interaction.reply({embeds: [embed], ephemeral: true});
+					return interaction.editReply({embeds: [embed]});
 				}
 
 				// Get an array of messages to delete and delete it
@@ -62,7 +63,7 @@ module.exports = {
 					embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/purge", "success", [target_messages.length]));
 					if (target_member) { embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/administration/purge", "success.member", [target_messages.length, target_member.user.tag])); }
 					embed.setColor([47, 49, 54]);
-					interaction.reply({embeds: [embed]}).then(async (reply_message) => { setTimeout(async () => { await interaction.deleteReply(); }, 5000); });
+					interaction.editReply({embeds: [embed]}).then(async (reply_message) => { setTimeout(async () => { await interaction.deleteReply(); }, 5000); });
 				});
 			}
 		}
