@@ -13,12 +13,12 @@ function isEmpty(obj) {
 async function command_loader(client, reload = false) {
 	if (reload) {
 		console.log("");
-		console.log("Unloading commands:");
+		console.log(">> Unloading all");
 		await client.commands.forEach(async function(command) {
 			let path = process.cwd() + "/" + client.config.commands_dir + "/" + command.path + "/" + command.name + ".js";
 			delete require.cache[require.resolve(path)];
 			await client.commands.delete(command.name);
-			console.log("Unloaded " + "'" + command.name + "'" + ".");
+			console.log("> " + command.name + ".js (unloaded)");
 		});
 	}
 	
@@ -35,9 +35,9 @@ async function command_loader(client, reload = false) {
 		if (dir.startsWith("_") || dir.includes(".")) { continue; }
 		
 		console.log("");
-		console.log("Looking into " + "'" + dir + "'" + " directory:");
+		console.log(">> " + dir);
 		if (!files_dir.length) {
-			console.log("This directory is empty, no commands loaded.");
+			console.log("Empty.");
 			continue;
 		}
 		
@@ -48,23 +48,26 @@ async function command_loader(client, reload = false) {
 				if (isEmpty(command)) { continue; }
 				else if (!command.id || !command.type || (command.flags & constants.cmdFlags.dontLoad)) {
 					count_skipped++;
-					console.log("Skipped " + "'" + (command.id || command.name) + "'" + ".");
+					console.log("> " + (command.id || command.name) + ".js... (skipped)");
 				}
 				else {
 					await client.commands.set(command.id, command);
 					
-					console.log("Loaded " + "'" + command.id + "'.");
+					console.log("> " + command.id + ".js...");
 					count_load++;
 					count_commands++;
 				}
 			} catch (error) {
-				console.error("Couldn't load " + "'" + file.replace(".js", "") + "'" + ":" + "\n", error);
+				console.log("> " + file + " (error):");
+				console.log(error);
 				count_error++;
 			}
 		}
-		console.log("Loaded " + count_load + " commands.");
+		//console.log("Loaded " + count_load + " commands.");
 	}
-	console.log("");
-	console.log("Loaded all " + count_commands + " commands." + " (" + count_error + " errored)" + " " + "(" + count_skipped + " skipped)");
+	//console.log("");
+	console.log("<> " + count_commands + " commands");
+	console.log("<> " + count_error + " errors");
+	console.log("<> " + count_skipped + " skipped");
 }
 module.exports = command_loader;

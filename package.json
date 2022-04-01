@@ -1,5 +1,6 @@
 {
     "dependencies": {
+        "@discordjs/opus": "^0.5.3",
         "@discordjs/voice": "^0.7.2",
         "better-sqlite3": "^7.2.0",
         "bufferutil": "^4.0.3",

@@ -16,7 +16,7 @@ async function updateGuildLevels(client) {
 				let previous_level = get_level.level;
 				let next_level = get_level.level + 1;
 				//let exp_score_base = client.config.exp_score_base;
-				let score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
+				let score_goal = client.config.exp_formula(next_level); //(next_level * next_level) * exp_score_base;
 				let score_max = client.config.exp_formula(client.config.exp_level_max); //(client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
 				let finished_level = false;
 				let level_up = false;
@@ -29,7 +29,10 @@ async function updateGuildLevels(client) {
 						level_up = true;
 						updated_count++;
 					}
-					else { finished_level = true; still_count++; }
+					else {
+						finished_level = true;
+						if (!level_up) { still_count++; }
+					}
 				}
 				
 				if (get_level.score > score_max) { get_level.score = score_max; }
@@ -40,7 +43,7 @@ async function updateGuildLevels(client) {
 		});
 		guild_count++;
 	});
-	console.log("Looked at " + guild_count + " guilds and " + member_count + " members.");
-	console.log("Added " + added_count + " entries, updated " + updated_count + " entries and " + still_count + " entries didn't changed.");
+	//console.log("Looked at " + guild_count + " guilds and " + member_count + " members.");
+	//console.log("Added " + added_count + " entries, updated " + updated_count + " entries and " + still_count + " entries didn't changed.");
 }
 module.exports = updateGuildLevels;

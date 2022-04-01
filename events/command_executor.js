@@ -32,8 +32,8 @@ async function commandExecutor(client, executor) {
 		// Flag check; if works with the bot's owner
 		if ((command.command_flags & constants.cmdFlags.ownerOnly) && (executor.author.id !== process.env.OWNER_ID)) {
 			let embed = new Discord.MessageEmbed();
-			embed.setColor([255, 0, 0]);
-			embed.setDescription(":no_entry: " + client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "only_owner", [client.users.cache.get(process.env.OWNER_ID).tag]));
+			embed.setColor([47, 49, 54]);
+			embed.setDescription(client.functions.getTranslation(client, executor.guild, "events/command_executor", "only_owner", [client.users.cache.get(process.env.OWNER_ID).tag]));
 			return executor.reply({embeds: [embed]});
 		}
 		
@@ -43,8 +43,8 @@ async function commandExecutor(client, executor) {
 			let get_disabled_commands = get_features.disabled_commands.trim().split(" ");
 			if (get_disabled_commands.includes(command.name)) {
 				let embed = new Discord.MessageEmbed();
-				embed.setColor([255, 0, 0]);
-				embed.setDescription(":no_entry: " + client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "disabled"));
+				embed.setColor([47, 49, 54]);
+				embed.setDescription(client.functions.getTranslation(client, executor.guild, "events/command_executor", "disabled"));
 				return executor.reply({embeds: [embed]});
 			}
 		}
@@ -59,8 +59,8 @@ async function commandExecutor(client, executor) {
 			if (time_actual < time_count) { // Cooldown is active
 				let time_remaining = (time_count - time_actual) / 1000;
 				var embed = new Discord.MessageEmbed();
-				embed.setColor([0, 255, 255]);
-				embed.setDescription(":information_source: " + client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
+				embed.setColor([47, 49, 54]);
+				embed.setDescription(client.functions.getTranslation(client, executor.guild, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
 				return executor.reply({embeds: [embed]});
 			}
 		}
@@ -102,13 +102,30 @@ async function commandExecutor(client, executor) {
 			}
 			
 			handler.execute(client, executor).then(() => {
-				time_data.set(executor.user.id, time_actual);
-				setTimeout(() => time_data.delete(executor.user.id), time_cooldown);
+				client.application_cooldowns.set(executor.user.id, time_actual);
+				setTimeout(() => client.application_cooldowns.delete(executor.user.id), time_cooldown);
 			}).catch(async (error) => {
 				console.error("Application Command failure: " + "\n" + executor.commandName + "\n" + "Stack trace: " + "\n", error);
 				if (executor.deferred) {
 					return executor.editReply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 				}
+				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
+			});
+		}
+		
+		// Autocomplete
+		if (executor.isAutocomplete()) {
+			let option = executor.options.getFocused(true);
+			let name = option.name;
+			let origin_name = executor.commandName;
+			let command = client.commands.find(cmd => { return cmd.autocompletes && cmd.autocompletes.find(app => (app.command_name === origin_name)); });
+			if (!command) { return; }
+
+			let handler = command.autocompletes.find(cmd => (cmd.option_name === name));
+			if (!handler.execute) { return; }
+			
+			handler.execute(client, executor, option).catch(async (error) => {
+				console.error("Autocomplete failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
 				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
@@ -139,8 +156,8 @@ async function commandExecutor(client, executor) {
 			}
 			
 			handler.execute(client, executor).then(() => {
-				time_data.set(executor.user.id, time_actual);
-				setTimeout(() => time_data.delete(executor.user.id), time_cooldown);
+				client.application_cooldowns.set(executor.user.id, time_actual);
+				setTimeout(() => client.application_cooldowns.delete(executor.user.id), time_cooldown);
 			}).catch(async (error) => {
 				console.error("Button failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
 				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
@@ -173,8 +190,8 @@ async function commandExecutor(client, executor) {
 			}
 			
 			handler.execute(client, executor).then(() => {
-				time_data.set(executor.user.id, time_actual);
-				setTimeout(() => time_data.delete(executor.user.id), time_cooldown);
+				client.application_cooldowns.set(executor.user.id, time_actual);
+				setTimeout(() => client.application_cooldowns.delete(executor.user.id), time_cooldown);
 			}).catch(async (error) => {
 				console.error("Select Menu failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
 				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});

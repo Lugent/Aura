@@ -9,7 +9,7 @@ module.exports = {
 	type: constants.cmdTypes.applicationsCommand,
 	
 	applications: [
-		{
+		/*{
 			format: {
 				name: "serverprofile",
 				description: "serverprofile.description",
@@ -30,33 +30,19 @@ module.exports = {
 					}
 				]
 			},
-			
+			*/
 			/**
 			 * @param {Discord.Client} client
 			 * @param {Discord.CommandInteraction} interaction
 			 */
-			async execute(client, interaction) {
+			/*async execute(client, interaction) {
 				let get_user = interaction.user;
 				await interaction.deferReply();
 				
-				let get_profile = client.server_data.prepare("SELECT * FROM profiles WHERE guild_id = ? AND user_id = ?;").get(interaction.guild.id, get_user.id);
-				if (!get_profile) {
-					client.server_data.prepare("INSERT INTO profiles (guild_id, user_id, credits) VALUES (?, ?, ?);").run(interaction.guild.id, get_user.id, 0);
-					get_profile = client.server_data.prepare("SELECT * FROM profiles WHERE guild_id = ? AND user_id = ?;").get(interaction.guild.id, get_user.id);
-				}
-				console.log(get_profile);
 				
-				let embed_description = [
-					client.functions.getTranslation(client, interaction.guild, "commands/general/serverprofile", "embed.description.credits", [get_profile.credits])
-				];
-				
-				let embed = new Discord.MessageEmbed();
-				embed.setColor([47, 49, 54]);
-				embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/general/serverprofile", "embed.title", [get_user.tag]), iconURL: get_user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
-				embed.setDescription(embed_description.join("\n"));
 				return interaction.editReply({embeds: [embed]});
 			}
-		},
+		},*/
 		
 		{
 			format: {
@@ -101,10 +87,32 @@ module.exports = {
 				}
 				console.log(get_profile);
 				
-				let embed = new Discord.MessageEmbed();
-				embed.setColor([47, 49, 54]);
-				embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/general/profile", "embed.title", [get_user.tag]), iconURL: get_user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
-				return interaction.editReply({embeds: [embed]});
+				let embeds = [];
+				let user_embed = new Discord.MessageEmbed();
+				user_embed.setColor([47, 49, 54]);
+				user_embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/general/profile", "embed.title", [get_user.tag]), iconURL: get_user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
+				embeds.push(user_embed);
+				
+				let find_member = await interaction.guild.members.fetch({user: get_user.id, force: true}).catch((error) => {});
+				if (find_member) {
+					let get_profile = client.server_data.prepare("SELECT * FROM profiles WHERE guild_id = ? AND user_id = ?;").get(interaction.guild.id, get_user.id);
+					if (!get_profile) {
+						client.server_data.prepare("INSERT INTO profiles (guild_id, user_id, credits) VALUES (?, ?, ?);").run(interaction.guild.id, get_user.id, 0);
+						get_profile = client.server_data.prepare("SELECT * FROM profiles WHERE guild_id = ? AND user_id = ?;").get(interaction.guild.id, get_user.id);
+					}
+					console.log(get_profile);
+					
+					let embed_description = [
+						client.functions.getTranslation(client, interaction.guild, "commands/general/serverprofile", "embed.description.credits", [get_profile.credits])
+					];
+					
+					let guild_embed = new Discord.MessageEmbed();
+					guild_embed.setColor([47, 49, 54]);
+					guild_embed.setAuthor({name: client.functions.getTranslation(client, interaction.guild, "commands/general/serverprofile", "embed.title", [get_user.tag]), iconURL: get_user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
+					guild_embed.setDescription(embed_description.join("\n"));
+					embeds.push(guild_embed);
+				}
+				return interaction.editReply({embeds: embeds});
 			}
 		}
 	]

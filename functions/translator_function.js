@@ -49,7 +49,7 @@ function getTranslation(client, guild, index, string, values) {
 		
 		translated_string = language_data[string];
 		//console.log(translated_string)
-		if (!translated_string) { return string; }
+		if (!translated_string) { return index + " | " + string; }
 		if (values) { translated_string = client.functions.getFormatedString(translated_string, values); }
 		return translated_string;
 	}

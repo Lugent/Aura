@@ -2,9 +2,9 @@ const Discord = require("discord.js");
 const SQLite = require("better-sqlite3");
 const fs = require("fs");
 if (!fs.existsSync("databases")) fs.mkdirSync("databases");
-const data_bot = new SQLite(process.cwd() + "/databases/bot_data.sqlite");
-const data_server = new SQLite(process.cwd() + "/databases/server_data.sqlite");
-const data_user = new SQLite(process.cwd() + "/databases/user_data.sqlite");
+const data_bot = new SQLite(process.cwd() + "/databases/bot.sqlite");
+const data_server = new SQLite(process.cwd() + "/databases/guild.sqlite");
+const data_user = new SQLite(process.cwd() + "/databases/user.sqlite");
 
 /**
  * 

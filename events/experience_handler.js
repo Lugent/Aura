@@ -44,16 +44,14 @@ async function exp_handler(client, message) {
 		
 		let previous_level = get_level.level;
 		let next_level = get_level.level + 1;
-		//let exp_score_base = client.config.exp_score_base;
-		let score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
-		let score_max = client.config.exp_formula(client.config.exp_level_max); //(client.config.exp_level_max * client.config.exp_level_max) * exp_score_base;
+		let score_goal = client.config.exp_formula(next_level);
+		let score_max = client.config.exp_formula(client.config.exp_level_max);
 		let finished_level = false;
 		while (!finished_level) {
 			if ((next_level <= client.config.exp_level_max) && (get_level.score > score_goal)) {
 				get_level.level = next_level;
 				next_level = get_level.level + 1;
-				//exp_score_base = client.config.exp_score_base;
-				score_goal = client.config.exp_formula(client.config.next_level); //(next_level * next_level) * exp_score_base;
+				score_goal = client.config.exp_formula(next_level);
 			}
 			else { finished_level = true; }
 		}
@@ -64,6 +62,8 @@ async function exp_handler(client, message) {
 		client.exp_cooldowns.set(message.author.id, "active");
 		setTimeout(() => client.exp_cooldowns.delete(message.author.id), client.config.exp_cooldown);
 		
+		//console.log(get_level.score, score_goal)
+		//console.log(get_level.level, previous_level)
 		if (get_level.level > previous_level) {
 			let get_member = message.member;
 			let level_index_old = previous_level;
@@ -113,24 +113,18 @@ async function exp_handler(client, message) {
 			
 			// Upload file
 			let button = new Discord.MessageButton();
-			button.setStyle("PRIMARY");
-			button.setLabel(client.functions.getTranslation(client, message.guild, "events/experience_handler", "button.label"));
+			button.setStyle("SECONDARY");
+			button.setLabel(client.functions.getTranslation(client, message.guild, "events/experience_handler", "leaderboard_button"));
 			button.setCustomId("show_leaderboard");
 			button.setEmoji("🏆");
 
-			let button2 = new Discord.MessageButton();
-			button2.setStyle("PRIMARY");
-			button2.setLabel(client.functions.getTranslation(client, message.guild, "events/experience_handler", "button2.label"));
-			button2.setCustomId("show_rank");
-			button2.setEmoji("🏅");
-
 			//let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "levelup.png"); 
 			let embed = new Discord.MessageEmbed();
-			embed.setAuthor({name: message.author.tag + ", " + client.functions.getTranslation(client, message.guild, "events/experience_handler", "levelup.title"), iconURL: get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128})});
-			embed.setDescription("**" + level_index_old + "**" + " -> " + "**" + level_index + "**");
+			embed.setAuthor({name: client.functions.getTranslation(client, message.guild, "events/experience_handler", "level_header", [message.member.nickname ? message.member.nickname : message.author.username]), iconURL: (get_member.avatar ? get_member.displayAvatarURL({format: "png", dynamic: false, size: 128}) : get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 128}))});
+			embed.setDescription("**" + client.functions.getTranslation(client, message.guild, "events/experience_handler", "level_name") + " " + level_index_old + "**" + " --> " + "**" + client.functions.getTranslation(client, message.guild, "events/experience_handler", "level_name") + " " + level_index + "**");
 			//embed.setImage("attachment://levelup.png");
-			embed.setColor(0x66b3ff);
-			return message.channel.send({embeds: [embed], components: [{type: "ACTION_ROW", components: [button2, button]}]}); // files: [attachment]
+			embed.setColor([47, 49, 54]);
+			return message.reply({embeds: [embed], components: [{type: "ACTION_ROW", components: [button]}]}); // files: [attachment]
 		}
 	}
 }

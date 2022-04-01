@@ -19,7 +19,7 @@ function resourceMonitor(client) {
 		lastUsage = { system: system / timeDelta, total: (system + user) / timeDelta, user: user / timeDelta };
 		previousTime = currentTime;
 		client.statsCPU = lastUsage;
-		if (lastUsage.total > 170) { process.abort(); }
+		if (lastUsage.total > 200) { process.abort(); }
 	}, 1000);
 	setInterval(() => { if ((process.memoryUsage().rss / 1000000) > 512) { process.abort(); } }, 1000);
 }

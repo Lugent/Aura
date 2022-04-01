@@ -3,11 +3,13 @@ let language = {
 	"is_disabled": "El servidor tiene el sistema de niveles desactivado.",
 	"no_member": "El miembro no esta en el servidor o no existe.",
 	"bot_member": "El miembro es un bot, y no puede estar en el sistema de niveles.",
-	"xp_max": "MAX",
+	"xp_max": "MAX XP",
 	"xp": "XP",
-	"level": "Nv",
-	"rank": "Rank",
-	"embed.title": "Nivel actual de %s",
-	"button.label": "Tabla de Posiciones"
+	"level": "Nivel",
+	"level_short": "Nv",
+	"rank": "Pocisión",
+	"user_header": "Nivel actual de %s",
+	"server_name": "Servidor: %s",
+	"leaderboard_button": "Posiciones"
 };
 module.exports = language;

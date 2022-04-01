@@ -8,8 +8,8 @@ module.exports = {
 	type: constants.cmdTypes.normalCommand,
 	
 	command_name: "reload",
-	command_description: "Actualiza todos los comandos o un comando en especifico.",
-    command_usage: "[id]",
+	//command_description: "",
+    //command_usage: "[id]",
     command_cooldown: 0,
     command_flags: constants.cmdFlags.ownerOnly,
 	/**
@@ -21,21 +21,39 @@ module.exports = {
 	async command_execute(client, message, args, prefix) {
 		if (!args[0]) {
 			let embed = new Discord.MessageEmbed();
-            embed.setDescription(":warning: " + "Especifica un comando o usa `" + prefix + "reload all` para todos los comandos.");
-			embed.setColor([255, 255, 0]);
+            embed.setDescription("Specify a command.\n\nYou can also use:\n`-all` for everything.\n`-apps` to only applications.\n`-cmds` to only commands.");
+			embed.setColor([47, 49, 54]);
             return message.channel.send({embeds: [embed]});
 		}
-
 		
 		switch (args[0]) {
-			case "all": {
+			case "-all": {
 				let command_loader = require(process.cwd() + "/functions/command_loader.js");
 				await command_loader(client, true);
 				await client.registerApplications(client);
 
 				let embed = new Discord.MessageEmbed();
-				embed.setDescription(":white_check_mark: " + "Comandos actualizados.");
-				embed.setColor([0, 255, 0]);
+				embed.setDescription("Commands and applications reloaded.");
+				embed.setColor([47, 49, 54]);
+				return message.channel.send({embeds: [embed]});
+			}
+			
+			case "-cmds": {
+				let command_loader = require(process.cwd() + "/functions/command_loader.js");
+				await command_loader(client, true);
+
+				let embed = new Discord.MessageEmbed();
+				embed.setDescription("Commands reloaded.");
+				embed.setColor([47, 49, 54]);
+				return message.channel.send({embeds: [embed]});
+			}
+			
+			case "-apps": {
+				await client.registerApplications(client);
+
+				let embed = new Discord.MessageEmbed();
+				embed.setDescription("Applications reloaded.");
+				embed.setColor([47, 49, 54]);
 				return message.channel.send({embeds: [embed]});
 			}
 		}
@@ -44,8 +62,8 @@ module.exports = {
         let command = client.commands.get(command_id);
         if (!command) {
 			let embed = new Discord.MessageEmbed();
-            embed.setDescription(":no_entry: " + "El comando no existe o el alias no es reconocible a un comando.");
-			embed.setColor([255, 0, 0]);
+            embed.setDescription("That command don't exists.");
+			embed.setColor([47, 49, 54]);
             return message.channel.send({embeds: [embed]});
 		}
 
@@ -56,8 +74,8 @@ module.exports = {
             client.commands.set(newCommand.id, newCommand);
 
 			let embed = new Discord.MessageEmbed();
-            embed.setDescription(":white_check_mark: " + "Comando **" + command.id + "** actualizado.");
-			embed.setColor([0, 255, 0]);
+            embed.setDescription("Command `" + command.id + "` reloaded.");
+			embed.setColor([47, 49, 54]);
             return message.channel.send({embeds: [embed]});
         }
 		catch (error) {
