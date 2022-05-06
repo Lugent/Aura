@@ -16,6 +16,7 @@ const level_updater = require(process.cwd() + "/functions/experience_updater.js"
 module.exports = function (client) {
 	client.on("interactionCreate", async (interaction) => {
 		console.log(interaction);
+		await database_handler(client, interaction);
 		
 		let blacklist_guild = interaction.guild ? client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'guild';").get(interaction.guild.id) : false;
 		let blacklist_user = client.bot_data.prepare("SELECT * FROM blacklist WHERE target_id = ? AND type = 'user';").get(interaction.user.id);
@@ -109,8 +110,8 @@ module.exports = function (client) {
 			
 			let kick_audit_logs = await member.guild.fetchAuditLogs({type: "MEMBER_KICK", limit: 1});
 			let kick_action_log = kick_audit_logs.entries.first();
-			let kick_executor = ban_action_log ? kick_action_log.executor : null;
-			let kick_target = ban_action_log ? kick_action_log.target : null;
+			let kick_executor = kick_action_log ? kick_action_log.executor : null;
+			let kick_target = kick_action_log ? kick_action_log.target : null;
 			
 			if (ban_action_log && (ban_target.id === member.user.id)) {
 				console.log(member.user.tag + " was banned from " + member.guild.name + " by " + ban_executor.tag);

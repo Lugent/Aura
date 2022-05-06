@@ -117,7 +117,7 @@ async function execute_rank(client, interaction) {
 	image_context.fillRect(image_data_position - 8, image_data_avatar_padding - 8, image_data_avatar_size + 16, image_data_avatar_size + 16);
 
 	// Avatar
-	let avatar_image = await Canvas.loadImage(get_member.avatar ? get_member.displayAvatarURL({format: "png", dynamic: false, size: 64}) : get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 64}));
+	let avatar_image = await Canvas.loadImage(get_member.avatar ? get_member.displayAvatarURL({format: "png", dynamic: false, size: 256}) : get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 256}));
 	//let avatar_image = await Canvas.loadImage(get_member.user.displayAvatarURL({format: "png", dynamic: false, size: 512})); // 4096
 	image_context.drawImage(avatar_image, image_data_position, image_data_avatar_padding, image_data_avatar_size, image_data_avatar_size);
 	

@@ -16,7 +16,7 @@ let client = new Discord.Client({
 	intents: intents,
 	allowedMentions: {repliedUser: false}, 
 	presence: {status: "online"},
-	partials: ["MESSAGE", "CHANNEL", "REACTION", "USER", "GUILD_MEMBER"],
+	//partials: ["MESSAGE", "CHANNEL", "REACTION", "USER", "GUILD_MEMBER"],
 	//ws: { properties: { $browser: "Discord iOS" } }
 });
 client_setup(client);

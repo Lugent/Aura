@@ -18,6 +18,11 @@ dayjs.updateLocale("es", {
 	}
 });
 
+/**
+ * 
+ * @param {Discord.Client} client 
+ * @param {Discord.CommandInteraction|Discord.ContextMenuInteraction} interaction 
+ */
 async function userInfo(client, interaction) {
 	let target_id = interaction.options.getString("target_id"); // The ID of the user
 	let target_user = interaction.options.getUser("target_user"); // The specified user
