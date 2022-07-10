@@ -7,9 +7,9 @@ let language = {
 	"xp": "XP",
 	"level": "Nivel",
 	"level_short": "Nv",
-	"rank": "Pocisión",
+	"rank": "Posición",
 	"user_header": "Nivel actual de %s",
 	"server_name": "Servidor: %s",
-	"leaderboard_button": "Posiciones"
+	"leaderboard_button": "Tabla de Posiciones"
 };
 module.exports = language;

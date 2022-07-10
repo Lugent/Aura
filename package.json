@@ -1,25 +1,15 @@
 {
     "dependencies": {
-        "@discordjs/opus": "^0.5.3",
-        "@discordjs/voice": "^0.7.2",
         "better-sqlite3": "^7.2.0",
         "bufferutil": "^4.0.3",
         "canvas": "^2.8.0",
-        "chalk": "^4.1.2",
         "dayjs": "^1.10.6",
-        "discord.js": "^13.6.0",
+        "discord.js": "^13.8.0",
         "dotenv": "^8.2.0",
-        "ffmpeg-static": "^4.4.0",
-        "libsodium-wrappers": "^0.7.9",
         "mathjs": "^10.1.0",
         "node-gyp": "^8.0.0",
         "node-pre-gyp": "^0.17.0",
-        "sodium": "^3.0.2",
-        "steam-server-query": "^1.1.2",
-        "tweetnacl": "^1.0.3",
         "utf-8-validate": "^5.0.5",
-        "weather-js": "^2.0.0",
-        "ytdl-core": "^4.9.2",
         "zlib-sync": "^0.1.7"
     }
 }

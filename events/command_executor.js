@@ -86,7 +86,7 @@ async function commandExecutor(client, executor) {
 			if (!handler.execute) { return; }
 			
 			// Cooldown
-			if (!client.application_cooldowns.has(handler.format.name)) { client.application_cooldowns.set(handler.format.name, new Discord.Collection()); }
+			/*if (!client.application_cooldowns.has(handler.format.name)) { client.application_cooldowns.set(handler.format.name, new Discord.Collection()); }
 			let time_actual = Date.now();
 			let time_cooldown = 1 * 1000;
 			let time_data = client.application_cooldowns.get(handler.format.name);
@@ -99,13 +99,10 @@ async function commandExecutor(client, executor) {
 					embed.setDescription(client.functions.getTranslation(client, executor.user, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
 					return executor.reply({embeds: [embed], ephemeral: true});
 				}
-			}
+			}*/
 			
-			handler.execute(client, executor).then(() => {
-				client.application_cooldowns.set(executor.user.id, time_actual);
-				setTimeout(() => client.application_cooldowns.delete(executor.user.id), time_cooldown);
-			}).catch(async (error) => {
-				console.error("Application Command failure: " + "\n" + executor.commandName + "\n" + "Stack trace: " + "\n", error);
+			handler.execute(client, executor).then(() => {}).catch(async (error) => {
+				console.log("Interaction <" + name + "> failed." + "\n" + error)
 				if (executor.deferred) {
 					return executor.editReply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 				}
@@ -124,12 +121,27 @@ async function commandExecutor(client, executor) {
 			let handler = command.autocompletes.find(cmd => (cmd.option_name === name));
 			if (!handler.execute) { return; }
 			
-			handler.execute(client, executor, option).catch(async (error) => {
-				console.error("Autocomplete failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
-				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
+			handler.execute(client, executor, option).then(() => {}).catch(async (error) => {
+				console.log("Interaction <" + name + "> failed." + "\n" + error)
+				await executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
 		
+		// Modal
+		if (executor.isModalSubmit()) {
+			let name = executor.customId;
+			let command = client.commands.find(cmd => { return cmd.modals && cmd.modals.find(mdl => (mdl.id === name)); });
+			if (!command) { return; }
+
+			let handler = command.modals.find(cmd => (cmd.id === name));
+			if (!handler.execute) { return; }
+			
+			handler.execute(client, executor).then(() => {}).catch(async (error) => {
+				console.log("Interaction <" + name + "> failed." + "\n" + error)
+				await executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
+			});
+		}
+
 		// Button
 		if (executor.isButton()) {
 			let name = executor.customId;
@@ -139,28 +151,9 @@ async function commandExecutor(client, executor) {
 			let handler = command.buttons.find(cmd => (cmd.id === name));
 			if (!handler.execute) { return; }
 			
-			// Cooldown
-			if (!client.button_cooldowns.has(handler.id)) { client.button_cooldowns.set(handler.id, new Discord.Collection()); }
-			let time_actual = Date.now();
-			let time_cooldown = 1 * 1000;
-			let time_data = client.button_cooldowns.get(handler.id);
-			if (time_data.has(executor.user.id)) {
-				let time_count = time_data.get(executor.user.id) + time_cooldown;
-				if (time_actual < time_count) { // Cooldown is active
-					let time_remaining = (time_count - time_actual) / 1000;
-					var embed = new Discord.MessageEmbed();
-					embed.setColor([47, 49, 54]);
-					embed.setDescription(client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
-					return executor.reply({embeds: [embed], ephemeral: true});
-				}
-			}
-			
-			handler.execute(client, executor).then(() => {
-				client.application_cooldowns.set(executor.user.id, time_actual);
-				setTimeout(() => client.application_cooldowns.delete(executor.user.id), time_cooldown);
-			}).catch(async (error) => {
-				console.error("Button failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
-				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
+			handler.execute(client, executor).then(() => {}).catch(async (error) => {
+				console.log("Interaction <" + name + "> failed." + "\n" + error)
+				await executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
 		
@@ -173,28 +166,9 @@ async function commandExecutor(client, executor) {
 			let handler = command.selects.find(cmd => (cmd.id === name));
 			if (!handler.execute) { return; }
 			
-			// Cooldown
-			if (!client.select_cooldowns.has(handler.id)) { client.select_cooldowns.set(handler.id, new Discord.Collection()); }
-			let time_actual = Date.now();
-			let time_cooldown = 1 * 1000;
-			let time_data = client.select_cooldowns.get(handler.id);
-			if (time_data.has(executor.user.id)) {
-				let time_count = time_data.get(executor.user.id) + time_cooldown;
-				if (time_actual < time_count) { // Cooldown is active
-					let time_remaining = (time_count - time_actual) / 1000;
-					var embed = new Discord.MessageEmbed();
-					embed.setColor([47, 49, 54]);
-					embed.setDescription(client.functions.getTranslation(client, executor.author, executor.guild, "events/command_executor", "cooldown", [time_remaining.toFixed(2)]));
-					return executor.reply({embeds: [embed], ephemeral: true});
-				}
-			}
-			
-			handler.execute(client, executor).then(() => {
-				client.application_cooldowns.set(executor.user.id, time_actual);
-				setTimeout(() => client.application_cooldowns.delete(executor.user.id), time_cooldown);
-			}).catch(async (error) => {
-				console.error("Select Menu failure: " + "\n" + executor.customId + "\n" + "Stack trace: " + "\n", error);
-				return executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
+			handler.execute(client, executor).then(() => {}).catch(async (error) => {
+				console.log("Interaction <" + name + "> failed." + "\n" + error)
+				await executor.reply({content: "```" + "\n" + error.stack + "\n" + "```", ephemeral: true});
 			});
 		}
 	}

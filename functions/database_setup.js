@@ -20,7 +20,7 @@ function setupDatabases(client) {
 	
 	let table_bot_profiles = data_bot.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'profiles';").get();
 	if (!table_bot_profiles["count(*)"]) {
-		data_bot.prepare("CREATE TABLE profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, accent_colour TEXT, karma NUMERIC, bio TEXT, gender TEXT, birthdate NUMERIC, birthdate_year NUMERIC);").run();
+		data_bot.prepare("CREATE TABLE profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, accent_colour TEXT, bio TEXT, gender TEXT, birthdate NUMERIC, birthdate_year NUMERIC);").run();
 		data_bot.prepare("CREATE UNIQUE INDEX profiles_id ON profiles (id);").run();
 	}
 	client.bot_data = data_bot;
@@ -44,7 +44,7 @@ function setupDatabases(client) {
 	// Profiles
 	let table_server_profiles = data_server.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'profiles';").get();
 	if (!table_server_profiles["count(*)"]) {
-		data_server.prepare("CREATE TABLE profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, credits NUMERIC);").run();
+		data_server.prepare("CREATE TABLE profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, guild_id TEXT, user_id TEXT, credits NUMERIC, karma NUMERIC);").run();
 		data_server.prepare("CREATE UNIQUE INDEX profiles_id ON profiles (id);").run();
 	}
 	

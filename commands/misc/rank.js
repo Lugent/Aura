@@ -94,7 +94,7 @@ async function execute_rank(client, interaction) {
 
 	// Background
 	let get_profile = client.bot_data.prepare("SELECT * FROM profiles WHERE user_id = ?;").get(get_member.user.id);
-	let get_colour = get_profile ? (get_profile.accent_colour.startsWith("#") ? get_profile.accent_colour : "#7289DA") : "#7289DA"
+	let get_colour = (get_profile && get_profile.accent_colour && get_profile.accent_colour.startsWith("#")) ? get_profile.accent_colour : "#ffffff";
 	image_context.fillStyle = "#ffffff" //get_colour;
 	image_context.fillRect(0, 0, image_data_width, image_data_height);
 
@@ -372,7 +372,6 @@ async function execute_leaderboard(client, interaction) {
 		embed.setColor([47, 49, 54]);
 		interaction.editReply({embeds: [embed]});
 	});
-	//return 
 }
 
 /**

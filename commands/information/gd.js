@@ -1,29 +1,179 @@
 const Discord = require("discord.js");
 const path = require("path");
 const constants = require(process.cwd() + "/configurations/constants.js");
-const https = require("https");
-const Canvas = require("canvas");
-Canvas.registerFont(process.cwd() + "/assets/fonts/PUSAB.otf", {family: "Pusab"});
+const request = require("request");
+
+// welcome to pain
+// because robtop server's response is a mess
+let versionTable = {1: "1.0", 2: "1.1", 3: "1.2", 4: "1.3", 5: "1.4", 6: "1.5", 7: "1.6", 10: "1.7", 11: "1.8"}
+let lenghtTable = ["Tiny", "Short", "Medium", "Large", "Extra-Long"];
+let difficultyTable = {0: "NA", 10: "Easy", 20: "Normal", 30: "Hard", 40: "Harder", 50: "Insane"};
+let demonDifficultyTable = {3: "Easy", 4: "Medium", 5: "Insane", 6: "Extreme"};
+let orbsTable = [0, 0, 50, 75, 125, 175, 225, 275, 350, 425, 500];
+let officalSongsTable = [
+    ["Stay Inside Me", "OcularNebula"],
+    ["Stereo Madness", "ForeverBound"],
+    ["Back on Track", "DJVI"],
+    ["Polargeist", "Step"],
+    ["Dry Out", "DJVI"],
+    ["Base After Base", "DJVI"],
+    ["Can't Let Go", "DJVI"],
+    ["Jumper", "Waterflame"],
+    ["Time Machine", "Waterflame"],
+    ["Cycles", "DJVI"],
+    ["xStep", "DJVI"],
+    ["Clutterfunk", "Waterflame"],
+    ["Theory of Everything", "DJ-Nate"],
+    ["Electroman Adventures", "Waterflame"],
+    ["Clubstep", "DJ-Nate"],
+    ["Electrodynamix", "DJ-Nate"],
+    ["Hexagon Force", "Waterflame"],
+    ["Blast Processing", "Waterflame"],
+    ["Theory of Everything 2", "DJ-Nate"],
+    ["Geometrical Dominator", "Waterflame"],
+    ["Deadlocked", "F-777"],
+    ["Fingerdash", "MDK"],
+    ["The Seven Seas", "F-777"],
+    ["Viking Arena", "F-777"],
+    ["Airborne Robots", "F-777"],
+    ["The Challenge", "RobTop"],
+    ["Payload", "Dex Arson"],
+    ["Beast Mode", "Dex Arson"],
+    ["Machina", "Dex Arson"],
+    ["Years", "Dex Arson"],
+    ["Frontlines", "Dex Arson"],
+    ["Space Pirates", "Waterflame"],
+    ["Striker", "Waterflame"],
+    ["Embers", "Dex Arson"],
+    ["Round 1", "Dex Arson"],
+    ["Monster Dance Off", "F-777"],
+    ["Press Start", "MDK"],
+    ["Nock Em", "Bossfight"],
+    ["Power Trip", "Boom Kitty"]
+];
+
+class GJLevelAuthor {
+	constructor(level, data) {
+		this.playerID = Number(data[0] || level[6]);
+		this.username = data[1] || "-";
+		this.accountID = Number(data[2]) || 0;
+	}
+}
+
+class GJLevelSong {
+	constructor(level, data) {
+		if (level[35]) {
+			this.id = Number(data[1] || level[35]);
+			this.name = data[2] || "Unknown";
+			this.artist = data[4] || "Unknown";
+			this.size = (data[5] || "0") + "MB";
+			this.link = data[10] ? decodeURIComponent(data[10]) : -1;
+		}
+		else {
+			this.id = "Level " + level[12];
+			this.name = officalSongsTable[level[12]][0] || "Unknown";
+			this.artist = officalSongsTable[level[12]][1] || "Unknown";
+			this.size = "0MB";
+			this.link = -1;
+		}
+	}
+}
+
+class GJLevel {
+	constructor(data, author, song) {
+		this.id = Number(data[1]); // ID
+		this.name = data[2]; // level name
+		this.description = Buffer.from(data[3] || "", "base64").toString() || "(No description provied)";
+		this.author = new GJLevelAuthor(data, author);
+		this.song = new GJLevelSong(data, song);
+		this.version = Number(data[5]); // level version
+		//this.playerID = data[6]; // player id
+		this.downloads = Number(data[10]); // amount of downloads
+		//this.customSongID = data[35];
+		//this.officialSong = this.customSongID ? 0 : parseInt(data[12]) + 1;
+		this.gameVersion = (data[13] > 17) ? (data[13] / 10).toFixed(1) : versionTable[data[13]];
+		this.likes = Number(data[14]);
+		this.length = lenghtTable[data[15]];
+		this.stars = Number(data[18]);
+		this.orbs = orbsTable[this.stars];
+		this.featured = (data[19] > 0);
+		this.featuredScore = (this.featured > 0) ? Number(data[19]) : -1;
+		this.copiedID = (data[30] > 0) ? Number(data[30]) : -1;
+		this.twoPlayer = (data[31] > 0);
+		this.coins = Number(data[37]);
+		this.verifiedCoins = (data[38] > 0);
+		this.starsRequested = Number(data[39]);
+		this.epic = (data[42] > 0);
+		this.objects = Number(data[45]);
+		this.large = (this.objects > 40000);
+		this.difficulty = (data[25] > 0) ? "Auto" : ((data[17] > 0) ? (demonDifficultyTable[data[43]] || "Hard") + " Demon" : difficultyTable[data[9]]);
+	}
+}
+
+class GJLevelSearch {
+	constructor(levels_data, authors_data, songs_data, pages_data) {
+		this.currentPage = Number(pages_data[1]);
+		this.maxPage = Number(pages_data[0]);
+		this.listCount = Number(pages_data[2]);
+		this.levels = [];
+		for (let k = 0; k < levels_data.length; k++) {
+			let level_author = authors_data.find((author) => { (author[0] == levels_data[k][6]) }) || [];
+			let level_song = songs_data.find((song) => { (song[1] == levels_data[k][35]) }) || [];
+			this.levels[k] = new GJLevel(levels_data[k], level_author, level_song);
+		}
+	}
+}
 
 /**
- * @param {Canvas.CanvasRenderingContext2D} context
- * @param {Number} x 
- * @param {Number} y 
- * @param {String} string 
- * @param {String} color 
- * @param {String} outline_color
- * @param {String} shadow_color 
- * @param {Number} shadow_offset 
+ * 
+ * @param {String} data 
+ * @returns {Array}
  */
-function shadowed_text(context, x, y, string, color, outline_color, shadow_color, shadow_offset) {
-	context.fillStyle = shadow_color;
-	context.fillText(string, x + shadow_offset, y + shadow_offset);
+function convertGJLevel(data) {
+	let raw_data = data.split("#");
+	let level_array = [];
+	let song_array = [];
+	let author_array = raw_data[1].split("|")[0].split(":");
+	let raw_level_array = raw_data[0].split(":");
+	let raw_song_array = raw_data[2].split("~|~");
+	for (let i = 0; i < raw_level_array.length; i += 2) { level_array[raw_level_array[i]] = raw_level_array[i + 1]; }
+	for (let i = 0; i < raw_song_array.length; i += 2) { song_array[raw_song_array[i]] = raw_song_array[i + 1]; }
+	return new GJLevel(level_array, author_array, song_array);
+}
 
-	context.fillStyle = color;
-	context.fillText(string, x, y);
+function convertGJSearch(data) {
+	let raw_data = data.split("#");
+	let raw_levels_array = raw_data[0].split("|");
+	let raw_authors_array = raw_data[1].split("|");
+	let raw_songs_array = raw_data[2].split("~:~");
+	let raw_page_array = raw_data[3].split(":");
+
+	let songs_array = [];
+	for (let j = 0; j < raw_songs_array.length; j += 1)
+	{
+		let song_array = [];
+		let raw_song_array = raw_songs_array[j].split("~|~");
+		for (let i = 0; i < raw_song_array.length; i += 2) { song_array[raw_song_array[i]] = raw_song_array[i + 1]; }
+		songs_array[j] = song_array;
+	}
 	
-	context.strokeStyle = outline_color;
-	context.strokeText(string, x, y);
+	let authors_array = [];
+	for (let j = 0; j < raw_authors_array.length; j += 1)
+	{
+		let author_array = [];
+		let raw_author_array = raw_authors_array[j].split("|")[0].split(":");
+		authors_array[j] = raw_author_array;
+	}
+
+	let levels_array = [];
+	for (let j = 0; j < raw_levels_array.length; j += 1)
+	{
+		let level_array = [];
+		let raw_level_array = raw_levels_array[j].split(":");
+		for (let i = 0; i < raw_level_array.length; i += 2) { level_array[raw_level_array[i]] = raw_level_array[i + 1]; }
+		levels_array[j] = level_array;
+	}
+	return new GJLevelSearch(levels_array, authors_array, songs_array, raw_page_array); //{levels_array, authors_array, songs_array, raw_page_array}; //{raw_level_array, raw_author_array, raw_song_array};
 }
 
 module.exports = {
@@ -59,31 +209,25 @@ module.exports = {
 					{
 						type: "SUB_COMMAND",
 						name: "search",
-						description: "Search levels",
+						description: "search.description",
 						options: [
 							{
 								type: "STRING",
-								name: "level_name",
-								description: "Name of the levels to search",
+								name: "name",
+								description: "search.name.description",
 								required: false
 							},
-							{
-								type: "STRING",
-								name: "filers",
-								description: "The filters to use",
-								required: false
-							}
 						]
 					},
 					{
 						type: "SUB_COMMAND",
 						name: "level",
-						description: "Get level's information",
+						description: "level.description",
 						options: [
 							{
 								type: "STRING",
-								name: "level_id",
-								description: "The ID of the level",
+								name: "id",
+								description: "level.id.description",
 								required: true
 							}
 						]
@@ -91,12 +235,12 @@ module.exports = {
 					{
 						type: "SUB_COMMAND",
 						name: "profile",
-						description: "Get profile's information",
+						description: "profile.description",
 						options: [
 							{
 								type: "STRING",
-								name: "profile_id",
-								description: "The ID of the profile",
+								name: "id",
+								description: "profile.id.description",
 								required: true
 							}
 						]
@@ -109,121 +253,37 @@ module.exports = {
 			 * @param {Discord.CommandInteraction} interaction
 			 */
 			async execute(client, interaction) {
-				const api_url = "https://gdbrowser.com/api/";
+				await interaction.deferReply();
+
+				let endpoint_url = "http://www.boomlings.com/database/";
 				switch (interaction.options.getSubcommand()) {
 					case "help": {
 						switch (interaction.options.getString("command")) {
 							case "search": {
-								let embed = new Discord.MessageEmbed();
-								embed.setTitle(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.title", ["/"]));
-								embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.page"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.page.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.difficulty"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.difficulty.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.length"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.length.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.count"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.count.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.song_id"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.song_id.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.custom_song"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.custom_song.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.list"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.list.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.creators"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.creators.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.user"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.user.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.type"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.type.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.featured"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.featured.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.original"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.original.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.two_player"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.two_player.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.coins"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.coins.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.epic"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.epic.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.starred"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.starred.description"));
-								embed.addField(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.no_star"), client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "help.search.no_star.description"));
-								embed.setColor([254, 223, 0]);
-								return interaction.reply({embeds: [embed]});
+								
 							}
 						}
 						break;
 					}
 					
 					case "search": {
-						let search_query = interaction.options.getString("level_name") ?? "*";
-						let search_filters = "";
-						
-						let raw_data = "";
-						let complete_url = api_url + "search/" + search_query + "?count=10" + search_filters;
-						console.log(complete_url);
-						await interaction.deferReply();
-						https.get(complete_url, async (response) => {
-							response.on("data", async (chunk) => { raw_data += chunk; });
-							response.on("end", async () => {
-								console.log(raw_data);
-								if (!raw_data.startsWith("[")) {
-									if (raw_data === "-1") {
-										let embed = new Discord.MessageEmbed();
-										embed.setColor([47, 49, 54]);
-										embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/information/gd", "search.not_found"));
-										return interaction.editReply({embeds: [embed]});
-									}
-									
-									let embed = new Discord.MessageEmbed();
-									embed.setColor([47, 49, 54]);
-									embed.setDescription(raw_data);
-									return interaction.editReply({embeds: [embed]});
-								}
+						//let search_data = {gameVersion: "21", binaryVersion: "35", secret: "Wmfd2893gb7", type: 10, page: "0", count: 10, str: "6508283"};
+						let search_data = {gameVersion: "21", binaryVersion: "35", secret: "Wmfd2893gb7", type: 0, page: "0", count: 10};
+						request.post(endpoint_url + "getGJLevels21.php", {form: search_data, headers: {}}, function(error, response, body){
+							if (error)
+							{
+								console.log(error);
+							}
+							else {
+								let GJData = convertGJSearch(body);
+								console.log(GJData);
 								
-								let levels_data = JSON.parse(raw_data);
-								console.log(levels_data);
-								
-								let image_canvas = Canvas.createCanvas(1280, 720);
-								let image_context = image_canvas.getContext("2d");
-								image_context.patternQuality = "nearest";
-								image_context.quality = "nearest";
-								image_context.imageSmoothingEnabled = false;
-								
-								image_context.fillStyle = "#C1743F";
-								image_context.fillRect(0, 0, 1280, 720);
-								
+								let search_image = new Discord.MessageAttachment(process.cwd() + "/assets/images/geometrydash/magnify.png", "search.png");
 								let embed = new Discord.MessageEmbed();
-								embed.setColor([47, 49, 54]);
-								for (let index = 0; index < levels_data.length; index++) {
-									let difficulty_image = await Canvas.loadImage(process.cwd() + "/assets/images/geometrydash/difficulties/" + levels_data[index].difficultyFace + ".png");
-									image_context.drawImage(difficulty_image, 16, 16 + (70 * index), 64, 64);
-									
-									let pos_x = 16 + 70
-									let pos_y = 16 + (70 * index)
-									image_context.font = "32px Pusab";
-									image_context.textAlign = "left";
-									image_context.textBaseline = "top";
-									shadowed_text(image_context, pos_x, pos_y, levels_data[index].name, "#ffffff", "#000000", "#000000", 2);
-									shadowed_text(image_context, pos_x, pos_y + 26, "By " + levels_data[index].author, ((levels_data[index].accountID !== "0") ? "#ffc800" : "#55cc37"), "#000000", "#000000", 2);
-									
-									for (let coin_index = 0; coin_index < levels_data[index].coins; coin_index++) {
-										let coin_image = await Canvas.loadImage(process.cwd() + "/assets/images/geometrydash/" + (levels_data[index].verifiedCoins ? "silvercoin" : "browncoin") + ".png");
-										image_context.drawImage(coin_image, (pos_x + (4 + (32 * coin_index))) + image_context.measureText(levels_data[index].name).width, pos_y, 32, 32)
-									}
-
-									/*image_context.fillStyle = "#000000";
-									image_context.fillText(text_string, pos_x + 2, pos_y + 2);
-
-									image_context.fillStyle = "#ffffff";
-									image_context.fillText(text_string, pos_x, pos_y);
-									
-									image_context.strokeStyle = "#000000";
-									image_context.strokeText(text_string, pos_x, pos_y);*/
-									
-									/*let level_name = (levels_data[index].epic ? ":fire:" : (levels_data[index].featured ? ":star:" : "")) + " " + levels_data[index].name;
-									
-									let level_info = [
-										":thermometer: " + levels_data[index].difficulty,
-										":hourglass: " + levels_data[index].length,
-										":arrow_heading_down: " + client.functions.getFormattedNumber(levels_data[index].downloads, 2),
-										":+1: " + client.functions.getFormattedNumber(levels_data[index].likes, 2),
-										":id: " + levels_data[index].id
-									];
-									embed.addField(level_name, level_info.join("\n"), true);*/
-								}
-								
-								let attachment = new Discord.MessageAttachment(image_canvas.toBuffer(), "gd.png");
-								embed.setImage("attachment://gd.png");
-								return interaction.editReply({embeds: [embed], files: [attachment]});
-							});
-						}).on("error", (error) => { throw error; });
+								embed.setTitle(client.function.getTranslation(client, interaction.guild, "commands/information/gd", "search_results"));
+								embed.setFooter({text: client.function.getTranslation(client, interaction.guild, "commands/information/gd", "search_results.page", [GJData.currentPage, GJData.maxPage])});
+							}
+						});
 						break;
 					}
 				}

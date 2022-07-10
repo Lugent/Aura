@@ -5,6 +5,7 @@ const Discord = require("discord.js");
 const command_executor = require(process.cwd() + "/events/command_executor.js"); 
 const database_handler = require(process.cwd() + "/events/database_handler.js");
 const experience_handler = require(process.cwd() + "/events/experience_handler.js");
+const credits_handler = require(process.cwd() + "/events/credits_handler.js");
 const invite_tracker = require(process.cwd() + "/functions/invite_tracker.js");
 const level_updater = require(process.cwd() + "/functions/experience_updater.js");
 
@@ -37,6 +38,7 @@ module.exports = function (client) {
 		
 		command_executor(client, message);
 		experience_handler(client, message);
+		credits_handler(client, message);
 	});
 
 	client.on("inviteCreate", async (invite) => {
@@ -61,10 +63,7 @@ module.exports = function (client) {
 
 	client.on("guildMemberAdd", async (member) => {
 		if (member.guild.me.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)) {
-			//console.log(client.guild_invites);
-
 			let get_guild = client.guild_invites.get(member.guild.id);
-			//console.log(get_guild);
 			await member.guild.invites.fetch().then(async (invites) => {
 				let guild_invite = invites.find(invite => get_guild.get(invite.code) < invite.uses);
 				if (guild_invite) {
@@ -102,31 +101,34 @@ module.exports = function (client) {
 	});
 
 	client.on("guildMemberRemove", async (member) => {
-		if (member.guild.me.permissions.has(Discord.Permissions.FLAGS.VIEW_AUDIT_LOG)) {
-			let ban_audit_logs = await member.guild.fetchAuditLogs({type: "MEMBER_BAN_ADD", limit: 1});
-			let ban_action_log = ban_audit_logs.entries.first();
-			let ban_executor = ban_action_log ? ban_action_log.executor : null;
-			let ban_target = ban_action_log ? ban_action_log.target : null;
-			
-			let kick_audit_logs = await member.guild.fetchAuditLogs({type: "MEMBER_KICK", limit: 1});
-			let kick_action_log = kick_audit_logs.entries.first();
-			let kick_executor = kick_action_log ? kick_action_log.executor : null;
-			let kick_target = kick_action_log ? kick_action_log.target : null;
-			
-			if (ban_action_log && (ban_target.id === member.user.id)) {
-				console.log(member.user.tag + " was banned from " + member.guild.name + " by " + ban_executor.tag);
-			}
-			else if (kick_action_log && (kick_target.id === member.user.id)) {
-				console.log(member.user.tag + " was kicked from " + member.guild.name + " by " + kick_executor.tag);
+		if (member.guild.me)
+		{
+			if (member.guild.me.permissions.has(Discord.Permissions.FLAGS.VIEW_AUDIT_LOG)) {
+				let ban_audit_logs = await member.guild.fetchAuditLogs({type: "MEMBER_BAN_ADD", limit: 1});
+				let ban_action_log = ban_audit_logs.entries.first();
+				let ban_executor = ban_action_log ? ban_action_log.executor : null;
+				let ban_target = ban_action_log ? ban_action_log.target : null;
+				
+				let kick_audit_logs = await member.guild.fetchAuditLogs({type: "MEMBER_KICK", limit: 1});
+				let kick_action_log = kick_audit_logs.entries.first();
+				let kick_executor = kick_action_log ? kick_action_log.executor : null;
+				let kick_target = kick_action_log ? kick_action_log.target : null;
+				
+				if (ban_action_log && (ban_target.id === member.user.id)) {
+					console.log(member.user.tag + " was banned from " + member.guild.name + " by " + ban_executor.tag);
+				}
+				else if (kick_action_log && (kick_target.id === member.user.id)) {
+					console.log(member.user.tag + " was kicked from " + member.guild.name + " by " + kick_executor.tag);
+				}
+				else {
+					if (member.user.bot) { console.log("Bot " + member.user.tag + " leaved from " + member.guild.name); }
+					else { console.log(member.user.tag + " leaved from " + member.guild.name); }
+				}
 			}
 			else {
 				if (member.user.bot) { console.log("Bot " + member.user.tag + " leaved from " + member.guild.name); }
 				else { console.log(member.user.tag + " leaved from " + member.guild.name); }
 			}
-		}
-		else {
-			if (member.user.bot) { console.log("Bot " + member.user.tag + " leaved from " + member.guild.name); }
-			else { console.log(member.user.tag + " leaved from " + member.guild.name); }
 		}
 	});
 

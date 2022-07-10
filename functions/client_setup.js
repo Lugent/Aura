@@ -49,9 +49,7 @@ module.exports = function (client) {
 	client.select_cooldowns = new Discord.Collection();
 	client.exp_cooldowns = new Discord.Collection();
 	client.guild_invites = new Discord.Collection();
-
-	// Client states
-	//client.connected = false; // don't change this
+	client.credits_cooldowns = new Discord.Collection();
 
 	// Databases
 	let setupDatabases = require(process.cwd() + "/functions/database_setup.js");
@@ -85,7 +83,61 @@ module.exports = function (client) {
 
 			let guild_element = await guilds_array[guild_index].fetch();
 			await guild_element.commands.set(applications_commands).catch(console.error);
-			//console.log(applications_commands);
 		}
 	};
+	
+	/* This new system of localizations in discord.js v13.7.x doesn't works, soo i'll keep the old system until figure it out */
+	// Translator
+	/*function application_translate(application) {
+		let languages = [{source: "en", target: "en-US"}, {source: "en", target: "en-GB"}, {source: "es", target: "es-ES"}];
+		let languages_definition = {};
+		let languages_definition_name = {};
+		for (let index = 0; index < languages.length; index++) {
+			let get_name = client.functions.getTranslation(client, languages[index].source, "application_commands", application.name, null, true);
+			let get_description = client.functions.getTranslation(client, languages[index].source, "application_commands", application.description, null, true);
+			languages_definition_name[languages[index].target] = get_name.length ? get_name : application.name;
+			languages_definition[languages[index].target] = get_description.length ? get_description : application.description;
+		}
+		
+		application.nameLocalizations = languages_definition_name;
+		application.descriptionLocalizations = languages_definition;
+		if (application.options && application.options.length) {
+			for (let index = 0; index < application.options.length; index++) {
+				application_translate(application.options[index]);
+			}
+		}
+		return application;
+	}
+
+	// Register
+	client.registerApplications = async function (client) {
+		let guilds_array = [];
+		let client_guilds = await client.guilds.fetch();
+		client_guilds.forEach(async function (guild) { guilds_array.push(guild); });
+		
+		let client_commands = [];
+		client.commands.forEach((command) => { client_commands.push(command); })
+		
+		let applications_commands = [];
+		for (let command_index = 0; command_index < client_commands.length; command_index++) {
+			if ((client_commands[command_index].type & constants.cmdTypes.applicationsCommand) && (client_commands[command_index].applications)) {
+				for (let index = 0; index < client_commands[command_index].applications.length; index++) {
+					let	result_command = client_commands[command_index].applications[index].format;
+					applications_commands.push(result_command);
+				}
+			}
+		}
+		
+		for (let index = 0; index < applications_commands.length; index++) {
+			if (applications_commands[index].type == "CHAT_INPUT") {
+				application_translate(applications_commands[index]);
+			}
+		}
+		
+		console.log(applications_commands);
+		for (let guild_index = 0; guild_index < guilds_array.length; guild_index++) {
+			let guild_element = await guilds_array[guild_index].fetch();
+			await guild_element.commands.set(applications_commands).catch(console.error);
+		}
+	};*/
 }

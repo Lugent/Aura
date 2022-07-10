@@ -17,12 +17,14 @@ async function invite_tracker(client) {
 		}
 		guilds_count++;
 		
-		await guild.invites.fetch().then(async (invites) => {
-			invites.forEach(async function (invite) {
-				guild_data.set(invite.code, invite.uses);
-				invite_count++;
+		if (guild.me.permissions.has(Discord.Permissions.FLAGS.MANAGE_GUILD)) {
+			await guild.invites.fetch().then(async (invites) => {
+				invites.forEach(async function (invite) {
+					guild_data.set(invite.code, invite.uses);
+					invite_count++;
+				});
 			});
-		});
+		}
 	});
 	//console.log("Registering " + invite_count + " invites on " + guilds_count + " guilds.");
 }

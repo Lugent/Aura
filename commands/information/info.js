@@ -38,20 +38,20 @@ async function userInfo(client, interaction) {
 	
 	// Retrieve user's info
 	let get_user;
-	if (interaction.isContextMenu()) {
+	if (interaction.isContextMenu()) { // Context menu
 		get_user = await client.users.fetch(interaction.targetMember, {force: true}).catch((error) => {});
 	}
-	else if (target_id) {
+	else if (target_id) { // Chat Command - ID
 		get_user = await client.users.fetch(target_id, {force: true}).catch((error) => {});
 	}
-	else if (target_user) {
+	else if (target_user) { // Chat Command - User
 		get_user = await client.users.fetch(target_user.id, {force: true}).catch((error) => {});
 	}
-	else {
+	else { // Yourself
 		get_user = await client.users.fetch(interaction.user.id, {force: true}).catch((error) => {});
 	}
 	
-	if (!get_user) {
+	if (!get_user) { // User not found; Impossible to trigger that on yourself
 		let embed = new Discord.MessageEmbed();
 		embed.setColor([47, 49, 54]);
 		embed.setDescription(client.functions.getTranslation(client, interaction.guild, "commands/information/info", "user.not_found"));
@@ -63,6 +63,7 @@ async function userInfo(client, interaction) {
 	let embeds = [];
 	
 	// User "Tags"
+	// Check if that user is a system user by Discord and/or is a Bot
 	let user_tags = [];
 	if (get_user.system) { user_tags.push(client.functions.getTranslation(client, interaction.guild, "commands/information/info", "user.tags.system")); }
 	if (get_user.bot) { user_tags.push(client.functions.getTranslation(client, interaction.guild, "commands/information/info", "user.tags.bot")); }
@@ -106,11 +107,13 @@ async function userInfo(client, interaction) {
 		let guild_owner = await interaction.guild.fetchOwner({force: true}); // Used to check if the member is the ownership
 		
 		// Member "Tags"
+		// If it's the ownership or has administrator permission
 		let member_tags = [];
 		if (guild_owner.user.id === get_user.id) { member_tags.push(client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.tags.owner")); }
 		else if (find_member.permissions & Discord.Permissions.FLAGS.ADMINISTRATOR) { member_tags.push(client.functions.getTranslation(client, interaction.guild, "commands/information/info", "member.tags.admin")); }
 		
 		// Roles
+		// Skips @everyone
 		let member_roles = "";
 		let actual_roles = find_member.roles.cache.sort(function (a, b) { if (a.position > b.position) { return -1; } else if (b.position > a.position) { return 1; } return 0; });
 		actual_roles.forEach(function (role) { if (role.name !== "@everyone") { member_roles += "<@&" + role.id + ">" + " "; } });
@@ -159,15 +162,14 @@ module.exports = {
 			/**
 			 * @param {Discord.Client} client
 			 * @param {Discord.AutocompleteInteraction} interaction
+			 * @param {Discord.ApplicationCommandOptionChoiceData} option
 			 */
 			async execute(client, interaction, option) {
-				if (!option.value.length) { return interaction.respond([{name: "No User", value: "-1"}]); }
+				if (!option.value.length) { return interaction.respond([{name: "No User Specified", value: "-1"}]); }
 				
 				let get_user = await client.users.fetch(option.value, {force: true}).catch((error) => {})
-				console.log(get_user)
-				if (!get_user) { return interaction.respond([{name: "Invalid User", value: "-1"}]); }
-				
-				return interaction.respond([{name: get_user.tag, value: get_user.id}]);
+				if (!get_user) { return interaction.respond([{name: "Invalid Specified User", value: "-1"}]); }
+				return interaction.respond([{name: get_user.tag + " (" + get_user.id + ")", value: get_user.id}]);
 			}
 		}
 	],
@@ -234,7 +236,19 @@ module.exports = {
 						let get_guild = interaction.guild; // Get the current guild
 						await interaction.deferReply(); // Using this to make Discord thinks that the interaction is working
 						
+						let member_count = 0;
+						let guild_members = await get_guild.members.fetch();
+						guild_members.forEach(function (member) {
+							member_count++;
+						});
+
 						console.log(get_guild);
+
+						let guild_embed = new Discord.MessageEmbed();
+						guild_embed.setColor([47, 49, 54]);
+						guild_embed.setAuthor({name: get_guild.name, });
+						guild_embed.setDescription("Miembros: " + member_count);
+						return interaction.editReply({embeds: [guild_embed]}); // And finally send all!
 					}
 				}
 			}
